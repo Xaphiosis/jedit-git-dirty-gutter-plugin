@@ -1,2 +1,6 @@
 .gradle/
+bin/
 build/
+
+# Temporarily ignore due to <https://bugs.eclipse.org/bugs/show_bug.cgi?id=470946>
+.settings/gradle.prefs
