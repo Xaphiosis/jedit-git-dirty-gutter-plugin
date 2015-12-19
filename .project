@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
   <name>jedit-git-dirty-gutter-plugin</name>
-  <comment>jEdit plugin for highlighting lines that have been changed since the last Git commit.</comment>
+  <comment>A jEdit plugin that adds highlights in the gutter for lines that have been changed since the last Git commit.</comment>
   <projects>
   </projects>
   <buildSpec>
