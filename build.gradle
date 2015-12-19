@@ -1,6 +1,6 @@
 plugins {
     id 'java'
-    id 'com.github.johnrengelman.shadow' version '1.2.2'
+    id 'nebula.provided-base' version '3.0.3'
 }
 
 version = '0.1.0'
@@ -11,15 +11,19 @@ repositories {
 }
 
 dependencies {
-    shadow fileTree(dir: 'lib', include: '*.jar')
+    provided fileTree(dir: 'lib', include: '*.jar')
 }
 
-shadowJar {
-    exclude 'META-INF/maven/**/*'
-}
-
-tasks.withType(AbstractCompile) {
-    classpath += configurations.shadow
+task fatJar(type: Jar) {
+    classifier = 'all'
+    from {
+        (configurations.compile - configurations.provided).collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    } {
+        exclude 'META-INF/**'
+    }
+    with jar
 }
 
 task wrapper(type: Wrapper) {
