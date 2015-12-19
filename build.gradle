@@ -3,8 +3,12 @@ apply plugin: 'java'
 version = '0.1.0'
 sourceCompatibility = '1.7'
 
+dependencies {
+    compile fileTree(dir: 'lib', include: '*.jar')
+}
+
 task wrapper(type: Wrapper) {
-  description = 'Generates Gradle wrapper files.'
-  gradleVersion = '2.9'
-  group = 'Build Setup'
+    description = 'Generates Gradle wrapper files.'
+    gradleVersion = '2.9'
+    group = 'Build Setup'
 }

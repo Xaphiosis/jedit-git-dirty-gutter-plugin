@@ -18,10 +18,12 @@
 
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter;
 
+import org.gjt.sp.jedit.EditPlugin;
+
 /**
- * A jEdit plugin for highlighting lines that have been changed since the last
- * Git commit.
+ * A jEdit plugin that adds highlights in the gutter for lines that have been
+ * changed since the last Git commit.
  */
-public final class GitDirtyGutterPlugin {
+public final class GitDirtyGutterPlugin extends EditPlugin {
     // do nothing
 }
