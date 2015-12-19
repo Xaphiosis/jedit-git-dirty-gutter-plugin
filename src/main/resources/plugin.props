@@ -2,6 +2,7 @@ plugin.io.github.ssoloff.jedit.plugins.git_dirty_gutter.GitDirtyGutterPlugin.act
 plugin.io.github.ssoloff.jedit.plugins.git_dirty_gutter.GitDirtyGutterPlugin.author=Steven Soloff
 plugin.io.github.ssoloff.jedit.plugins.git_dirty_gutter.GitDirtyGutterPlugin.depend.0=jdk 1.7
 plugin.io.github.ssoloff.jedit.plugins.git_dirty_gutter.GitDirtyGutterPlugin.depend.1=jedit 05.00.99.00
+plugin.io.github.ssoloff.jedit.plugins.git_dirty_gutter.GitDirtyGutterPlugin.depend.2=plugin lcm.LCMPlugin 0.3b
 plugin.io.github.ssoloff.jedit.plugins.git_dirty_gutter.GitDirtyGutterPlugin.description=Adds highlights in the gutter for lines that have been changed since the last Git commit.
 plugin.io.github.ssoloff.jedit.plugins.git_dirty_gutter.GitDirtyGutterPlugin.docs=docs.html
 plugin.io.github.ssoloff.jedit.plugins.git_dirty_gutter.GitDirtyGutterPlugin.longdescription=description.html
