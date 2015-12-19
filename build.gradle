@@ -1,10 +1,25 @@
-apply plugin: 'java'
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '1.2.2'
+}
 
 version = '0.1.0'
 sourceCompatibility = '1.7'
 
+repositories {
+    mavenCentral()
+}
+
 dependencies {
-    compile fileTree(dir: 'lib', include: '*.jar')
+    shadow fileTree(dir: 'lib', include: '*.jar')
+}
+
+shadowJar {
+    exclude 'META-INF/maven/**/*'
+}
+
+tasks.withType(AbstractCompile) {
+    classpath += configurations.shadow
 }
 
 task wrapper(type: Wrapper) {
