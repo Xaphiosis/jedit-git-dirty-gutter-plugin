@@ -1,5 +1,5 @@
 plugins {
-    id 'java'
+    id 'groovy'
     id 'nebula.provided-base' version '3.0.3'
 }
 
@@ -12,6 +12,7 @@ repositories {
 
 dependencies {
     provided fileTree(dir: 'libs/jedit', include: '*.jar')
+    testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
 }
 
 task fatJar(type: Jar) {
