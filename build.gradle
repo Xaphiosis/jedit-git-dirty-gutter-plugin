@@ -12,6 +12,7 @@ repositories {
 
 dependencies {
     provided fileTree(dir: 'libs/jedit', include: '*.jar')
+    compile 'com.googlecode.java-diff-utils:diffutils:1.2.1'
     testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
 }
 

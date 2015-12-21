@@ -16,22 +16,28 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal
+package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
 
-import spock.lang.Specification
+/**
+ * The type of dirty mark associated with a line.
+ */
+enum DirtyMarkType {
+    /** The line was added since the last commit. */
+    ADDED,
 
-class GitDirtyLineProviderSpec extends Specification {
-    def 'A set should allow a new element to be added'() {
-        given: 'a set with four items'
-        def items = [4, 6, 3, 2] as Set
+    /** The line was changed since the last commit. */
+    CHANGED,
 
-        when: 'a new item is added'
-        items << 1
+    /**
+     * One or more lines have been removed above the line since the last commit.
+     */
+    REMOVED_ABOVE,
 
-        then: 'the set should contain the added item'
-        items.contains(1)
+    /**
+     * One or more lines have been removed below the line since the last commit.
+     */
+    REMOVED_BELOW,
 
-        and: 'the set size should be 5'
-        items.size() == 5
-    }
+    /** The line has not changed since the last commit. */
+    UNCHANGED;
 }
