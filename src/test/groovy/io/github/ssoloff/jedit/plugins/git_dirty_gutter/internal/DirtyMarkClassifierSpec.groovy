@@ -180,7 +180,9 @@ class DirtyMarkClassifierSpec extends Specification {
         // @@ -17 +17 @@
         // -check this dokument. On
         // +check this document. On
-        // @@ -24,0 +25,4 @@
+        // @@ -21 +20,0 @@
+        // -(pause)
+        // @@ -25,0 +25,4 @@
         // +
         // +This paragraph contains
         // +important new additions
@@ -222,7 +224,13 @@ class DirtyMarkClassifierSpec extends Specification {
             ])
         ))
         patch.addDelta(new ChangeDelta(
-            new Chunk(23, []),
+            new Chunk(20, [
+                '(pause)'
+            ]),
+            new Chunk(19, [])
+        ))
+        patch.addDelta(new ChangeDelta(
+            new Chunk(24, []),
             new Chunk(24, [
                 '',
                 'This paragraph contains',
@@ -252,7 +260,7 @@ class DirtyMarkClassifierSpec extends Specification {
         classifier.classifyLine(16) == DirtyMarkType.CHANGED
         classifier.classifyLine(17) == DirtyMarkType.UNCHANGED
         classifier.classifyLine(18) == DirtyMarkType.UNCHANGED
-        classifier.classifyLine(19) == DirtyMarkType.UNCHANGED
+        classifier.classifyLine(19) == DirtyMarkType.REMOVED_BELOW
         classifier.classifyLine(20) == DirtyMarkType.UNCHANGED
         classifier.classifyLine(21) == DirtyMarkType.UNCHANGED
         classifier.classifyLine(22) == DirtyMarkType.UNCHANGED
