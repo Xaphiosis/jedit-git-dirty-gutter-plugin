@@ -48,44 +48,78 @@ class DirtyMarkClassifierSpec extends Specification {
     }
 
     def 'classifyLine should classify an added line'() {
-        // --- from.add	2015-12-21 08:41:37.902610985 -0500
+        // --- from.add	2015-12-21 17:53:29.082877088 -0500
         // +++ to.add	2015-12-21 08:41:52.663714666 -0500
-        // @@ -9,0 +10 @@
+        // @@ -0,0 +1 @@
+        // +1
+        // @@ -8,0 +10 @@
         // +10
+        // @@ -17,0 +20 @@
+        // +20
 
         setup:
         def patch = new Patch()
         patch.addDelta(new ChangeDelta(
-            new Chunk(8, []),
+            new Chunk(0, []), // NB: difflib behavior: 0(1) -> -1(0) -> 0(0)
+            new Chunk(0, ['1'])
+        ))
+        patch.addDelta(new ChangeDelta(
+            new Chunk(7, []),
             new Chunk(9, ['10'])
+        ))
+        patch.addDelta(new ChangeDelta(
+            new Chunk(16, []),
+            new Chunk(19, ['20'])
         ))
         def classifier = new DirtyMarkClassifier(patch)
 
         expect:
+        classifier.classifyLine(0) == DirtyMarkType.ADDED
+        classifier.classifyLine(1) == DirtyMarkType.UNCHANGED
         classifier.classifyLine(8) == DirtyMarkType.UNCHANGED
         classifier.classifyLine(9) == DirtyMarkType.ADDED
         classifier.classifyLine(10) == DirtyMarkType.UNCHANGED
+        classifier.classifyLine(18) == DirtyMarkType.UNCHANGED
+        classifier.classifyLine(19) == DirtyMarkType.ADDED
     }
 
     def 'classifyLine should classify a changed line'() {
-        // --- from.change	2015-12-21 09:09:52.392320598 -0500
-        // +++ to.change	2015-12-21 09:10:01.216381102 -0500
+        // --- from.change	2015-12-21 17:56:43.051161447 -0500
+        // +++ to.change	2015-12-21 17:56:53.987233859 -0500
+        // @@ -1 +1 @@
+        // -1/from
+        // +1/to
         // @@ -10 +10 @@
         // -10/from
         // +10/to
+        // @@ -20 +20 @@
+        // -20/from
+        // +20/to
 
         setup:
         def patch = new Patch()
+        patch.addDelta(new ChangeDelta(
+            new Chunk(0, ['1/from']),
+            new Chunk(0, ['1/to'])
+        ))
         patch.addDelta(new ChangeDelta(
             new Chunk(9, ['10/from']),
             new Chunk(9, ['10/to'])
         ))
+        patch.addDelta(new ChangeDelta(
+            new Chunk(19, ['20/from']),
+            new Chunk(19, ['20/to'])
+        ))
         def classifier = new DirtyMarkClassifier(patch)
 
         expect:
+        classifier.classifyLine(0) == DirtyMarkType.CHANGED
+        classifier.classifyLine(1) == DirtyMarkType.UNCHANGED
         classifier.classifyLine(8) == DirtyMarkType.UNCHANGED
         classifier.classifyLine(9) == DirtyMarkType.CHANGED
         classifier.classifyLine(10) == DirtyMarkType.UNCHANGED
+        classifier.classifyLine(18) == DirtyMarkType.UNCHANGED
+        classifier.classifyLine(19) == DirtyMarkType.CHANGED
     }
 
     def 'classifyLine should classify a removed line'() {
