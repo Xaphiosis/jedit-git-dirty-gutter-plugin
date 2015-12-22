@@ -23,7 +23,7 @@ import difflib.Chunk
 import difflib.Patch
 import spock.lang.Specification
 
-class DirtyMarkClassifierSpec extends Specification {
+class PatchAnalyzerSpec extends Specification {
     def 'ctor should throw exception if patch contains context lines'() {
         // --- from.change	2015-12-21 09:09:52.392320598 -0500
         // +++ to.change	2015-12-21 09:10:01.216381102 -0500
@@ -41,7 +41,7 @@ class DirtyMarkClassifierSpec extends Specification {
         ))
 
         when:
-        new DirtyMarkClassifier(patch)
+        new PatchAnalyzer(patch)
 
         then:
         thrown(IllegalArgumentException)
@@ -71,16 +71,16 @@ class DirtyMarkClassifierSpec extends Specification {
             new Chunk(16, []),
             new Chunk(19, ['20'])
         ))
-        def classifier = new DirtyMarkClassifier(patch)
+        def patchAnalyzer = new PatchAnalyzer(patch)
 
         expect:
-        classifier.getDirtyMarkForLine(0) == DirtyMarkType.ADDED
-        classifier.getDirtyMarkForLine(1) == DirtyMarkType.UNCHANGED
-        classifier.getDirtyMarkForLine(8) == DirtyMarkType.UNCHANGED
-        classifier.getDirtyMarkForLine(9) == DirtyMarkType.ADDED
-        classifier.getDirtyMarkForLine(10) == DirtyMarkType.UNCHANGED
-        classifier.getDirtyMarkForLine(18) == DirtyMarkType.UNCHANGED
-        classifier.getDirtyMarkForLine(19) == DirtyMarkType.ADDED
+        patchAnalyzer.getDirtyMarkForLine(0) == DirtyMarkType.ADDED
+        patchAnalyzer.getDirtyMarkForLine(1) == DirtyMarkType.UNCHANGED
+        patchAnalyzer.getDirtyMarkForLine(8) == DirtyMarkType.UNCHANGED
+        patchAnalyzer.getDirtyMarkForLine(9) == DirtyMarkType.ADDED
+        patchAnalyzer.getDirtyMarkForLine(10) == DirtyMarkType.UNCHANGED
+        patchAnalyzer.getDirtyMarkForLine(18) == DirtyMarkType.UNCHANGED
+        patchAnalyzer.getDirtyMarkForLine(19) == DirtyMarkType.ADDED
     }
 
     def 'getDirtyMarkForLine should handle changed lines'() {
@@ -110,16 +110,16 @@ class DirtyMarkClassifierSpec extends Specification {
             new Chunk(19, ['20/from']),
             new Chunk(19, ['20/to'])
         ))
-        def classifier = new DirtyMarkClassifier(patch)
+        def patchAnalyzer = new PatchAnalyzer(patch)
 
         expect:
-        classifier.getDirtyMarkForLine(0) == DirtyMarkType.CHANGED
-        classifier.getDirtyMarkForLine(1) == DirtyMarkType.UNCHANGED
-        classifier.getDirtyMarkForLine(8) == DirtyMarkType.UNCHANGED
-        classifier.getDirtyMarkForLine(9) == DirtyMarkType.CHANGED
-        classifier.getDirtyMarkForLine(10) == DirtyMarkType.UNCHANGED
-        classifier.getDirtyMarkForLine(18) == DirtyMarkType.UNCHANGED
-        classifier.getDirtyMarkForLine(19) == DirtyMarkType.CHANGED
+        patchAnalyzer.getDirtyMarkForLine(0) == DirtyMarkType.CHANGED
+        patchAnalyzer.getDirtyMarkForLine(1) == DirtyMarkType.UNCHANGED
+        patchAnalyzer.getDirtyMarkForLine(8) == DirtyMarkType.UNCHANGED
+        patchAnalyzer.getDirtyMarkForLine(9) == DirtyMarkType.CHANGED
+        patchAnalyzer.getDirtyMarkForLine(10) == DirtyMarkType.UNCHANGED
+        patchAnalyzer.getDirtyMarkForLine(18) == DirtyMarkType.UNCHANGED
+        patchAnalyzer.getDirtyMarkForLine(19) == DirtyMarkType.CHANGED
     }
 
     def 'getDirtyMarkForLine should handle removed lines'() {
@@ -146,16 +146,16 @@ class DirtyMarkClassifierSpec extends Specification {
             new Chunk(19, ['20']),
             new Chunk(16, [])
         ))
-        def classifier = new DirtyMarkClassifier(patch)
+        def patchAnalyzer = new PatchAnalyzer(patch)
 
         expect:
-        classifier.getDirtyMarkForLine(0) == DirtyMarkType.REMOVED_ABOVE
-        classifier.getDirtyMarkForLine(1) == DirtyMarkType.UNCHANGED
-        classifier.getDirtyMarkForLine(6) == DirtyMarkType.UNCHANGED
-        classifier.getDirtyMarkForLine(7) == DirtyMarkType.REMOVED_BELOW
-        classifier.getDirtyMarkForLine(8) == DirtyMarkType.UNCHANGED
-        classifier.getDirtyMarkForLine(15) == DirtyMarkType.UNCHANGED
-        classifier.getDirtyMarkForLine(16) == DirtyMarkType.REMOVED_BELOW
+        patchAnalyzer.getDirtyMarkForLine(0) == DirtyMarkType.REMOVED_ABOVE
+        patchAnalyzer.getDirtyMarkForLine(1) == DirtyMarkType.UNCHANGED
+        patchAnalyzer.getDirtyMarkForLine(6) == DirtyMarkType.UNCHANGED
+        patchAnalyzer.getDirtyMarkForLine(7) == DirtyMarkType.REMOVED_BELOW
+        patchAnalyzer.getDirtyMarkForLine(8) == DirtyMarkType.UNCHANGED
+        patchAnalyzer.getDirtyMarkForLine(15) == DirtyMarkType.UNCHANGED
+        patchAnalyzer.getDirtyMarkForLine(16) == DirtyMarkType.REMOVED_BELOW
     }
 
     def 'getDirtyMarkForLine should handle a mixed collection of added, changed, and removed lines'() {
@@ -238,36 +238,36 @@ class DirtyMarkClassifierSpec extends Specification {
                 'to this document.'
             ])
         ))
-        def classifier = new DirtyMarkClassifier(patch)
+        def patchAnalyzer = new PatchAnalyzer(patch)
 
         expect:
-        classifier.getDirtyMarkForLine(0) == DirtyMarkType.ADDED
-        classifier.getDirtyMarkForLine(1) == DirtyMarkType.ADDED
-        classifier.getDirtyMarkForLine(2) == DirtyMarkType.ADDED
-        classifier.getDirtyMarkForLine(3) == DirtyMarkType.ADDED
-        classifier.getDirtyMarkForLine(4) == DirtyMarkType.ADDED
-        classifier.getDirtyMarkForLine(5) == DirtyMarkType.ADDED
-        classifier.getDirtyMarkForLine(6) == DirtyMarkType.UNCHANGED
-        classifier.getDirtyMarkForLine(7) == DirtyMarkType.UNCHANGED
-        classifier.getDirtyMarkForLine(8) == DirtyMarkType.UNCHANGED
-        classifier.getDirtyMarkForLine(9) == DirtyMarkType.UNCHANGED
-        classifier.getDirtyMarkForLine(10) == DirtyMarkType.UNCHANGED
-        classifier.getDirtyMarkForLine(11) == DirtyMarkType.UNCHANGED
-        classifier.getDirtyMarkForLine(12) == DirtyMarkType.UNCHANGED
-        classifier.getDirtyMarkForLine(13) == DirtyMarkType.CHANGED
-        classifier.getDirtyMarkForLine(14) == DirtyMarkType.UNCHANGED
-        classifier.getDirtyMarkForLine(15) == DirtyMarkType.UNCHANGED
-        classifier.getDirtyMarkForLine(16) == DirtyMarkType.CHANGED
-        classifier.getDirtyMarkForLine(17) == DirtyMarkType.UNCHANGED
-        classifier.getDirtyMarkForLine(18) == DirtyMarkType.UNCHANGED
-        classifier.getDirtyMarkForLine(19) == DirtyMarkType.REMOVED_BELOW
-        classifier.getDirtyMarkForLine(20) == DirtyMarkType.UNCHANGED
-        classifier.getDirtyMarkForLine(21) == DirtyMarkType.UNCHANGED
-        classifier.getDirtyMarkForLine(22) == DirtyMarkType.UNCHANGED
-        classifier.getDirtyMarkForLine(23) == DirtyMarkType.UNCHANGED
-        classifier.getDirtyMarkForLine(24) == DirtyMarkType.ADDED
-        classifier.getDirtyMarkForLine(25) == DirtyMarkType.ADDED
-        classifier.getDirtyMarkForLine(26) == DirtyMarkType.ADDED
-        classifier.getDirtyMarkForLine(27) == DirtyMarkType.ADDED
+        patchAnalyzer.getDirtyMarkForLine(0) == DirtyMarkType.ADDED
+        patchAnalyzer.getDirtyMarkForLine(1) == DirtyMarkType.ADDED
+        patchAnalyzer.getDirtyMarkForLine(2) == DirtyMarkType.ADDED
+        patchAnalyzer.getDirtyMarkForLine(3) == DirtyMarkType.ADDED
+        patchAnalyzer.getDirtyMarkForLine(4) == DirtyMarkType.ADDED
+        patchAnalyzer.getDirtyMarkForLine(5) == DirtyMarkType.ADDED
+        patchAnalyzer.getDirtyMarkForLine(6) == DirtyMarkType.UNCHANGED
+        patchAnalyzer.getDirtyMarkForLine(7) == DirtyMarkType.UNCHANGED
+        patchAnalyzer.getDirtyMarkForLine(8) == DirtyMarkType.UNCHANGED
+        patchAnalyzer.getDirtyMarkForLine(9) == DirtyMarkType.UNCHANGED
+        patchAnalyzer.getDirtyMarkForLine(10) == DirtyMarkType.UNCHANGED
+        patchAnalyzer.getDirtyMarkForLine(11) == DirtyMarkType.UNCHANGED
+        patchAnalyzer.getDirtyMarkForLine(12) == DirtyMarkType.UNCHANGED
+        patchAnalyzer.getDirtyMarkForLine(13) == DirtyMarkType.CHANGED
+        patchAnalyzer.getDirtyMarkForLine(14) == DirtyMarkType.UNCHANGED
+        patchAnalyzer.getDirtyMarkForLine(15) == DirtyMarkType.UNCHANGED
+        patchAnalyzer.getDirtyMarkForLine(16) == DirtyMarkType.CHANGED
+        patchAnalyzer.getDirtyMarkForLine(17) == DirtyMarkType.UNCHANGED
+        patchAnalyzer.getDirtyMarkForLine(18) == DirtyMarkType.UNCHANGED
+        patchAnalyzer.getDirtyMarkForLine(19) == DirtyMarkType.REMOVED_BELOW
+        patchAnalyzer.getDirtyMarkForLine(20) == DirtyMarkType.UNCHANGED
+        patchAnalyzer.getDirtyMarkForLine(21) == DirtyMarkType.UNCHANGED
+        patchAnalyzer.getDirtyMarkForLine(22) == DirtyMarkType.UNCHANGED
+        patchAnalyzer.getDirtyMarkForLine(23) == DirtyMarkType.UNCHANGED
+        patchAnalyzer.getDirtyMarkForLine(24) == DirtyMarkType.ADDED
+        patchAnalyzer.getDirtyMarkForLine(25) == DirtyMarkType.ADDED
+        patchAnalyzer.getDirtyMarkForLine(26) == DirtyMarkType.ADDED
+        patchAnalyzer.getDirtyMarkForLine(27) == DirtyMarkType.ADDED
     }
 }

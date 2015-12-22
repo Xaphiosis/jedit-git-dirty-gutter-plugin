@@ -23,7 +23,7 @@ import difflib.Delta;
 import difflib.Patch;
 
 /**
- * Classifies the dirty mark associated with a line in a file.
+ * Provides various types of analysis for a patch.
  * 
  * <p>
  * <b>NOTE:</b> The current implementation only handles patches that have been
@@ -31,21 +31,20 @@ import difflib.Patch;
  * <i>any</i> context lines will result in an exception being thrown.
  * </p>
  */
-final class DirtyMarkClassifier {
-    /** The patch describing the difference between two versions of a file. */
+final class PatchAnalyzer {
+    /** The patch to analyze. */
     private final Patch patch;
 
     /**
-     * Initializes a new instance of the {@code DirtyMarkClassifier} class.
+     * Initializes a new instance of the {@code PatchAnalyzer} class.
      *
      * @param patch
-     *        The patch describing the difference between two versions of a
-     *        file; must not be {@code null}.
+     *        The patch to analyze; must not be {@code null}.
      * 
      * @throws IllegalArgumentException
      *         If {@code patch} contains any context lines.
      */
-    DirtyMarkClassifier(final Patch patch) {
+    PatchAnalyzer(final Patch patch) {
         assert patch != null;
 
         if (DiffLibUtils.Patch.isContextLinePresent(patch)) {
