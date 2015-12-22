@@ -18,7 +18,7 @@
 
 /**
  * Provides the implementation of the jEdit Git dirty gutter plugin.
- * 
+ *
  * <p>
  * This package is not intended for use outside this module.
  * </p>

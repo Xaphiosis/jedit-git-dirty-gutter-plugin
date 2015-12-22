@@ -45,7 +45,7 @@ final class DiffLibUtils {
          * @param lineIndex
          *        The zero-based index of the line to test for membership in the
          *        specified chunk; must not be negative.
-         * 
+         *
          * @return {@code true} if the specified add or change chunk includes
          *         the specified line; otherwise {@code null}.
          */
@@ -72,7 +72,7 @@ final class DiffLibUtils {
          *
          * @param delta
          *        The delta to examine; must not be {@code null}.
-         * 
+         *
          * @return {@code true} if the specified delta represents added content;
          *         otherwise {@code false}.
          */
@@ -87,7 +87,7 @@ final class DiffLibUtils {
          *
          * @param delta
          *        The delta to examine; must not be {@code null}.
-         * 
+         *
          * @return {@code true} if the specified delta represents changed
          *         content; otherwise {@code false}.
          */
@@ -102,7 +102,7 @@ final class DiffLibUtils {
          *
          * @param delta
          *        The delta to examine; must not be {@code null}.
-         * 
+         *
          * @return {@code true} if the specified delta represents removed
          *         content; otherwise {@code false}.
          */
@@ -118,7 +118,7 @@ final class DiffLibUtils {
          * @param delta
          *        The delta to examine for context lines; must not be
          *        {@code null}.
-         * 
+         *
          * @return {@code true} if the specified delta contains at least one
          *         context line; otherwise {@code false}.
          */
@@ -149,7 +149,7 @@ final class DiffLibUtils {
          * @param patch
          *        The patch to examine for context lines; must not be
          *        {@code null}.
-         * 
+         *
          * @return {@code true} if the specified patch contains at least one
          *         context line; otherwise {@code false}.
          */
@@ -182,7 +182,7 @@ final class DiffLibUtils {
          * @param lineIndex
          *        The zero-based index of the line to test for membership in the
          *        specified chunk; must not be negative.
-         * 
+         *
          * @return {@code true} if the specified remove chunk includes the
          *         specified line; otherwise {@code null}.
          */
@@ -210,7 +210,7 @@ final class DiffLibUtils {
          * @param delta
          *        The delta to examine; must not be {@code null} and must
          *        represent a removed delta.
-         * 
+         *
          * @return {@code true} if the specified remove delta is associated with
          *         content that previously appeared before the first line;
          *         otherwise {@code false}.

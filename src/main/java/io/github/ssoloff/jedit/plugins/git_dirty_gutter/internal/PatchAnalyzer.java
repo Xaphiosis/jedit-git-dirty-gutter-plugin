@@ -24,7 +24,7 @@ import difflib.Patch;
 
 /**
  * Provides various types of analysis for a patch.
- * 
+ *
  * <p>
  * <b>NOTE:</b> The current implementation only handles patches that have been
  * produced with <i>zero</i> context lines. Attempting to use a patch with
@@ -40,7 +40,7 @@ final class PatchAnalyzer {
      *
      * @param patch
      *        The patch to analyze; must not be {@code null}.
-     * 
+     *
      * @throws IllegalArgumentException
      *         If {@code patch} contains any context lines.
      */
@@ -60,7 +60,7 @@ final class PatchAnalyzer {
      * @param lineIndex
      *        The zero-based index of the line whose delta is desired; must not
      *        be negative.
-     * 
+     *
      * @return The delta associated with the specified line or {@code null} if
      *         none.
      */
@@ -84,7 +84,7 @@ final class PatchAnalyzer {
      * @param lineIndex
      *        The zero-based index of the line whose dirty mark is desired; must
      *        not be negative.
-     * 
+     *
      * @return The type of dirty mark associated with the specified line; never
      *         {@code null}.
      */
