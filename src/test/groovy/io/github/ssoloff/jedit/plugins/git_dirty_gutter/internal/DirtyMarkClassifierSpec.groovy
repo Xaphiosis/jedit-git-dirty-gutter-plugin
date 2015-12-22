@@ -47,7 +47,7 @@ class DirtyMarkClassifierSpec extends Specification {
         thrown(IllegalArgumentException)
     }
 
-    def 'classifyLine should classify an added line'() {
+    def 'getDirtyMarkForLine should handle added lines'() {
         // --- from.add	2015-12-21 17:53:29.082877088 -0500
         // +++ to.add	2015-12-21 08:41:52.663714666 -0500
         // @@ -0,0 +1 @@
@@ -74,16 +74,16 @@ class DirtyMarkClassifierSpec extends Specification {
         def classifier = new DirtyMarkClassifier(patch)
 
         expect:
-        classifier.classifyLine(0) == DirtyMarkType.ADDED
-        classifier.classifyLine(1) == DirtyMarkType.UNCHANGED
-        classifier.classifyLine(8) == DirtyMarkType.UNCHANGED
-        classifier.classifyLine(9) == DirtyMarkType.ADDED
-        classifier.classifyLine(10) == DirtyMarkType.UNCHANGED
-        classifier.classifyLine(18) == DirtyMarkType.UNCHANGED
-        classifier.classifyLine(19) == DirtyMarkType.ADDED
+        classifier.getDirtyMarkForLine(0) == DirtyMarkType.ADDED
+        classifier.getDirtyMarkForLine(1) == DirtyMarkType.UNCHANGED
+        classifier.getDirtyMarkForLine(8) == DirtyMarkType.UNCHANGED
+        classifier.getDirtyMarkForLine(9) == DirtyMarkType.ADDED
+        classifier.getDirtyMarkForLine(10) == DirtyMarkType.UNCHANGED
+        classifier.getDirtyMarkForLine(18) == DirtyMarkType.UNCHANGED
+        classifier.getDirtyMarkForLine(19) == DirtyMarkType.ADDED
     }
 
-    def 'classifyLine should classify a changed line'() {
+    def 'getDirtyMarkForLine should handle changed lines'() {
         // --- from.change	2015-12-21 17:56:43.051161447 -0500
         // +++ to.change	2015-12-21 17:56:53.987233859 -0500
         // @@ -1 +1 @@
@@ -113,16 +113,16 @@ class DirtyMarkClassifierSpec extends Specification {
         def classifier = new DirtyMarkClassifier(patch)
 
         expect:
-        classifier.classifyLine(0) == DirtyMarkType.CHANGED
-        classifier.classifyLine(1) == DirtyMarkType.UNCHANGED
-        classifier.classifyLine(8) == DirtyMarkType.UNCHANGED
-        classifier.classifyLine(9) == DirtyMarkType.CHANGED
-        classifier.classifyLine(10) == DirtyMarkType.UNCHANGED
-        classifier.classifyLine(18) == DirtyMarkType.UNCHANGED
-        classifier.classifyLine(19) == DirtyMarkType.CHANGED
+        classifier.getDirtyMarkForLine(0) == DirtyMarkType.CHANGED
+        classifier.getDirtyMarkForLine(1) == DirtyMarkType.UNCHANGED
+        classifier.getDirtyMarkForLine(8) == DirtyMarkType.UNCHANGED
+        classifier.getDirtyMarkForLine(9) == DirtyMarkType.CHANGED
+        classifier.getDirtyMarkForLine(10) == DirtyMarkType.UNCHANGED
+        classifier.getDirtyMarkForLine(18) == DirtyMarkType.UNCHANGED
+        classifier.getDirtyMarkForLine(19) == DirtyMarkType.CHANGED
     }
 
-    def 'classifyLine should classify a removed line'() {
+    def 'getDirtyMarkForLine should handle removed lines'() {
         // --- from.remove	2015-12-21 10:07:45.208277091 -0500
         // +++ to.remove	2015-12-21 10:07:54.855343987 -0500
         // @@ -1 +0,0 @@
@@ -149,16 +149,16 @@ class DirtyMarkClassifierSpec extends Specification {
         def classifier = new DirtyMarkClassifier(patch)
 
         expect:
-        classifier.classifyLine(0) == DirtyMarkType.REMOVED_ABOVE
-        classifier.classifyLine(1) == DirtyMarkType.UNCHANGED
-        classifier.classifyLine(6) == DirtyMarkType.UNCHANGED
-        classifier.classifyLine(7) == DirtyMarkType.REMOVED_BELOW
-        classifier.classifyLine(8) == DirtyMarkType.UNCHANGED
-        classifier.classifyLine(15) == DirtyMarkType.UNCHANGED
-        classifier.classifyLine(16) == DirtyMarkType.REMOVED_BELOW
+        classifier.getDirtyMarkForLine(0) == DirtyMarkType.REMOVED_ABOVE
+        classifier.getDirtyMarkForLine(1) == DirtyMarkType.UNCHANGED
+        classifier.getDirtyMarkForLine(6) == DirtyMarkType.UNCHANGED
+        classifier.getDirtyMarkForLine(7) == DirtyMarkType.REMOVED_BELOW
+        classifier.getDirtyMarkForLine(8) == DirtyMarkType.UNCHANGED
+        classifier.getDirtyMarkForLine(15) == DirtyMarkType.UNCHANGED
+        classifier.getDirtyMarkForLine(16) == DirtyMarkType.REMOVED_BELOW
     }
 
-    def 'classifyLine should classify a mixed collection of added, changed, and removed lines'() {
+    def 'getDirtyMarkForLine should handle a mixed collection of added, changed, and removed lines'() {
         // --- from.mixed	2015-12-21 17:33:49.971052965 -0500
         // +++ to.mixed	2015-12-21 17:34:43.429408252 -0500
         // @@ -0,0 +1,6 @@
@@ -241,33 +241,33 @@ class DirtyMarkClassifierSpec extends Specification {
         def classifier = new DirtyMarkClassifier(patch)
 
         expect:
-        classifier.classifyLine(0) == DirtyMarkType.ADDED
-        classifier.classifyLine(1) == DirtyMarkType.ADDED
-        classifier.classifyLine(2) == DirtyMarkType.ADDED
-        classifier.classifyLine(3) == DirtyMarkType.ADDED
-        classifier.classifyLine(4) == DirtyMarkType.ADDED
-        classifier.classifyLine(5) == DirtyMarkType.ADDED
-        classifier.classifyLine(6) == DirtyMarkType.UNCHANGED
-        classifier.classifyLine(7) == DirtyMarkType.UNCHANGED
-        classifier.classifyLine(8) == DirtyMarkType.UNCHANGED
-        classifier.classifyLine(9) == DirtyMarkType.UNCHANGED
-        classifier.classifyLine(10) == DirtyMarkType.UNCHANGED
-        classifier.classifyLine(11) == DirtyMarkType.UNCHANGED
-        classifier.classifyLine(12) == DirtyMarkType.UNCHANGED
-        classifier.classifyLine(13) == DirtyMarkType.CHANGED
-        classifier.classifyLine(14) == DirtyMarkType.UNCHANGED
-        classifier.classifyLine(15) == DirtyMarkType.UNCHANGED
-        classifier.classifyLine(16) == DirtyMarkType.CHANGED
-        classifier.classifyLine(17) == DirtyMarkType.UNCHANGED
-        classifier.classifyLine(18) == DirtyMarkType.UNCHANGED
-        classifier.classifyLine(19) == DirtyMarkType.REMOVED_BELOW
-        classifier.classifyLine(20) == DirtyMarkType.UNCHANGED
-        classifier.classifyLine(21) == DirtyMarkType.UNCHANGED
-        classifier.classifyLine(22) == DirtyMarkType.UNCHANGED
-        classifier.classifyLine(23) == DirtyMarkType.UNCHANGED
-        classifier.classifyLine(24) == DirtyMarkType.ADDED
-        classifier.classifyLine(25) == DirtyMarkType.ADDED
-        classifier.classifyLine(26) == DirtyMarkType.ADDED
-        classifier.classifyLine(27) == DirtyMarkType.ADDED
+        classifier.getDirtyMarkForLine(0) == DirtyMarkType.ADDED
+        classifier.getDirtyMarkForLine(1) == DirtyMarkType.ADDED
+        classifier.getDirtyMarkForLine(2) == DirtyMarkType.ADDED
+        classifier.getDirtyMarkForLine(3) == DirtyMarkType.ADDED
+        classifier.getDirtyMarkForLine(4) == DirtyMarkType.ADDED
+        classifier.getDirtyMarkForLine(5) == DirtyMarkType.ADDED
+        classifier.getDirtyMarkForLine(6) == DirtyMarkType.UNCHANGED
+        classifier.getDirtyMarkForLine(7) == DirtyMarkType.UNCHANGED
+        classifier.getDirtyMarkForLine(8) == DirtyMarkType.UNCHANGED
+        classifier.getDirtyMarkForLine(9) == DirtyMarkType.UNCHANGED
+        classifier.getDirtyMarkForLine(10) == DirtyMarkType.UNCHANGED
+        classifier.getDirtyMarkForLine(11) == DirtyMarkType.UNCHANGED
+        classifier.getDirtyMarkForLine(12) == DirtyMarkType.UNCHANGED
+        classifier.getDirtyMarkForLine(13) == DirtyMarkType.CHANGED
+        classifier.getDirtyMarkForLine(14) == DirtyMarkType.UNCHANGED
+        classifier.getDirtyMarkForLine(15) == DirtyMarkType.UNCHANGED
+        classifier.getDirtyMarkForLine(16) == DirtyMarkType.CHANGED
+        classifier.getDirtyMarkForLine(17) == DirtyMarkType.UNCHANGED
+        classifier.getDirtyMarkForLine(18) == DirtyMarkType.UNCHANGED
+        classifier.getDirtyMarkForLine(19) == DirtyMarkType.REMOVED_BELOW
+        classifier.getDirtyMarkForLine(20) == DirtyMarkType.UNCHANGED
+        classifier.getDirtyMarkForLine(21) == DirtyMarkType.UNCHANGED
+        classifier.getDirtyMarkForLine(22) == DirtyMarkType.UNCHANGED
+        classifier.getDirtyMarkForLine(23) == DirtyMarkType.UNCHANGED
+        classifier.getDirtyMarkForLine(24) == DirtyMarkType.ADDED
+        classifier.getDirtyMarkForLine(25) == DirtyMarkType.ADDED
+        classifier.getDirtyMarkForLine(26) == DirtyMarkType.ADDED
+        classifier.getDirtyMarkForLine(27) == DirtyMarkType.ADDED
     }
 }

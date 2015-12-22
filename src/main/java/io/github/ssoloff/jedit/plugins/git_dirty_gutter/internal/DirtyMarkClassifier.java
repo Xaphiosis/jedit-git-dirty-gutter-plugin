@@ -56,35 +56,6 @@ final class DirtyMarkClassifier {
     }
 
     /**
-     * Classifies the dirty mark for the specified line.
-     *
-     * @param lineIndex
-     *        The zero-based index of the line whose dirty mark is desired; must
-     *        not be negative.
-     * 
-     * @return The type of dirty mark associated with the specified line; never
-     *         {@code null}.
-     */
-    DirtyMarkType classifyLine(final int lineIndex) {
-        assert lineIndex >= 0;
-
-        final Delta delta = getDeltaForLine(lineIndex);
-        if (delta != null) {
-            if (DiffLibUtils.Delta.isContentAdded(delta)) {
-                return DirtyMarkType.ADDED;
-            } else if (DiffLibUtils.Delta.isContentChanged(delta)) {
-                return DirtyMarkType.CHANGED;
-            } else if (DiffLibUtils.Delta.isContentRemoved(delta)) {
-                return DiffLibUtils.RemoveDelta.isBeforeFirstLine(delta) //
-                        ? DirtyMarkType.REMOVED_ABOVE //
-                        : DirtyMarkType.REMOVED_BELOW;
-            }
-        }
-
-        return DirtyMarkType.UNCHANGED;
-    }
-
-    /**
      * Gets the delta associated with the specified line.
      *
      * @param lineIndex
@@ -106,5 +77,34 @@ final class DirtyMarkClassifier {
         }
 
         return null;
+    }
+
+    /**
+     * Gets the type of dirty mark associated with the specified line.
+     *
+     * @param lineIndex
+     *        The zero-based index of the line whose dirty mark is desired; must
+     *        not be negative.
+     * 
+     * @return The type of dirty mark associated with the specified line; never
+     *         {@code null}.
+     */
+    DirtyMarkType getDirtyMarkForLine(final int lineIndex) {
+        assert lineIndex >= 0;
+
+        final Delta delta = getDeltaForLine(lineIndex);
+        if (delta != null) {
+            if (DiffLibUtils.Delta.isContentAdded(delta)) {
+                return DirtyMarkType.ADDED;
+            } else if (DiffLibUtils.Delta.isContentChanged(delta)) {
+                return DirtyMarkType.CHANGED;
+            } else if (DiffLibUtils.Delta.isContentRemoved(delta)) {
+                return DiffLibUtils.RemoveDelta.isBeforeFirstLine(delta) //
+                        ? DirtyMarkType.REMOVED_ABOVE //
+                        : DirtyMarkType.REMOVED_BELOW;
+            }
+        }
+
+        return DirtyMarkType.UNCHANGED;
     }
 }
