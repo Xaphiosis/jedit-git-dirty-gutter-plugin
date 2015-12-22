@@ -1,5 +1,7 @@
 plugins {
     id 'groovy'
+    id 'jacoco'
+    id 'com.github.kt3k.coveralls' version '2.4.0'
     id 'nebula.provided-base' version '3.0.3'
 }
 
@@ -14,6 +16,13 @@ dependencies {
     provided fileTree(dir: 'libs/jedit', include: '*.jar')
     compile 'com.googlecode.java-diff-utils:diffutils:1.2.1'
     testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
+}
+
+jacocoTestReport {
+    reports {
+        html.enabled = true
+        xml.enabled = true
+    }
 }
 
 task fatJar(type: Jar) {

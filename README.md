@@ -1,6 +1,7 @@
 # jEdit Git DirtyGutter Plugin
 
 [![Build Status](https://travis-ci.org/ssoloff/jedit-git-dirty-gutter-plugin.svg?branch=master)](https://travis-ci.org/ssoloff/jedit-git-dirty-gutter-plugin)
+[![Coverage Status](https://coveralls.io/repos/ssoloff/jedit-git-dirty-gutter-plugin/badge.svg?branch=master&service=github)](https://coveralls.io/github/ssoloff/jedit-git-dirty-gutter-plugin?branch=master)
 
 A jEdit plugin that adds highlights in the gutter for lines that have been changed since the last Git commit.
 
