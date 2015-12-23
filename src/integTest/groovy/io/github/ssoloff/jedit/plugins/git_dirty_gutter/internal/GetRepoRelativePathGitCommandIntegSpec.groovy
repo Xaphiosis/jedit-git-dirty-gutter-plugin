@@ -74,7 +74,12 @@ class GetRepoRelativePathGitCommandIntegSpec extends Specification {
         executor.setDirectory(workingDirPath.toString())
 
         def command = new GitCommand(executor)
-        assert command.execute() == 0
+        def exitCode = command.execute()
+        if (exitCode != 0) {
+            System.err.println "Git command: '${command.executor.cmd}'"
+            System.err.println "      error: ${command.error}"
+        }
+        assert exitCode == 0
     }
 
     private static Path initRepo() {
