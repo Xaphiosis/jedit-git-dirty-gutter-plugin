@@ -9,3 +9,7 @@ plugin.io.github.ssoloff.jedit.plugins.git_dirty_gutter.GitDirtyGutterPlugin.lon
 plugin.io.github.ssoloff.jedit.plugins.git_dirty_gutter.GitDirtyGutterPlugin.name=Git DirtyGutter
 plugin.io.github.ssoloff.jedit.plugins.git_dirty_gutter.GitDirtyGutterPlugin.usePluginHome=false
 plugin.io.github.ssoloff.jedit.plugins.git_dirty_gutter.GitDirtyGutterPlugin.version=0.1.0
+
+messages.GitDirtyGutterPlugin.option_addedContentColorLabel_text=Added content marker color:
+messages.GitDirtyGutterPlugin.option_changedContentColorLabel_text=Changed content marker color:
+messages.GitDirtyGutterPlugin.option_removedContentColorLabel_text=Removed content marker color:
