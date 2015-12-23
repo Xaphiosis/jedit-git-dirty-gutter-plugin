@@ -1,5 +1,7 @@
 language: java
 jdk:
   - openjdk7
+script:
+  - ./gradlew --info check
 after_success:
   - ./gradlew jacocoTestReport coveralls
