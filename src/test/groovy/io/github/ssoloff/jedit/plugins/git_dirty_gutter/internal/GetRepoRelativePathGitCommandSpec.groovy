@@ -18,32 +18,31 @@
 
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal
 
-import common.io.ProcessExecutor
+import java.nio.file.Paths
 import spock.lang.Specification
 
 class GetRepoRelativePathGitCommandSpec extends Specification {
-    def executor = new ProcessExecutor('')
-    def command = new GetRepoRelativePathGitCommand(executor)
+    def command = new GetRepoRelativePathGitCommand(Paths.get('/root/subdir1/subdir2/file'), Paths.get('git'))
 
-    def 'when file exists on HEAD it should provide repo-relative path'() {
+    def 'when file exists on HEAD it should set repo-relative path'() {
         setup:
-        def repoRelativePath = 'subdir1/subdir2/file'
+        def repoRelativePath = Paths.get('subdir1/subdir2/file')
 
         when:
-        def processResult = command.process(repoRelativePath, false)
+        def processResult = command.process(repoRelativePath.toString(), false)
 
         then:
         processResult == false
         command.getRepoRelativePath() == repoRelativePath
     }
 
-    def 'when file does not exist on HEAD it should set repo-relative path to null'() {
+    def 'when file is inside repo but does not exist on HEAD it should set repo-relative path to null'() {
         expect:
         // process() not called in this case because stdout and stderr are empty
         command.getRepoRelativePath() == null
     }
 
-    def 'when file does not exist in repo it should set repo-relative path to null'() {
+    def 'when file is outside repo it should set repo-relative path to null'() {
         when:
         def processResult = command.process('error message', true)
 

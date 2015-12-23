@@ -18,6 +18,16 @@ dependencies {
     testCompile 'org.spockframework:spock-core:1.0-groovy-2.4'
 }
 
+sourceSets {
+    integrationTest {
+        java.srcDir file('src/integTest/java')
+        groovy.srcDir file('src/integTest/groovy')
+        resources.srcDir file('src/integTest/resources')
+        compileClasspath = sourceSets.main.output + configurations.testRuntime
+        runtimeClasspath = output + compileClasspath
+    }
+}
+
 jacocoTestReport {
     reports {
         html.enabled = true
@@ -37,8 +47,15 @@ task fatJar(type: Jar) {
     with jar
 }
 
+task integrationTest(type: Test) {
+    testClassesDir = sourceSets.integrationTest.output.classesDir
+    classpath = sourceSets.integrationTest.runtimeClasspath
+}
+
 task wrapper(type: Wrapper) {
     description = 'Generates Gradle wrapper files.'
     gradleVersion = '2.10'
     group = 'Build Setup'
 }
+
+check.dependsOn integrationTest

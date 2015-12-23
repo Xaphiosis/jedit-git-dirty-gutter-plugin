@@ -21,41 +21,59 @@ package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
 import common.io.ProcessExecutor;
 import common.io.ProcessExecutor.LineVisitor;
 import git.GitCommand;
+import git.GitPlugin;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * A Git command that obtains the repository-relative path of a file at the HEAD
  * revision.
  */
 final class GetRepoRelativePathGitCommand extends GitCommand implements LineVisitor {
-    private String repoRelativePath;
+    private Path repoRelativePath;
 
     /**
      * Initializes a new instance of the {@code GetRepoRelativePathGitCommand}
-     * class using the specified path.
+     * class using the default Git path.
      *
-     * @param path
-     *        The absolute path of the file whose repository-relative path is
-     *        desired; must not be {@code null}.
+     * @param filePath
+     *        The path to the file whose repository-relative path is desired;
+     *        must not be {@code null}.
      */
-    GetRepoRelativePathGitCommand(final String path) {
-        super(path);
-
-        assert path != null;
-
-        // TODO
+    GetRepoRelativePathGitCommand(final Path filePath) {
+        this(filePath, Paths.get(GitPlugin.gitPath()));
     }
 
     /**
      * Initializes a new instance of the {@code GetRepoRelativePathGitCommand}
-     * class using the specified process executor.
+     * class using the specified Git path.
      *
-     * @param executor
-     *        The process executor; must not be {@code null}.
+     * @param filePath
+     *        The path to the file whose repository-relative path is desired;
+     *        must not be {@code null}.
+     * @param gitPath
+     *        The path to the Git executable; must not be {@code null}.
      */
-    GetRepoRelativePathGitCommand(final ProcessExecutor executor) {
-        super(executor);
+    GetRepoRelativePathGitCommand(final Path filePath, final Path gitPath) {
+        super(createExecutor(gitPath, filePath));
 
-        assert executor != null;
+        getExecutor().addVisitor(this);
+    }
+
+    private static ProcessExecutor createExecutor(final Path gitPath, final Path filePath) {
+        assert gitPath != null;
+        assert filePath != null;
+
+        final ProcessExecutor executor = new ProcessExecutor( //
+                gitPath.toString(), //
+                "ls-tree", //$NON-NLS-1$
+                "--full-name", //$NON-NLS-1$
+                "--name-only", //$NON-NLS-1$
+                "HEAD", //$NON-NLS-1$
+                filePath.toString() //
+        );
+        executor.setDirectory(filePath.getParent().toString());
+        return executor;
     }
 
     /**
@@ -67,7 +85,7 @@ final class GetRepoRelativePathGitCommand extends GitCommand implements LineVisi
      *         exist in the repository at the HEAD revision or if an error
      *         occurred while executing the command.
      */
-    String getRepoRelativePath() {
+    Path getRepoRelativePath() {
         return repoRelativePath;
     }
 
@@ -80,7 +98,7 @@ final class GetRepoRelativePathGitCommand extends GitCommand implements LineVisi
             return true;
         }
 
-        repoRelativePath = line;
+        repoRelativePath = Paths.get(line);
         return false;
     }
 }
