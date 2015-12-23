@@ -67,16 +67,24 @@ final class DirtyMarkPainterFactory {
         }
 
         final ColoredRectWithStripsPainter dirtyMarkPainter = new ColoredRectWithStripsPainter();
+
         final boolean isTopStripPainted = isTopStripPainted(dirtyMarkType);
-        final boolean isMiddleStripPainted = isMiddleStripPainted(dirtyMarkType);
+        final boolean isBodyPainted = isBodyPainted(dirtyMarkType);
         final boolean isBottomStripPainted = isBottomStripPainted(dirtyMarkType);
-        dirtyMarkPainter.setParts(isTopStripPainted, isMiddleStripPainted, isBottomStripPainted);
-        final Color stripColor = getStripColor(dirtyMarkType);
-        dirtyMarkPainter.setStripColor(stripColor);
+        dirtyMarkPainter.setParts(isTopStripPainted, isBodyPainted, isBottomStripPainted);
+
+        final Color color = getColor(dirtyMarkType);
+        if (isBodyPainted) {
+            dirtyMarkPainter.setColor(color);
+        }
+        if (isTopStripPainted || isBottomStripPainted) {
+            dirtyMarkPainter.setStripColor(color);
+        }
+
         return dirtyMarkPainter;
     }
 
-    private Color getStripColor(final DirtyMarkType dirtyMarkType) {
+    private Color getColor(final DirtyMarkType dirtyMarkType) {
         assert dirtyMarkType != null;
 
         switch (dirtyMarkType) {
@@ -95,16 +103,16 @@ final class DirtyMarkPainterFactory {
         }
     }
 
+    private static boolean isBodyPainted(final DirtyMarkType dirtyMarkType) {
+        assert dirtyMarkType != null;
+
+        return (dirtyMarkType == DirtyMarkType.ADDED) || (dirtyMarkType == DirtyMarkType.CHANGED);
+    }
+
     private static boolean isBottomStripPainted(final DirtyMarkType dirtyMarkType) {
         assert dirtyMarkType != null;
 
         return dirtyMarkType == DirtyMarkType.REMOVED_BELOW;
-    }
-
-    private static boolean isMiddleStripPainted(final DirtyMarkType dirtyMarkType) {
-        assert dirtyMarkType != null;
-
-        return (dirtyMarkType == DirtyMarkType.ADDED) || (dirtyMarkType == DirtyMarkType.CHANGED);
     }
 
     private static boolean isTopStripPainted(final DirtyMarkType dirtyMarkType) {
