@@ -18,7 +18,7 @@
 
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal
 
-import common.io.ProcessExecutor;
+import common.io.ProcessExecutor
 import spock.lang.Specification
 
 class GetRepoRelativePathGitCommandSpec extends Specification {
