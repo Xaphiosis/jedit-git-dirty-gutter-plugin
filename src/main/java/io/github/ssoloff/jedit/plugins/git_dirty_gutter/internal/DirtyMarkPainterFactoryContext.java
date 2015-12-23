@@ -25,25 +25,23 @@ import java.awt.Color;
  */
 interface DirtyMarkPainterFactoryContext {
     /**
-     * Gets the strip color to use for added dirty marks.
+     * Gets the color used for added dirty marks.
      *
-     * @return The strip color to use for added dirty marks; never {@code null}.
+     * @return The color used for added dirty marks; never {@code null}.
      */
-    Color getAddedStripColor();
+    Color getAddedDirtyMarkColor();
 
     /**
-     * Gets the strip color to use for changed dirty marks.
+     * Gets the color used for changed dirty marks.
      *
-     * @return The strip color to use for changed dirty marks; never
-     *         {@code null}.
+     * @return The color used for changed dirty marks; never {@code null}.
      */
-    Color getChangedStripColor();
+    Color getChangedDirtyMarkColor();
 
     /**
-     * Gets the strip color to use for removed dirty marks.
+     * Gets the color used for removed dirty marks.
      *
-     * @return The strip color to use for removed dirty marks; never
-     *         {@code null}.
+     * @return The color used for removed dirty marks; never {@code null}.
      */
-    Color getRemovedStripColor();
+    Color getRemovedDirtyMarkColor();
 }

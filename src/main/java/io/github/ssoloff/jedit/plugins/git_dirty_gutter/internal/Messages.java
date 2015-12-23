@@ -28,15 +28,15 @@ final class Messages {
     private Messages() {
     }
 
-    static String option_addedContentColorLabel_text() {
-        return jEdit.getProperty("messages.GitDirtyGutterPlugin.option_addedContentColorLabel_text"); //$NON-NLS-1$
+    static String option_addedDirtyMarkColorLabel_text() {
+        return jEdit.getProperty("messages.GitDirtyGutterPlugin.option_addedDirtyMarkColorLabel_text"); //$NON-NLS-1$
     }
 
-    static String option_changedContentColorLabel_text() {
-        return jEdit.getProperty("messages.GitDirtyGutterPlugin.option_changedContentColorLabel_text"); //$NON-NLS-1$
+    static String option_changedDirtyMarkColorLabel_text() {
+        return jEdit.getProperty("messages.GitDirtyGutterPlugin.option_changedDirtyMarkColorLabel_text"); //$NON-NLS-1$
     }
 
-    static String option_removedContentColorLabel_text() {
-        return jEdit.getProperty("messages.GitDirtyGutterPlugin.option_removedContentColorLabel_text"); //$NON-NLS-1$
+    static String option_removedDirtyMarkColorLabel_text() {
+        return jEdit.getProperty("messages.GitDirtyGutterPlugin.option_removedDirtyMarkColorLabel_text"); //$NON-NLS-1$
     }
 }

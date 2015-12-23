@@ -81,14 +81,14 @@ final class DirtyMarkPainterFactory {
 
         switch (dirtyMarkType) {
             case ADDED:
-                return context.getAddedStripColor();
+                return context.getAddedDirtyMarkColor();
 
             case CHANGED:
-                return context.getChangedStripColor();
+                return context.getChangedDirtyMarkColor();
 
             case REMOVED_ABOVE:
             case REMOVED_BELOW:
-                return context.getRemovedStripColor();
+                return context.getRemovedDirtyMarkColor();
 
             default:
                 throw new AssertionError("unsupported dirty mark type"); //$NON-NLS-1$
