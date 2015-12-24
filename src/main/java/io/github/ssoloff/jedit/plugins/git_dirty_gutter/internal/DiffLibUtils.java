@@ -157,6 +157,7 @@ final class DiffLibUtils {
             assert patch != null;
 
             for (final difflib.Delta delta : patch.getDeltas()) {
+                assert delta != null;
                 if (Delta.isContextLinePresent(delta)) {
                     return true;
                 }

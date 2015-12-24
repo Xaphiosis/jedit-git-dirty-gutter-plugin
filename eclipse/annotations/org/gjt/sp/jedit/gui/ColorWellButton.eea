@@ -1,0 +1,4 @@
+class org/gjt/sp/jedit/gui/ColorWellButton
+getSelectedColor
+ ()Ljava/awt/Color;
+ ()L1java/awt/Color;

@@ -1,0 +1,16 @@
+class difflib/Delta
+Delta
+ (Ldifflib/Chunk;Ldifflib/Chunk;)V
+ (L1difflib/Chunk;L1difflib/Chunk;)V
+getOriginal
+ ()Ldifflib/Chunk;
+ ()L1difflib/Chunk;
+getRevised
+ ()Ldifflib/Chunk;
+ ()L1difflib/Chunk;
+setOriginal
+ (Ldifflib/Chunk;)V
+ (L1difflib/Chunk;)V
+setRevised
+ (Ldifflib/Chunk;)V
+ (L1difflib/Chunk;)V

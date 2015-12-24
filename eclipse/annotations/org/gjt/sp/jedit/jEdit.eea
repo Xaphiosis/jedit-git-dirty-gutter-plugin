@@ -1,0 +1,4 @@
+class org/gjt/sp/jedit/jEdit
+getColorProperty
+ (Ljava/lang/String;Ljava/awt/Color;)Ljava/awt/Color;
+ (Ljava/lang/String;Ljava/awt/Color;)L1java/awt/Color;

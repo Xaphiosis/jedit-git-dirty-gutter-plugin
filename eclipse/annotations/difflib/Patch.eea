@@ -1,0 +1,4 @@
+class difflib/Patch
+getDeltas
+ ()Ljava/util/List<Ldifflib/Delta;>;
+ ()L1java/util/List<L1difflib/Delta;>;
