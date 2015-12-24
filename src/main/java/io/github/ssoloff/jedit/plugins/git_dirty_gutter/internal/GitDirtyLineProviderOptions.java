@@ -50,9 +50,7 @@ final class GitDirtyLineProviderOptions implements DirtyLineProviderOptions {
      * @see lcm.DirtyLineProviderOptions#initOptions(javax.swing.JPanel)
      */
     @Override
-    public void initOptions(final @Nullable JPanel optionPane) {
-        assert optionPane != null;
-
+    public void initOptions(final JPanel optionPane) {
         optionPane.setLayout(new GridLayout(0, 1));
         final ColorWellButton addedDirtyMarkColorButton = new ColorWellButton(Properties.getAddedDirtyMarkColor());
         addComponent(optionPane, Messages.option_addedDirtyMarkColorLabel_text(), addedDirtyMarkColorButton);

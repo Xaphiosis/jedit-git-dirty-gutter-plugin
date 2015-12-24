@@ -1,0 +1,4 @@
+class common/io/ProcessExecutor$LineVisitor
+process
+ (Ljava/lang/String;Z)Z
+ (L1java/lang/String;Z)Z

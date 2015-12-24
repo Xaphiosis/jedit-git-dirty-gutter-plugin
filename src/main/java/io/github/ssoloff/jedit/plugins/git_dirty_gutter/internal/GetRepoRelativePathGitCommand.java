@@ -90,9 +90,7 @@ final class GetRepoRelativePathGitCommand extends GitCommand implements LineVisi
      * @see common.io.ProcessExecutor.LineVisitor#process(java.lang.String, boolean)
      */
     @Override
-    public boolean process(final @Nullable String line, final boolean isError) {
-        assert line != null;
-
+    public boolean process(final String line, final boolean isError) {
         if (isError) {
             return true;
         }

@@ -1,0 +1,4 @@
+class lcm/DirtyLineProviderOptions
+initOptions
+ (Ljavax/swing/JPanel;)V
+ (L1javax/swing/JPanel;)V
