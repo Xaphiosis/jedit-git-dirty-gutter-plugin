@@ -22,6 +22,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import lcm.painters.ColoredRectWithStripsPainter;
 import lcm.painters.DirtyMarkPainter;
+import org.eclipse.jdt.annotation.Nullable;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.textarea.Gutter;
 
@@ -31,8 +32,8 @@ import org.gjt.sp.jedit.textarea.Gutter;
 final class DirtyMarkPainterFactory {
     private static final DirtyMarkPainter NULL_DIRTY_MARK_PAINTER = new DirtyMarkPainter() {
         @Override
-        public void paint(final Graphics2D g, final Gutter gutter, final int y, final int height, final Buffer buffer,
-                final int lineIndex) {
+        public void paint(final @Nullable Graphics2D g, final @Nullable Gutter gutter, final int y, final int height,
+                final @Nullable Buffer buffer, final int lineIndex) {
             // do nothing
         }
     };

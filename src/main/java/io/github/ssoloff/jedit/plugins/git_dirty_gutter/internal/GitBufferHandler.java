@@ -21,6 +21,7 @@ package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
 import java.awt.Color;
 import lcm.BufferHandler;
 import lcm.painters.DirtyMarkPainter;
+import org.eclipse.jdt.annotation.Nullable;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.buffer.BufferAdapter;
 
@@ -34,7 +35,7 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
      * @see lcm.BufferHandler#bufferSaved(org.gjt.sp.jedit.Buffer)
      */
     @Override
-    public void bufferSaved(final Buffer unusedBuffer) {
+    public void bufferSaved(final @Nullable Buffer buffer) {
         // do nothing
     }
 
@@ -61,7 +62,7 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
      * @see lcm.BufferHandler#getDirtyMarkPainter(org.gjt.sp.jedit.Buffer, int)
      */
     @Override
-    public DirtyMarkPainter getDirtyMarkPainter(final Buffer unusedBuffer, final int lineIndex) {
+    public DirtyMarkPainter getDirtyMarkPainter(final @Nullable Buffer buffer, final int lineIndex) {
         // TODO
         return dirtyMarkPainterFactory.createDirtyMarkPainter(DirtyMarkType.ADDED);
     }

@@ -24,4 +24,5 @@
  * </p>
  */
 
+@org.eclipse.jdt.annotation.NonNullByDefault
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;

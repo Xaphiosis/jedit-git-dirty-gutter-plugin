@@ -21,6 +21,7 @@ package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
 import difflib.Chunk;
 import difflib.Delta;
 import difflib.Patch;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Provides various types of analysis for a patch.
@@ -64,7 +65,7 @@ final class PatchAnalyzer {
      * @return The delta associated with the specified line or {@code null} if
      *         none.
      */
-    private Delta getDeltaForLine(final int lineIndex) {
+    private @Nullable Delta getDeltaForLine(final int lineIndex) {
         assert lineIndex >= 0;
 
         for (final Delta delta : patch.getDeltas()) {

@@ -21,6 +21,7 @@ package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
 import lcm.BufferHandler;
 import lcm.DirtyLineProvider;
 import lcm.DirtyLineProviderOptions;
+import org.eclipse.jdt.annotation.Nullable;
 import org.gjt.sp.jedit.Buffer;
 
 /**
@@ -33,7 +34,7 @@ public final class GitDirtyLineProvider implements DirtyLineProvider {
      * @see lcm.DirtyLineProvider#attach(org.gjt.sp.jedit.Buffer)
      */
     @Override
-    public BufferHandler attach(final Buffer buffer) {
+    public BufferHandler attach(final @Nullable Buffer buffer) {
         return new GitBufferHandler();
     }
 
@@ -41,7 +42,7 @@ public final class GitDirtyLineProvider implements DirtyLineProvider {
      * @see lcm.DirtyLineProvider#detach(org.gjt.sp.jedit.Buffer, lcm.BufferHandler)
      */
     @Override
-    public void detach(final Buffer buffer, final BufferHandler bufferHandler) {
+    public void detach(final @Nullable Buffer buffer, final @Nullable BufferHandler bufferHandler) {
         // do nothing
     }
 

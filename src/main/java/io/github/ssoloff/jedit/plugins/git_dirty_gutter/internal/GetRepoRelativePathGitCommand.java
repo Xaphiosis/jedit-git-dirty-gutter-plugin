@@ -24,13 +24,14 @@ import git.GitCommand;
 import git.GitPlugin;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * A Git command that obtains the repository-relative path of a file at the HEAD
  * revision.
  */
 final class GetRepoRelativePathGitCommand extends GitCommand implements LineVisitor {
-    private Path repoRelativePath;
+    private @Nullable Path repoRelativePath = null;
 
     /**
      * Initializes a new instance of the {@code GetRepoRelativePathGitCommand}
@@ -85,6 +86,7 @@ final class GetRepoRelativePathGitCommand extends GitCommand implements LineVisi
      *         exist in the repository at the HEAD revision or if an error
      *         occurred while executing the command.
      */
+    @Nullable
     Path getRepoRelativePath() {
         return repoRelativePath;
     }
@@ -93,7 +95,9 @@ final class GetRepoRelativePathGitCommand extends GitCommand implements LineVisi
      * @see common.io.ProcessExecutor.LineVisitor#process(java.lang.String, boolean)
      */
     @Override
-    public boolean process(final String line, final boolean isError) {
+    public boolean process(final @Nullable String line, final boolean isError) {
+        assert line != null;
+
         if (isError) {
             return true;
         }

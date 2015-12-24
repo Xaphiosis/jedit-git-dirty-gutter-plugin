@@ -28,15 +28,20 @@ final class Messages {
     private Messages() {
     }
 
+    private static String getMessage(final String name) {
+        final String message = jEdit.getProperty(name);
+        return (message != null) ? message : name;
+    }
+
     static String option_addedDirtyMarkColorLabel_text() {
-        return jEdit.getProperty("messages.GitDirtyGutterPlugin.option_addedDirtyMarkColorLabel_text"); //$NON-NLS-1$
+        return getMessage("messages.GitDirtyGutterPlugin.option_addedDirtyMarkColorLabel_text"); //$NON-NLS-1$
     }
 
     static String option_changedDirtyMarkColorLabel_text() {
-        return jEdit.getProperty("messages.GitDirtyGutterPlugin.option_changedDirtyMarkColorLabel_text"); //$NON-NLS-1$
+        return getMessage("messages.GitDirtyGutterPlugin.option_changedDirtyMarkColorLabel_text"); //$NON-NLS-1$
     }
 
     static String option_removedDirtyMarkColorLabel_text() {
-        return jEdit.getProperty("messages.GitDirtyGutterPlugin.option_removedDirtyMarkColorLabel_text"); //$NON-NLS-1$
+        return getMessage("messages.GitDirtyGutterPlugin.option_removedDirtyMarkColorLabel_text"); //$NON-NLS-1$
     }
 }
