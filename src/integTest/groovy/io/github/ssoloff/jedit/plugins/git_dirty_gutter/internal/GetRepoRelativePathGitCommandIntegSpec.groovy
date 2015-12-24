@@ -86,6 +86,10 @@ class GetRepoRelativePathGitCommandIntegSpec extends Specification {
         def repoPath = createTempDirectory()
         executeGitCommand(repoPath, 'init')
 
+        // configure required user properties
+        executeGitCommand(repoPath, 'config', 'user.name', 'TestUser')
+        executeGitCommand(repoPath, 'config', 'user.email', 'TestEmail')
+
         // create an initial commit so HEAD is present
         def filePath = repoPath.resolve('README')
         createNewFile(filePath)
