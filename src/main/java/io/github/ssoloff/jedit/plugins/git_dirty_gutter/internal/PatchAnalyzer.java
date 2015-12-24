@@ -40,14 +40,12 @@ final class PatchAnalyzer {
      * Initializes a new instance of the {@code PatchAnalyzer} class.
      *
      * @param patch
-     *        The patch to analyze; must not be {@code null}.
+     *        The patch to analyze.
      *
      * @throws IllegalArgumentException
      *         If {@code patch} contains any context lines.
      */
     PatchAnalyzer(final Patch patch) {
-        assert patch != null;
-
         if (DiffLibUtils.Patch.isContextLinePresent(patch)) {
             throw new IllegalArgumentException("patch must not contain any context lines"); //$NON-NLS-1$
         }
@@ -86,8 +84,7 @@ final class PatchAnalyzer {
      *        The zero-based index of the line whose dirty mark is desired; must
      *        not be negative.
      *
-     * @return The type of dirty mark associated with the specified line; never
-     *         {@code null}.
+     * @return The type of dirty mark associated with the specified line.
      */
     DirtyMarkType getDirtyMarkForLine(final int lineIndex) {
         assert lineIndex >= 0;

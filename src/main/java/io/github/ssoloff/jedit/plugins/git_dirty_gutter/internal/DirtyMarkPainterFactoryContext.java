@@ -27,21 +27,21 @@ interface DirtyMarkPainterFactoryContext {
     /**
      * Gets the color used for added dirty marks.
      *
-     * @return The color used for added dirty marks; never {@code null}.
+     * @return The color used for added dirty marks.
      */
     Color getAddedDirtyMarkColor();
 
     /**
      * Gets the color used for changed dirty marks.
      *
-     * @return The color used for changed dirty marks; never {@code null}.
+     * @return The color used for changed dirty marks.
      */
     Color getChangedDirtyMarkColor();
 
     /**
      * Gets the color used for removed dirty marks.
      *
-     * @return The color used for removed dirty marks; never {@code null}.
+     * @return The color used for removed dirty marks.
      */
     Color getRemovedDirtyMarkColor();
 }

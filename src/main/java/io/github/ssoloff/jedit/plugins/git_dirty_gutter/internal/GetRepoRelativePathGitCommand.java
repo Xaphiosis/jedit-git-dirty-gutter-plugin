@@ -38,8 +38,7 @@ final class GetRepoRelativePathGitCommand extends GitCommand implements LineVisi
      * class using the default Git path.
      *
      * @param filePath
-     *        The path to the file whose repository-relative path is desired;
-     *        must not be {@code null}.
+     *        The path to the file whose repository-relative path is desired.
      */
     GetRepoRelativePathGitCommand(final Path filePath) {
         this(filePath, Paths.get(GitPlugin.gitPath()));
@@ -50,10 +49,9 @@ final class GetRepoRelativePathGitCommand extends GitCommand implements LineVisi
      * class using the specified Git path.
      *
      * @param filePath
-     *        The path to the file whose repository-relative path is desired;
-     *        must not be {@code null}.
+     *        The path to the file whose repository-relative path is desired.
      * @param gitPath
-     *        The path to the Git executable; must not be {@code null}.
+     *        The path to the Git executable.
      */
     GetRepoRelativePathGitCommand(final Path filePath, final Path gitPath) {
         super(createExecutor(gitPath, filePath));
@@ -62,9 +60,6 @@ final class GetRepoRelativePathGitCommand extends GitCommand implements LineVisi
     }
 
     private static ProcessExecutor createExecutor(final Path gitPath, final Path filePath) {
-        assert gitPath != null;
-        assert filePath != null;
-
         final ProcessExecutor executor = new ProcessExecutor( //
                 gitPath.toString(), //
                 "ls-tree", //$NON-NLS-1$

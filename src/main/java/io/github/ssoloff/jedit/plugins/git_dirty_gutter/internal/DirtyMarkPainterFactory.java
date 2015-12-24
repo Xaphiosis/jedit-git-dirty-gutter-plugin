@@ -44,11 +44,9 @@ final class DirtyMarkPainterFactory {
      * Initializes a new instance of the {@code DirtyMarkPainterFactory} class.
      *
      * @param context
-     *        The execution context for the factory; must not be {@code null}.
+     *        The execution context for the factory.
      */
     DirtyMarkPainterFactory(final DirtyMarkPainterFactoryContext context) {
-        assert context != null;
-
         this.context = context;
     }
 
@@ -56,13 +54,11 @@ final class DirtyMarkPainterFactory {
      * Creates a new dirty mark painter for the specified type of dirty mark.
      *
      * @param dirtyMarkType
-     *        The type of dirty mark to be painted; must not be {@code null}.
+     *        The type of dirty mark to be painted.
      * 
-     * @return A new dirty mark painter; never {@code null}.
+     * @return A new dirty mark painter.
      */
     DirtyMarkPainter createDirtyMarkPainter(final DirtyMarkType dirtyMarkType) {
-        assert dirtyMarkType != null;
-
         if (dirtyMarkType == DirtyMarkType.UNCHANGED) {
             return NULL_DIRTY_MARK_PAINTER;
         }
@@ -86,8 +82,6 @@ final class DirtyMarkPainterFactory {
     }
 
     private Color getColor(final DirtyMarkType dirtyMarkType) {
-        assert dirtyMarkType != null;
-
         switch (dirtyMarkType) {
             case ADDED:
                 return context.getAddedDirtyMarkColor();
@@ -105,20 +99,14 @@ final class DirtyMarkPainterFactory {
     }
 
     private static boolean isBodyPainted(final DirtyMarkType dirtyMarkType) {
-        assert dirtyMarkType != null;
-
         return (dirtyMarkType == DirtyMarkType.ADDED) || (dirtyMarkType == DirtyMarkType.CHANGED);
     }
 
     private static boolean isBottomStripPainted(final DirtyMarkType dirtyMarkType) {
-        assert dirtyMarkType != null;
-
         return dirtyMarkType == DirtyMarkType.REMOVED_BELOW;
     }
 
     private static boolean isTopStripPainted(final DirtyMarkType dirtyMarkType) {
-        assert dirtyMarkType != null;
-
         return dirtyMarkType == DirtyMarkType.REMOVED_ABOVE;
     }
 }

@@ -36,7 +36,7 @@ final class Properties {
     /**
      * Gets the color used for added dirty marks.
      *
-     * @return The color used for added dirty marks; never {@code null}.
+     * @return The color used for added dirty marks.
      */
     static Color getAddedDirtyMarkColor() {
         return jEdit.getColorProperty(PROP_ADDED_DIRTY_MARK_COLOR, Color.GREEN);
@@ -45,7 +45,7 @@ final class Properties {
     /**
      * Gets the color used for changed dirty marks.
      *
-     * @return The color used for changed dirty marks; never {@code null}.
+     * @return The color used for changed dirty marks.
      */
     static Color getChangedDirtyMarkColor() {
         return jEdit.getColorProperty(PROP_CHANGED_DIRTY_MARK_COLOR, Color.ORANGE);
@@ -54,7 +54,7 @@ final class Properties {
     /**
      * Gets the color used for removed dirty marks.
      *
-     * @return The color used for removed dirty marks; never {@code null}.
+     * @return The color used for removed dirty marks.
      */
     static Color getRemovedDirtyMarkColor() {
         return jEdit.getColorProperty(PROP_REMOVED_DIRTY_MARK_COLOR, Color.RED);
@@ -64,11 +64,9 @@ final class Properties {
      * Sets the color used for added dirty marks.
      *
      * @param addedDirtyMarkColor
-     *        The color used for added dirty marks; must not be {@code null}.
+     *        The color used for added dirty marks.
      */
     static void setAddedDirtyMarkColor(final Color addedDirtyMarkColor) {
-        assert addedDirtyMarkColor != null;
-
         jEdit.setColorProperty(PROP_ADDED_DIRTY_MARK_COLOR, addedDirtyMarkColor);
     }
 
@@ -76,11 +74,9 @@ final class Properties {
      * Sets the color used for changed dirty marks.
      *
      * @param changedDirtyMarkColor
-     *        The color used for changed dirty marks; must not be {@code null}.
+     *        The color used for changed dirty marks.
      */
     static void setChangedDirtyMarkColor(final Color changedDirtyMarkColor) {
-        assert changedDirtyMarkColor != null;
-
         jEdit.setColorProperty(PROP_CHANGED_DIRTY_MARK_COLOR, changedDirtyMarkColor);
     }
 
@@ -88,11 +84,9 @@ final class Properties {
      * Sets the color used for removed dirty marks.
      *
      * @param removedDirtyMarkColor
-     *        The color used for removed dirty marks; must not be {@code null}.
+     *        The color used for removed dirty marks.
      */
     static void setRemovedDirtyMarkColor(final Color removedDirtyMarkColor) {
-        assert removedDirtyMarkColor != null;
-
         jEdit.setColorProperty(PROP_REMOVED_DIRTY_MARK_COLOR, removedDirtyMarkColor);
     }
 }
