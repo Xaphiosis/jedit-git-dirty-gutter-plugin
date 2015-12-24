@@ -24,7 +24,7 @@ import difflib.Patch
 import spock.lang.Specification
 
 class PatchAnalyzerSpec extends Specification {
-    def 'ctor should throw exception if patch contains context lines'() {
+    def 'ctor - when patch contains context lines - should throw exception'() {
         // --- from.change	2015-12-21 09:09:52.392320598 -0500
         // +++ to.change	2015-12-21 09:10:01.216381102 -0500
         // @@ -9,3 +9,3 @@
@@ -47,7 +47,7 @@ class PatchAnalyzerSpec extends Specification {
         thrown(IllegalArgumentException)
     }
 
-    def 'getDirtyMarkForLine should handle added lines'() {
+    def 'getDirtyMarkForLine - should handle added lines'() {
         // --- from.add	2015-12-21 17:53:29.082877088 -0500
         // +++ to.add	2015-12-21 08:41:52.663714666 -0500
         // @@ -0,0 +1 @@
@@ -83,7 +83,7 @@ class PatchAnalyzerSpec extends Specification {
         patchAnalyzer.getDirtyMarkForLine(19) == DirtyMarkType.ADDED
     }
 
-    def 'getDirtyMarkForLine should handle changed lines'() {
+    def 'getDirtyMarkForLine - should handle changed lines'() {
         // --- from.change	2015-12-21 17:56:43.051161447 -0500
         // +++ to.change	2015-12-21 17:56:53.987233859 -0500
         // @@ -1 +1 @@
@@ -122,7 +122,7 @@ class PatchAnalyzerSpec extends Specification {
         patchAnalyzer.getDirtyMarkForLine(19) == DirtyMarkType.CHANGED
     }
 
-    def 'getDirtyMarkForLine should handle removed lines'() {
+    def 'getDirtyMarkForLine - should handle removed lines'() {
         // --- from.remove	2015-12-21 10:07:45.208277091 -0500
         // +++ to.remove	2015-12-21 10:07:54.855343987 -0500
         // @@ -1 +0,0 @@
@@ -158,7 +158,7 @@ class PatchAnalyzerSpec extends Specification {
         patchAnalyzer.getDirtyMarkForLine(16) == DirtyMarkType.REMOVED_BELOW
     }
 
-    def 'getDirtyMarkForLine should handle a mixed collection of added, changed, and removed lines'() {
+    def 'getDirtyMarkForLine - should handle a mixed collection of added, changed, and removed lines'() {
         // --- from.mixed	2015-12-21 17:33:49.971052965 -0500
         // +++ to.mixed	2015-12-21 17:34:43.429408252 -0500
         // @@ -0,0 +1,6 @@
