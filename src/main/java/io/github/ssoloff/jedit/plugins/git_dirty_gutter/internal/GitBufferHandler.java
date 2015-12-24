@@ -18,8 +18,8 @@
 
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
 
+import java.awt.Color;
 import lcm.BufferHandler;
-import lcm.painters.ColoredRectWithStripsPainter;
 import lcm.painters.DirtyMarkPainter;
 import org.gjt.sp.jedit.Buffer;
 import org.gjt.sp.jedit.buffer.BufferAdapter;
@@ -28,21 +28,42 @@ import org.gjt.sp.jedit.buffer.BufferAdapter;
  * Implementation of {@link BufferHandler} for the Git dirty line provider.
  */
 final class GitBufferHandler extends BufferAdapter implements BufferHandler {
+    private final DirtyMarkPainterFactory dirtyMarkPainterFactory = createDirtyMarkPainterFactory();
+
     /*
      * @see lcm.BufferHandler#bufferSaved(org.gjt.sp.jedit.Buffer)
      */
     @Override
-    public void bufferSaved(final Buffer buffer) {
-        // TODO
+    public void bufferSaved(final Buffer unusedBuffer) {
+        // do nothing
+    }
+
+    private static DirtyMarkPainterFactory createDirtyMarkPainterFactory() {
+        return new DirtyMarkPainterFactory(new DirtyMarkPainterFactoryContext() {
+            @Override
+            public Color getAddedDirtyMarkColor() {
+                return Properties.getAddedDirtyMarkColor();
+            }
+
+            @Override
+            public Color getChangedDirtyMarkColor() {
+                return Properties.getChangedDirtyMarkColor();
+            }
+
+            @Override
+            public Color getRemovedDirtyMarkColor() {
+                return Properties.getRemovedDirtyMarkColor();
+            }
+        });
     }
 
     /*
      * @see lcm.BufferHandler#getDirtyMarkPainter(org.gjt.sp.jedit.Buffer, int)
      */
     @Override
-    public DirtyMarkPainter getDirtyMarkPainter(final Buffer buffer, final int physicalLine) {
+    public DirtyMarkPainter getDirtyMarkPainter(final Buffer unusedBuffer, final int lineIndex) {
         // TODO
-        return new ColoredRectWithStripsPainter();
+        return dirtyMarkPainterFactory.createDirtyMarkPainter(DirtyMarkType.ADDED);
     }
 
     /*
