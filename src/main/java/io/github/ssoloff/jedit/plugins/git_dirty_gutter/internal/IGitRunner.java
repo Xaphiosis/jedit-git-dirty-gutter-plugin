@@ -29,7 +29,8 @@ interface IGitRunner {
      * Runs a new Git process.
      *
      * @param outWriter
-     *        The writer that will receive the standard output of the process.
+     *        The writer that will receive the content of the standard output
+     *        stream of the process.
      * @param args
      *        The Git command arguments.
      * 

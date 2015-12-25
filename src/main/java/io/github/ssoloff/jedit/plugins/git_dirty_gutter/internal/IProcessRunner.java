@@ -30,9 +30,11 @@ interface IProcessRunner {
      * Runs a new process.
      *
      * @param outWriter
-     *        The writer that will receive the standard output of the process.
+     *        The writer that will receive the content of the standard output
+     *        stream of the process.
      * @param errWriter
-     *        The writer that will receive the standard error of the process.
+     *        The writer that will receive the content of the standard error
+     *        stream of the process.
      * @param workingDirPath
      *        The path to the process working directory.
      * @param command
