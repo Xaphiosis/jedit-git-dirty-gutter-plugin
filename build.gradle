@@ -29,18 +29,6 @@ sourceSets {
     }
 }
 
-test {
-    reports.html.destination = file("$reports.html.destination/unit")
-    reports.junitXml.destination = file("$reports.junitXml.destination/unit")
-}
-
-jacocoTestReport {
-    reports {
-        html.enabled = true
-        xml.enabled = true
-    }
-}
-
 task fatJar(type: Jar) {
     classifier = 'all'
     from {
@@ -54,16 +42,47 @@ task fatJar(type: Jar) {
 }
 
 task integrationTest(type: Test) {
+    description = 'Runs the integration tests.'
+    group = 'Verification'
+    mustRunAfter 'test'
+
     testClassesDir = sourceSets.integrationTest.output.classesDir
     classpath = sourceSets.integrationTest.runtimeClasspath
-    reports.html.destination = file("$reports.html.destination/integration")
-    reports.junitXml.destination = file("$reports.junitXml.destination/integration")
+}
+
+task jacocoIntegrationTestReport(type: JacocoReport) {
+    description = 'Generates code coverage report for the integration tests.'
+    group = 'Verification'
+
+    sourceSets sourceSets.main
+    executionData integrationTest
 }
 
 task wrapper(type: Wrapper) {
     description = 'Generates Gradle wrapper files.'
-    gradleVersion = '2.10'
     group = 'Build Setup'
+
+    gradleVersion = '2.10'
 }
 
-check.dependsOn integrationTest
+check {
+    dependsOn integrationTest
+}
+
+integrationTest {
+    reports.html.destination = file("$reports.html.destination/$name")
+    reports.junitXml.destination = file("$reports.junitXml.destination/$name")
+
+    jacocoIntegrationTestReport.reports.html.destination = file("$project.jacoco.reportsDir/$name/html")
+    jacocoIntegrationTestReport.reports.xml.destination = file("$project.jacoco.reportsDir/$name/jacocoTestReport.xml")
+    jacocoIntegrationTestReport.reports.html.enabled = true
+    jacocoIntegrationTestReport.reports.xml.enabled = true
+}
+
+test {
+    reports.html.destination = file("$reports.html.destination/$name")
+    reports.junitXml.destination = file("$reports.junitXml.destination/$name")
+
+    jacocoTestReport.reports.html.enabled = true
+    jacocoTestReport.reports.xml.enabled = true
+}
