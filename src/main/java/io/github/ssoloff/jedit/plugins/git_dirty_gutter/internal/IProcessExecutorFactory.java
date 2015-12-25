@@ -30,7 +30,7 @@ interface IProcessExecutorFactory {
      * @param command
      *        The command to run. The first element is the process executable.
      *        The remaining elements are the process arguments.
-     * 
+     *
      * @return A new process executor.
      */
     ProcessExecutor createProcessExecutor(String... command);

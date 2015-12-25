@@ -33,7 +33,7 @@ interface IGitRunner {
      *        stream of the process.
      * @param args
      *        The Git command arguments.
-     * 
+     *
      * @throws GitException
      *         If the Git process exits with an error.
      * @throws IOException

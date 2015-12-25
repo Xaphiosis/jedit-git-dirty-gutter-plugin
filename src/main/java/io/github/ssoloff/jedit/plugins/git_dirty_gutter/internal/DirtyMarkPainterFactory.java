@@ -55,7 +55,7 @@ final class DirtyMarkPainterFactory {
      *
      * @param dirtyMarkType
      *        The type of dirty mark to be painted.
-     * 
+     *
      * @return A new dirty mark painter.
      */
     DirtyMarkPainter createDirtyMarkPainter(final DirtyMarkType dirtyMarkType) {

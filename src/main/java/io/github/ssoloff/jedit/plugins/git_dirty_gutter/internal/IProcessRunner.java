@@ -40,9 +40,9 @@ interface IProcessRunner {
      * @param command
      *        The command to run. The first element is the process executable.
      *        The remaining elements are the process arguments.
-     * 
+     *
      * @return The exit code of the process.
-     * 
+     *
      * @throws IOException
      *         If an error occurs while running the process.
      * @throws InterruptedException

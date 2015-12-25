@@ -50,12 +50,12 @@ final class GitCommands {
      *
      * @param filePath
      *        The path to the file whose repository-relative path is desired.
-     * 
+     *
      * @return The repository-relative path at the HEAD revision of the
      *         specified file or {@code null} if the file does not exist in the
      *         repository at the HEAD revision or if an error occurred while
      *         executing the command.
-     * 
+     *
      * @throws GitException
      *         If the Git process exits with an error.
      * @throws IOException
