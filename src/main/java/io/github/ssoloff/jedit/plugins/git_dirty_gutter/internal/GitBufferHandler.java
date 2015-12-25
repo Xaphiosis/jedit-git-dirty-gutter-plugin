@@ -31,9 +31,6 @@ import org.gjt.sp.jedit.buffer.BufferAdapter;
 final class GitBufferHandler extends BufferAdapter implements BufferHandler {
     private final DirtyMarkPainterFactory dirtyMarkPainterFactory = createDirtyMarkPainterFactory();
 
-    /*
-     * @see lcm.BufferHandler#bufferSaved(org.gjt.sp.jedit.Buffer)
-     */
     @Override
     public void bufferSaved(final @Nullable Buffer buffer) {
         // do nothing
@@ -58,18 +55,12 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
         });
     }
 
-    /*
-     * @see lcm.BufferHandler#getDirtyMarkPainter(org.gjt.sp.jedit.Buffer, int)
-     */
     @Override
     public DirtyMarkPainter getDirtyMarkPainter(final @Nullable Buffer buffer, final int lineIndex) {
         // TODO
         return dirtyMarkPainterFactory.createDirtyMarkPainter(DirtyMarkType.ADDED);
     }
 
-    /*
-     * @see lcm.BufferHandler#start()
-     */
     @Override
     public void start() {
         // do nothing

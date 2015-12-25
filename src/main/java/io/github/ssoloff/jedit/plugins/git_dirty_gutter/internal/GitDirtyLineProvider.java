@@ -30,25 +30,16 @@ import org.gjt.sp.jedit.Buffer;
  * to the Git repository.
  */
 public final class GitDirtyLineProvider implements DirtyLineProvider {
-    /*
-     * @see lcm.DirtyLineProvider#attach(org.gjt.sp.jedit.Buffer)
-     */
     @Override
     public BufferHandler attach(final @Nullable Buffer buffer) {
         return new GitBufferHandler();
     }
 
-    /*
-     * @see lcm.DirtyLineProvider#detach(org.gjt.sp.jedit.Buffer, lcm.BufferHandler)
-     */
     @Override
     public void detach(final @Nullable Buffer buffer, final @Nullable BufferHandler bufferHandler) {
         // do nothing
     }
 
-    /*
-     * @see lcm.DirtyLineProvider#getOptions()
-     */
     @Override
     public DirtyLineProviderOptions getOptions() {
         return new GitDirtyLineProviderOptions();

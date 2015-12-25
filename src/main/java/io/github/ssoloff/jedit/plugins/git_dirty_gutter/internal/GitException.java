@@ -79,9 +79,6 @@ final class GitException extends Exception {
         return exitCode;
     }
 
-    /*
-     * @see java.lang.Throwable#getMessage()
-     */
     @Override
     @SuppressWarnings("boxing")
     public String getMessage() {

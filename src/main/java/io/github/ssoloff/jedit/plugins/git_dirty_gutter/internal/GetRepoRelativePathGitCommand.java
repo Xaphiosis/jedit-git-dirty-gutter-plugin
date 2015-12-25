@@ -86,9 +86,6 @@ final class GetRepoRelativePathGitCommand extends GitCommand implements LineVisi
         return repoRelativePath;
     }
 
-    /*
-     * @see common.io.ProcessExecutor.LineVisitor#process(java.lang.String, boolean)
-     */
     @Override
     public boolean process(final String line, final boolean isError) {
         if (isError) {

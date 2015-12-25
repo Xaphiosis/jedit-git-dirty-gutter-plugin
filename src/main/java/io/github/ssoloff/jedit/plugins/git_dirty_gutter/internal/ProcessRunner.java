@@ -54,9 +54,6 @@ final class ProcessRunner implements IProcessRunner {
         this.processExecutorFactory = processExecutorFactory;
     }
 
-    /*
-     * @see io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.IProcessRunner#run(java.io.Writer, java.io.Writer, java.nio.file.Path, java.lang.String[])
-     */
     @Override
     public int run(final Writer outWriter, final Writer errWriter, final Path workingDirPath, final String... command)
             throws IOException, InterruptedException {

@@ -55,9 +55,6 @@ final class GitRunner implements IGitRunner {
         return command;
     }
 
-    /*
-     * @see io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.IGitRunner#run(java.io.Writer, java.lang.String[])
-     */
     @Override
     public void run(final Writer outWriter, final String... args)
             throws GitException, IOException, InterruptedException {

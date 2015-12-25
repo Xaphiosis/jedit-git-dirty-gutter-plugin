@@ -46,9 +46,6 @@ final class GitDirtyLineProviderOptions implements DirtyLineProviderOptions {
         return controls;
     }
 
-    /*
-     * @see lcm.DirtyLineProviderOptions#initOptions(javax.swing.JPanel)
-     */
     @Override
     public void initOptions(final JPanel optionPane) {
         optionPane.setLayout(new GridLayout(0, 1));
@@ -62,9 +59,6 @@ final class GitDirtyLineProviderOptions implements DirtyLineProviderOptions {
         controls = new Controls(addedDirtyMarkColorButton, changedDirtyMarkColorButton, removedDirtyMarkColorButton);
     }
 
-    /*
-     * @see lcm.DirtyLineProviderOptions#saveOptions()
-     */
     @Override
     public void saveOptions() {
         @SuppressWarnings("hiding")
