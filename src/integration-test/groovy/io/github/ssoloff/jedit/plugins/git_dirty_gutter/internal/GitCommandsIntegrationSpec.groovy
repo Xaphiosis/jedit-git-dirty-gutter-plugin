@@ -91,38 +91,38 @@ class GitCommandsIntegrationSpec extends Specification {
         deleteDirectory(repoPath)
     }
 
-    def 'getRepoRelativePath - when file exists on HEAD it should return repo-relative path'() {
+    def 'getRepoRelativeFilePathAtHeadRevision - when file exists on HEAD it should return repo-relative path'() {
         setup:
         def filePath = repoPath.resolve('subdir1').resolve('file')
         createNewFile(filePath)
         addAndCommitFile(filePath)
 
         when:
-        def repoRelativePath = gitCommands.getRepoRelativePath(filePath)
+        def repoRelativeFilePath = gitCommands.getRepoRelativeFilePathAtHeadRevision(filePath)
 
         then:
-        repoRelativePath == repoPath.relativize(filePath)
+        repoRelativeFilePath == repoPath.relativize(filePath)
     }
 
-    def 'getRepoRelativePath - when file is inside repo but does not exist on HEAD it should return null'() {
+    def 'getRepoRelativeFilePathAtHeadRevision - when file is inside repo but does not exist on HEAD it should return null'() {
         setup:
         def filePath = repoPath.resolve('subdir1').resolve('file')
         createNewFile(filePath)
         // do not commit so it does not exist on HEAD
 
         when:
-        def repoRelativePath = gitCommands.getRepoRelativePath(filePath)
+        def repoRelativeFilePath = gitCommands.getRepoRelativeFilePathAtHeadRevision(filePath)
 
         then:
-        repoRelativePath == null
+        repoRelativeFilePath == null
     }
 
-    def 'getRepoRelativePath - when file is outside repo it should throw an exception'() {
+    def 'getRepoRelativeFilePathAtHeadRevision - when file is outside repo it should throw an exception'() {
         setup:
         def filePath = createTempFile()
 
         when:
-        def repoRelativePath = gitCommands.getRepoRelativePath(filePath)
+        gitCommands.getRepoRelativeFilePathAtHeadRevision(filePath)
 
         then:
         thrown(GitException)

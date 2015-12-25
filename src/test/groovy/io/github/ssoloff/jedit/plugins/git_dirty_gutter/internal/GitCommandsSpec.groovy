@@ -22,7 +22,7 @@ import java.nio.file.Paths
 import spock.lang.Specification
 
 class GitCommandsSpec extends Specification {
-    def 'getRepoRelativePath - when file exists on HEAD it should return repo-relative path'() {
+    def 'getRepoRelativeFilePathAtHeadRevision - when file exists on HEAD it should return repo-relative path'() {
         setup:
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> { Writer outWriter, String[] args ->
@@ -32,13 +32,13 @@ class GitCommandsSpec extends Specification {
         def gitCommands = new GitCommands(gitRunner)
 
         when:
-        def repoRelativePath = gitCommands.getRepoRelativePath(Paths.get('/root/subdir1/subdir2/file'))
+        def repoRelativePath = gitCommands.getRepoRelativeFilePathAtHeadRevision(Paths.get('/root/subdir1/subdir2/file'))
 
         then:
         repoRelativePath == Paths.get('subdir1/subdir2/file')
     }
 
-    def 'getRepoRelativePath - when file is inside repo but does not exist on HEAD it should return null'() {
+    def 'getRepoRelativeFilePathAtHeadRevision - when file is inside repo but does not exist on HEAD it should return null'() {
         setup:
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> {
@@ -48,7 +48,7 @@ class GitCommandsSpec extends Specification {
         def gitCommands = new GitCommands(gitRunner)
 
         when:
-        def repoRelativePath = gitCommands.getRepoRelativePath(Paths.get('/root/subdir1/subdir2/file'))
+        def repoRelativePath = gitCommands.getRepoRelativeFilePathAtHeadRevision(Paths.get('/root/subdir1/subdir2/file'))
 
         then:
         repoRelativePath == null

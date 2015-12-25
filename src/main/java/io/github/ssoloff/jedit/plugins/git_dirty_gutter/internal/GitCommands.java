@@ -46,16 +46,15 @@ final class GitCommands {
     }
 
     /**
-     * Gets the repository-relative path at the HEAD revision of the specified
-     * file.
+     * Gets the repository-relative path of the specified file at the HEAD
+     * revision.
      *
      * @param filePath
      *        The path to the file whose repository-relative path is desired.
      *
-     * @return The repository-relative path at the HEAD revision of the
-     *         specified file or {@code null} if the file does not exist in the
-     *         repository at the HEAD revision or if an error occurred while
-     *         executing the command.
+     * @return The repository-relative path of the specified file at the HEAD
+     *         revision or {@code null} if the file does not exist in the
+     *         repository at the HEAD revision.
      *
      * @throws GitException
      *         If the Git process exits with an error.
@@ -65,7 +64,8 @@ final class GitCommands {
      *         If interrupted while waiting for the Git process to exit.
      */
     @Nullable
-    Path getRepoRelativePath(final Path filePath) throws GitException, IOException, InterruptedException {
+    Path getRepoRelativeFilePathAtHeadRevision(final Path filePath)
+            throws GitException, IOException, InterruptedException {
         final StringWriter outWriter = new StringWriter();
         final String[] args = new String[] {
             "ls-tree", //$NON-NLS-1$
