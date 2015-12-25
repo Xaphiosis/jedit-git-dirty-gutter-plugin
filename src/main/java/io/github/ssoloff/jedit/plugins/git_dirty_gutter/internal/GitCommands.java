@@ -56,7 +56,7 @@ final class GitCommands {
      *         repository at the HEAD revision or if an error occurred while
      *         executing the command.
      * 
-     * @throws GitRunnerException
+     * @throws GitException
      *         If the Git process exits with an error.
      * @throws IOException
      *         If an error occurs while processing the Git process output.
@@ -64,7 +64,7 @@ final class GitCommands {
      *         If interrupted while waiting for the Git process to exit.
      */
     @Nullable
-    Path getRepoRelativePath(final Path filePath) throws GitRunnerException, IOException, InterruptedException {
+    Path getRepoRelativePath(final Path filePath) throws GitException, IOException, InterruptedException {
         final StringWriter outWriter = new StringWriter();
         final String[] args = new String[] {
             "ls-tree", //$NON-NLS-1$

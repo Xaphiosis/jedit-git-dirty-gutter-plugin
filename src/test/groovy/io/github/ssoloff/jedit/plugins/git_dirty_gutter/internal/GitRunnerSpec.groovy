@@ -86,7 +86,7 @@ class GitRunnerSpec extends Specification {
         gitRunner.run(new StringWriter())
 
         then:
-        def e = thrown(GitRunnerException)
+        def e = thrown(GitException)
         e.exitCode == 1
         e.message == 'stderr-line-1\nstderr-line-2\n'
     }

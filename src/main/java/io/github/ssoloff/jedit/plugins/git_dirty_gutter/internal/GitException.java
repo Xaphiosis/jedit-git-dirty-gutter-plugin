@@ -19,16 +19,15 @@
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
 
 /**
- * A checked exception that indicates the Git process run by an instance of
- * {@link IGitRunner} exited with an error.
+ * A checked exception that indicates a Git process exited with an error.
  */
-final class GitRunnerException extends Exception {
+final class GitException extends Exception {
     private static final long serialVersionUID = -4617699499893940183L;
 
     private final int exitCode;
 
     /**
-     * Initializes a new instance of the {@code GitRunnerException} class.
+     * Initializes a new instance of the {@code GitException} class.
      *
      * @param exitCode
      *        The exit code of the Git process.
@@ -36,7 +35,7 @@ final class GitRunnerException extends Exception {
      *        The detail message, typically the standard output of the Git
      *        process.
      */
-    GitRunnerException(final int exitCode, final String message) {
+    GitException(final int exitCode, final String message) {
         super(message);
 
         this.exitCode = exitCode;

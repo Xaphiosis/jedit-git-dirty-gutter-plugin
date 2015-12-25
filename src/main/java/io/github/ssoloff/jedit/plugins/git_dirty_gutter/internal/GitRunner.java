@@ -58,11 +58,11 @@ final class GitRunner implements IGitRunner {
      * @see io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.IGitRunner#run(java.io.Writer, java.lang.String[])
      */
     @Override
-    public void run(final Writer outWriter, final String... args) throws GitRunnerException, InterruptedException {
+    public void run(final Writer outWriter, final String... args) throws GitException, InterruptedException {
         final StringWriter errWriter = new StringWriter();
         final int exitCode = processRunner.run(outWriter, errWriter, workingDirPath, createCommand(args));
         if (exitCode != 0) {
-            throw new GitRunnerException(exitCode, errWriter.toString());
+            throw new GitException(exitCode, errWriter.toString());
         }
     }
 }
