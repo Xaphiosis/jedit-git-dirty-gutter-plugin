@@ -22,40 +22,85 @@ import common.io.ProcessExecutor;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Path;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Implementation of {@link IProcessRunner} that uses the jEdit common controls
  * plugin's {@code ProcessExecutor} to run the process.
  */
 final class ProcessRunner implements IProcessRunner {
+    private final IProcessExecutorFactory processExecutorFactory;
+
+    /**
+     * Initializes a new instance of the {@code ProcessRunner} class.
+     */
+    ProcessRunner() {
+        this(new IProcessExecutorFactory() {
+            @Override
+            public ProcessExecutor createProcessExecutor(final String... command) {
+                return new ProcessExecutor(command);
+            }
+        });
+    }
+
+    /**
+     * Initializes a new instance of the {@code ProcessRunner} class using the
+     * specified process executor factory.
+     *
+     * @param processExecutorFactory
+     *        The factory used to create process executor instances.
+     */
+    ProcessRunner(final IProcessExecutorFactory processExecutorFactory) {
+        this.processExecutorFactory = processExecutorFactory;
+    }
+
     /*
      * @see io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.IProcessRunner#run(java.io.Writer, java.io.Writer, java.nio.file.Path, java.lang.String[])
      */
     @Override
     public int run(final Writer outWriter, final Writer errWriter, final Path workingDirPath, final String... command)
             throws IOException, InterruptedException {
-        final ProcessExecutor processExecutor = new ProcessExecutor(command);
+        final ProcessExecutor processExecutor = processExecutorFactory.createProcessExecutor(command);
         processExecutor.setDirectory(workingDirPath.toString());
-        processExecutor.addVisitor(new ProcessExecutor.LineVisitor() {
-            @Override
-            public boolean process(final String line, final boolean isError) {
-                try {
-                    if (isError) {
-                        errWriter.write(line);
-                        errWriter.write("\n"); //$NON-NLS-1$
-                    } else {
-                        outWriter.write(line);
-                        outWriter.write("\n"); //$NON-NLS-1$
-                    }
-                } catch (@SuppressWarnings("unused") final IOException e) {
-                    // TODO: rethrow exception outside of visitor
-                    return false;
-                }
+        final LineVisitor visitor = new LineVisitor(outWriter, errWriter);
+        processExecutor.addVisitor(visitor);
 
-                return true;
+        processExecutor.start();
+        final int exitCode = processExecutor.waitFor();
+        if (visitor.exception != null) {
+            throw visitor.exception;
+        }
+        return exitCode;
+    }
+
+    private static final class LineVisitor implements ProcessExecutor.LineVisitor {
+        private final Writer errWriter;
+        private final Writer outWriter;
+
+        @Nullable
+        IOException exception = null;
+
+        LineVisitor(final Writer outWriter, final Writer errWriter) {
+            this.errWriter = errWriter;
+            this.outWriter = outWriter;
+        }
+
+        @Override
+        public boolean process(final String line, final boolean isError) {
+            try {
+                if (isError) {
+                    errWriter.write(line);
+                    errWriter.write("\n"); //$NON-NLS-1$
+                } else {
+                    outWriter.write(line);
+                    outWriter.write("\n"); //$NON-NLS-1$
+                }
+            } catch (final IOException e) {
+                exception = e;
+                return false;
             }
-        });
-        final Process process = processExecutor.start();
-        return process.waitFor();
+
+            return true;
+        }
     }
 }
