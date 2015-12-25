@@ -18,27 +18,56 @@
 
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
 
+import java.util.Arrays;
+
 /**
  * A checked exception that indicates a Git process exited with an error.
  */
 final class GitException extends Exception {
     private static final long serialVersionUID = -4617699499893940183L;
 
+    private final String[] command;
+    private final String errorMessage;
     private final int exitCode;
 
     /**
      * Initializes a new instance of the {@code GitException} class.
      *
+     * @param command
+     *        The command that was run by the Git process.
      * @param exitCode
      *        The exit code of the Git process.
-     * @param message
-     *        The detail message, typically the standard output of the Git
-     *        process.
+     * @param errorMessage
+     *        The error message, typically the content of the standard error
+     *        stream of the Git process.
      */
-    GitException(final int exitCode, final String message) {
-        super(message);
-
+    GitException(final String[] command, final int exitCode, final String errorMessage) {
+        this.command = cloneArray(command);
+        this.errorMessage = errorMessage;
         this.exitCode = exitCode;
+    }
+
+    @SuppressWarnings("null")
+    private static <T> T[] cloneArray(final T[] array) {
+        return array.clone();
+    }
+
+    /**
+     * Gets the command that was run by the Git process.
+     *
+     * @return The command that was run by the Git process.
+     */
+    String[] getCommand() {
+        return cloneArray(command);
+    }
+
+    /**
+     * Gets the error message.
+     *
+     * @return The error message.
+     */
+    String getErrorMessage() {
+        return errorMessage;
     }
 
     /**
@@ -48,5 +77,18 @@ final class GitException extends Exception {
      */
     int getExitCode() {
         return exitCode;
+    }
+
+    /*
+     * @see java.lang.Throwable#getMessage()
+     */
+    @Override
+    @SuppressWarnings("boxing")
+    public String getMessage() {
+        final StringBuilder sb = new StringBuilder();
+        sb.append(String.format("Git command: %s\n", Arrays.toString(command))); //$NON-NLS-1$
+        sb.append(String.format("  exit code: %d\n", exitCode)); //$NON-NLS-1$
+        sb.append(String.format("      error: %s", errorMessage)); //$NON-NLS-1$
+        return sb.toString();
     }
 }

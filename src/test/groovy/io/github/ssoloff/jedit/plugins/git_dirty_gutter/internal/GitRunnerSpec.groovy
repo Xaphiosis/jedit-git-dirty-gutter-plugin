@@ -83,11 +83,12 @@ class GitRunnerSpec extends Specification {
         def gitRunner = createGitRunnerUnderTest(processRunner)
 
         when:
-        gitRunner.run(new StringWriter())
+        gitRunner.run(new StringWriter(), 'arg1', 'arg2')
 
         then:
         def e = thrown(GitException)
+        e.command == [gitPath, 'arg1', 'arg2'] as String[]
+        e.errorMessage == 'stderr-line-1\nstderr-line-2\n'
         e.exitCode == 1
-        e.message == 'stderr-line-1\nstderr-line-2\n'
     }
 }
