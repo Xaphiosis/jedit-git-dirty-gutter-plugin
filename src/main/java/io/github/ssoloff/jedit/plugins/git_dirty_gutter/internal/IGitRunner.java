@@ -18,6 +18,7 @@
 
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
 
+import java.io.IOException;
 import java.io.Writer;
 
 /**
@@ -33,9 +34,11 @@ interface IGitRunner {
      *        The Git command arguments.
      * 
      * @throws GitException
-     *         If the process exits with an error.
+     *         If the Git process exits with an error.
+     * @throws IOException
+     *         If an error occurs while running the Git process.
      * @throws InterruptedException
-     *         If interrupted while waiting for the process to exit.
+     *         If interrupted while waiting for the Git process to exit.
      */
-    void run(Writer outWriter, String... args) throws GitException, InterruptedException;
+    void run(Writer outWriter, String... args) throws GitException, IOException, InterruptedException;
 }

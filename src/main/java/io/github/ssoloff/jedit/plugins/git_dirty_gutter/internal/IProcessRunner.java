@@ -18,6 +18,7 @@
 
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
 
+import java.io.IOException;
 import java.io.Writer;
 import java.nio.file.Path;
 
@@ -40,8 +41,11 @@ interface IProcessRunner {
      * 
      * @return The exit code of the process.
      * 
+     * @throws IOException
+     *         If an error occurs while running the process.
      * @throws InterruptedException
      *         If interrupted while waiting for the process to exit.
      */
-    int run(Writer outWriter, Writer errWriter, Path workingDirPath, String... command) throws InterruptedException;
+    int run(Writer outWriter, Writer errWriter, Path workingDirPath, String... command)
+            throws IOException, InterruptedException;
 }

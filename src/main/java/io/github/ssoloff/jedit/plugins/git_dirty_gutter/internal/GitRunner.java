@@ -18,6 +18,7 @@
 
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
 
+import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.file.Path;
@@ -58,7 +59,8 @@ final class GitRunner implements IGitRunner {
      * @see io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.IGitRunner#run(java.io.Writer, java.lang.String[])
      */
     @Override
-    public void run(final Writer outWriter, final String... args) throws GitException, InterruptedException {
+    public void run(final Writer outWriter, final String... args)
+            throws GitException, IOException, InterruptedException {
         final StringWriter errWriter = new StringWriter();
         final int exitCode = processRunner.run(outWriter, errWriter, workingDirPath, createCommand(args));
         if (exitCode != 0) {
