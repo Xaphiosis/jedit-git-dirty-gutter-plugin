@@ -53,4 +53,22 @@ class GitCommandsSpec extends Specification {
         then:
         repoRelativePath == null
     }
+
+    def 'readFileContentAtHeadRevision - when file exists on HEAD it should read file content'() {
+        setup:
+        def gitRunner = Stub(IGitRunner) {
+            run(_, _) >> { Writer outWriter, String[] args ->
+                outWriter.write('line1\n')
+                outWriter.write('line2\n')
+            }
+        }
+        def gitCommands = new GitCommands(gitRunner)
+        def writer = new StringWriter()
+
+        when:
+        gitCommands.readFileContentAtHeadRevision(Paths.get('file'), writer)
+
+        then:
+        writer.toString() == 'line1\nline2\n'
+    }
 }

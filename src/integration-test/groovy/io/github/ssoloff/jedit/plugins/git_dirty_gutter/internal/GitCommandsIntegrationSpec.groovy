@@ -36,13 +36,13 @@ class GitCommandsIntegrationSpec extends Specification {
         new GitRunner(new ProcessRunner(), Paths.get('git'), repoPath)
     }
 
-    private static void createNewFile(Path filePath) {
+    private static void createNewFile(Path filePath, String fileContent='') {
         def parentPath = filePath.parent
         if (Files.notExists(parentPath)) {
             assert parentPath.toFile().mkdirs()
         }
 
-        filePath.setText('test')
+        filePath.setText(fileContent)
     }
 
     private Path createTempDirectory() {
@@ -129,5 +129,33 @@ class GitCommandsIntegrationSpec extends Specification {
 
         cleanup:
         deleteFile(filePath)
+    }
+
+    def 'readFileContentAtHeadRevision - when file exists on HEAD it should read file content'() {
+        setup:
+        def filePath = repoPath.resolve('file')
+        def fileContent = 'line1\nline2\n'
+        createNewFile(filePath, fileContent)
+        addAndCommitFile(filePath)
+        def writer = new StringWriter()
+
+        when:
+        gitCommands.readFileContentAtHeadRevision(repoPath.relativize(filePath), writer)
+
+        then:
+        writer.toString() == 'line1\nline2\n'
+    }
+
+    def 'readFileContentAtHeadRevision - when file does not exist on HEAD it should throw an exception'() {
+        setup:
+        def filePath = repoPath.resolve('file')
+        createNewFile(filePath)
+        // do not commit so it does not exist on HEAD
+
+        when:
+        gitCommands.readFileContentAtHeadRevision(repoPath.relativize(filePath), new StringWriter())
+
+        then:
+        thrown(GitException)
     }
 }

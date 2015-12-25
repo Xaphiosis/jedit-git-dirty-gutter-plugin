@@ -22,6 +22,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.Writer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -87,5 +88,31 @@ final class GitCommands {
             }
         }
         return lines;
+    }
+
+    /**
+     * Reads the content of the specified file at the HEAD revision and sends it
+     * to the specified writer.
+     *
+     * @param repoRelativeFilePath
+     *        The repository-relative path of the file whose content is to be
+     *        read.
+     * @param writer
+     *        The writer that will receive the file content.
+     *
+     * @throws GitException
+     *         If the Git process exits with an error.
+     * @throws IOException
+     *         If an error occurs while processing the Git process output.
+     * @throws InterruptedException
+     *         If interrupted while waiting for the Git process to exit.
+     */
+    void readFileContentAtHeadRevision(final Path repoRelativeFilePath, final Writer writer)
+            throws GitException, IOException, InterruptedException {
+        final String[] args = new String[] {
+            "show", //$NON-NLS-1$
+            String.format("HEAD:%s", repoRelativeFilePath) //$NON-NLS-1$
+        };
+        gitRunner.run(writer, args);
     }
 }
