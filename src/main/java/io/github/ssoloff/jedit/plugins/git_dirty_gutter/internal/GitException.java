@@ -83,9 +83,10 @@ final class GitException extends Exception {
     @SuppressWarnings("boxing")
     public String getMessage() {
         final StringBuilder sb = new StringBuilder();
-        sb.append(String.format("Git command: %s\n", Arrays.toString(command))); //$NON-NLS-1$
-        sb.append(String.format("  exit code: %d\n", exitCode)); //$NON-NLS-1$
-        sb.append(String.format("      error: %s", errorMessage)); //$NON-NLS-1$
+        sb.append("Git process exited with an error\n"); //$NON-NLS-1$
+        sb.append(String.format("  command: %s\n", Arrays.toString(command))); //$NON-NLS-1$
+        sb.append(String.format("exit code: %d\n", exitCode)); //$NON-NLS-1$
+        sb.append(String.format("    error: %s", errorMessage)); //$NON-NLS-1$
         return sb.toString();
     }
 }
