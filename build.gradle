@@ -29,6 +29,11 @@ sourceSets {
     }
 }
 
+test {
+    reports.html.destination = file("$reports.html.destination/unit")
+    reports.junitXml.destination = file("$reports.junitXml.destination/unit")
+}
+
 jacocoTestReport {
     reports {
         html.enabled = true
@@ -51,6 +56,8 @@ task fatJar(type: Jar) {
 task integrationTest(type: Test) {
     testClassesDir = sourceSets.integrationTest.output.classesDir
     classpath = sourceSets.integrationTest.runtimeClasspath
+    reports.html.destination = file("$reports.html.destination/integration")
+    reports.junitXml.destination = file("$reports.junitXml.destination/integration")
 }
 
 task wrapper(type: Wrapper) {
