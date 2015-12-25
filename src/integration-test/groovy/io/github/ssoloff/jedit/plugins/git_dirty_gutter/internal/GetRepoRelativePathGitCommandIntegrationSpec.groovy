@@ -25,7 +25,7 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import spock.lang.Specification
 
-class GetRepoRelativePathGitCommandIntegSpec extends Specification {
+class GetRepoRelativePathGitCommandIntegrationSpec extends Specification {
     private def repoPath = initRepo()
 
     private static void addAndCommitFile(Path filePath) {
