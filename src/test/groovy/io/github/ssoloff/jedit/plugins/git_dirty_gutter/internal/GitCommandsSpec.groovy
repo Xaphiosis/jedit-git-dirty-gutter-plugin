@@ -61,7 +61,7 @@ class GitCommandsSpec extends Specification {
         writer.toString() == 'line1\nline2\n'
     }
 
-    def 'diffFiles - when Git exits without error and when Git returns unexpected exit code it should throw an exception'() {
+    def 'diffFiles - when Git exits without error and when Git returns an unexpected exit code it should throw an exception'() {
         setup:
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> { Writer outWriter, String[] args ->
@@ -113,6 +113,41 @@ class GitCommandsSpec extends Specification {
         repoRelativePath == null
     }
 
+    def 'getRepoRelativeFilePathAtHeadRevision - when Git returns an unexpected exit code it should throw an exception'() {
+        setup:
+        def gitRunner = Stub(IGitRunner) {
+            run(_, _) >> { Writer outWriter, String[] args ->
+                outWriter.write('subdir1/subdir2/file\n')
+                1
+            }
+        }
+        def gitCommands = new GitCommands(gitRunner)
+
+        when:
+        gitCommands.getRepoRelativeFilePathAtHeadRevision(Paths.get('/root/subdir1/subdir2/file'))
+
+        then:
+        thrown(RuntimeException)
+    }
+
+    def 'getRepoRelativeFilePathAtHeadRevision - when Git produces an unexpected output it should throw an exception'() {
+        setup:
+        def gitRunner = Stub(IGitRunner) {
+            run(_, _) >> { Writer outWriter, String[] args ->
+                outWriter.write('subdir1/subdir2/file\n')
+                outWriter.write('subdir1/subdir2/another-file\n')
+                0
+            }
+        }
+        def gitCommands = new GitCommands(gitRunner)
+
+        when:
+        gitCommands.getRepoRelativeFilePathAtHeadRevision(Paths.get('/root/subdir1/subdir2/file'))
+
+        then:
+        thrown(RuntimeException)
+    }
+
     def 'readFileContentAtHeadRevision - when file exists on HEAD it should read file content'() {
         setup:
         def gitRunner = Stub(IGitRunner) {
@@ -130,5 +165,24 @@ class GitCommandsSpec extends Specification {
 
         then:
         writer.toString() == 'line1\nline2\n'
+    }
+
+    def 'readFileContentAtHeadRevision - when Git returns an unexpected exit code it should throw an exception'() {
+        setup:
+        def gitRunner = Stub(IGitRunner) {
+            run(_, _) >> { Writer outWriter, String[] args ->
+                outWriter.write('line1\n')
+                outWriter.write('line2\n')
+                1
+            }
+        }
+        def gitCommands = new GitCommands(gitRunner)
+        def writer = new StringWriter()
+
+        when:
+        gitCommands.readFileContentAtHeadRevision(Paths.get('file'), writer)
+
+        then:
+        thrown(RuntimeException)
     }
 }

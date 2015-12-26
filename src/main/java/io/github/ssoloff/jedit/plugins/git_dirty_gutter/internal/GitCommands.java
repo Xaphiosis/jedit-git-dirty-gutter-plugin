@@ -45,6 +45,20 @@ final class GitCommands {
         this.gitRunner = gitRunner;
     }
 
+    private static RuntimeException createUnexpectedExitCodeException(final int exitCode) {
+        return new RuntimeException(String.format("unexpected Git exit code: %d", Integer.valueOf(exitCode))); //$NON-NLS-1$
+    }
+
+    private static RuntimeException createUnexpectedOutputException(final List<String> lines) {
+        final StringBuilder sb = new StringBuilder();
+        sb.append("unexpected Git output:\n"); //$NON-NLS-1$
+        for (final String line : lines) {
+            sb.append(line);
+            sb.append('\n');
+        }
+        return new RuntimeException(sb.toString());
+    }
+
     /**
      * Calculates the changes between two files and sends the difference in
      * unified format to the specified writer.
@@ -80,7 +94,7 @@ final class GitCommands {
         } else if (exitCode == 1) {
             return true;
         } else {
-            throw new RuntimeException(String.format("unexpected Git exit code: %d", Integer.valueOf(exitCode))); //$NON-NLS-1$
+            throw createUnexpectedExitCodeException(exitCode);
         }
     }
 
@@ -113,9 +127,19 @@ final class GitCommands {
             "HEAD", //$NON-NLS-1$
             filePath.toString() //
         };
-        gitRunner.run(outWriter, args);
+        final int exitCode = gitRunner.run(outWriter, args);
+        if (exitCode != 0) {
+            throw createUnexpectedExitCodeException(exitCode);
+        }
+
         final List<String> lines = readAllLines(outWriter);
-        return (lines.size() == 1) ? Paths.get(lines.get(0)) : null;
+        if (lines.size() == 0) {
+            return null;
+        } else if (lines.size() == 1) {
+            return Paths.get(lines.get(0));
+        } else {
+            throw createUnexpectedOutputException(lines);
+        }
     }
 
     private static List<String> readAllLines(final StringWriter writer) throws IOException {
@@ -152,6 +176,9 @@ final class GitCommands {
             "show", //$NON-NLS-1$
             String.format("HEAD:%s", repoRelativeFilePath) //$NON-NLS-1$
         };
-        gitRunner.run(writer, args);
+        final int exitCode = gitRunner.run(writer, args);
+        if (exitCode != 0) {
+            throw createUnexpectedExitCodeException(exitCode);
+        }
     }
 }
