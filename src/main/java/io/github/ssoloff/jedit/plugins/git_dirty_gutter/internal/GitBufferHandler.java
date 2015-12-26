@@ -32,7 +32,7 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
     private final DirtyMarkPainterFactory dirtyMarkPainterFactory = createDirtyMarkPainterFactory();
 
     @Override
-    public void bufferSaved(final @Nullable Buffer buffer) {
+    public void bufferSaved(final Buffer buffer) {
         // do nothing
     }
 
@@ -56,7 +56,7 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
     }
 
     @Override
-    public DirtyMarkPainter getDirtyMarkPainter(final @Nullable Buffer buffer, final int lineIndex) {
+    public @Nullable DirtyMarkPainter getDirtyMarkPainter(final Buffer buffer, final int lineIndex) {
         // TODO
         return dirtyMarkPainterFactory.createDirtyMarkPainter(DirtyMarkType.ADDED);
     }

@@ -1,0 +1,7 @@
+class lcm/BufferHandler
+bufferSaved
+ (Lorg/gjt/sp/jedit/Buffer;)V
+ (L1org/gjt/sp/jedit/Buffer;)V
+getDirtyMarkPainter
+ (Lorg/gjt/sp/jedit/Buffer;I)Llcm/painters/DirtyMarkPainter;
+ (L1org/gjt/sp/jedit/Buffer;I)L0lcm/painters/DirtyMarkPainter;

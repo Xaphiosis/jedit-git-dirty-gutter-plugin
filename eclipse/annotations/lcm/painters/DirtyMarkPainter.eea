@@ -1,0 +1,4 @@
+class lcm/painters/DirtyMarkPainter
+paint
+ (Ljava/awt/Graphics2D;Lorg/gjt/sp/jedit/textarea/Gutter;IILorg/gjt/sp/jedit/Buffer;I)V
+ (L1java/awt/Graphics2D;L1org/gjt/sp/jedit/textarea/Gutter;IIL1org/gjt/sp/jedit/Buffer;I)V

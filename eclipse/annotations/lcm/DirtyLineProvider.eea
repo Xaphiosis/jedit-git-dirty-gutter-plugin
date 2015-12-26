@@ -1,0 +1,10 @@
+class lcm/DirtyLineProvider
+attach
+ (Lorg/gjt/sp/jedit/Buffer;)Llcm/BufferHandler;
+ (L1org/gjt/sp/jedit/Buffer;)L1lcm/BufferHandler;
+detach
+ (Lorg/gjt/sp/jedit/Buffer;Llcm/BufferHandler;)V
+ (L1org/gjt/sp/jedit/Buffer;L1lcm/BufferHandler;)V
+getOptions
+ ()Llcm/DirtyLineProviderOptions;
+ ()L1lcm/DirtyLineProviderOptions;
