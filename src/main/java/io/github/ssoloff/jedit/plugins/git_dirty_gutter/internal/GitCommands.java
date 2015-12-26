@@ -87,6 +87,7 @@ final class GitCommands {
         final String[] args = new String[] {
             "diff", //$NON-NLS-1$
             "--no-index", //$NON-NLS-1$
+            "--unified=0", //$NON-NLS-1$
             originalFilePath.toString(), //
             newFilePath.toString() //
         };

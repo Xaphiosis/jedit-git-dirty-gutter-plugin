@@ -124,10 +124,26 @@ class GitCommandsIntegrationSpec extends Specification {
 
         then:
         isDifferent
-        def diff = writer.toString()
-        diff =~ /(?m)^@@ -1 \+1 @@$/
-        diff =~ /(?m)^-original$/
-        diff =~ /(?m)^\+new/
+        writer.toString() =~ /(?m)^@@ -1 \+1 @@\n-original\n\+new$/
+
+        cleanup:
+        deleteFile(originalFilePath)
+        deleteFile(newFilePath)
+    }
+
+    def 'diffFiles - it should produce a difference without any context lines'() {
+        setup:
+        def originalFilePath = createTempFile()
+        createNewFile(originalFilePath, 'context\noriginal\ncontext\n')
+        def newFilePath = createTempFile()
+        createNewFile(newFilePath, 'context\nnew\ncontext\n')
+        def writer = new StringWriter()
+
+        when:
+        gitCommands.diffFiles(originalFilePath, newFilePath, writer)
+
+        then:
+        writer.toString() =~ /(?m)^@@ -2 \+2 @@ context\n-original\n\+new$/
 
         cleanup:
         deleteFile(originalFilePath)
