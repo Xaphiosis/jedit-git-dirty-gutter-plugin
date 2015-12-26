@@ -34,6 +34,8 @@ interface IGitRunner {
      * @param args
      *        The Git command arguments.
      *
+     * @return The exit code of the Git process.
+     *
      * @throws GitException
      *         If the Git process exits with an error.
      * @throws IOException
@@ -41,5 +43,5 @@ interface IGitRunner {
      * @throws InterruptedException
      *         If interrupted while waiting for the Git process to exit.
      */
-    void run(Writer outWriter, String... args) throws GitException, IOException, InterruptedException;
+    int run(Writer outWriter, String... args) throws GitException, IOException, InterruptedException;
 }

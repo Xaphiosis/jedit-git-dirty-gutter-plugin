@@ -22,11 +22,69 @@ import java.nio.file.Paths
 import spock.lang.Specification
 
 class GitCommandsSpec extends Specification {
+    def 'diffFiles - when the files are the same it should produce an empty difference'() {
+        setup:
+        def gitRunner = Stub(IGitRunner) {
+            run(_, _) >> { Writer outWriter, String[] args ->
+                // empty stdout
+                0
+            }
+        }
+        def gitCommands = new GitCommands(gitRunner)
+        def writer = new StringWriter()
+
+        when:
+        def isDifferent = gitCommands.diffFiles(Paths.get('original-file'), Paths.get('new-file'), writer)
+
+        then:
+        !isDifferent
+        writer.toString().isEmpty()
+    }
+
+    def 'diffFiles - when the files are different it should produce the difference between the two files'() {
+        setup:
+        def gitRunner = Stub(IGitRunner) {
+            run(_, _) >> { Writer outWriter, String[] args ->
+                outWriter.write('line1\n')
+                outWriter.write('line2\n')
+                1
+            }
+        }
+        def gitCommands = new GitCommands(gitRunner)
+        def writer = new StringWriter()
+
+        when:
+        def isDifferent = gitCommands.diffFiles(Paths.get('original-file'), Paths.get('new-file'), writer)
+
+        then:
+        isDifferent
+        writer.toString() == 'line1\nline2\n'
+    }
+
+    def 'diffFiles - when Git exits without error and when Git returns unexpected exit code it should throw an exception'() {
+        setup:
+        def gitRunner = Stub(IGitRunner) {
+            run(_, _) >> { Writer outWriter, String[] args ->
+                // empty stdout
+                2
+            }
+        }
+        def gitCommands = new GitCommands(gitRunner)
+        def writer = new StringWriter()
+
+        when:
+        gitCommands.diffFiles(Paths.get('original-file'), Paths.get('new-file'), writer)
+
+        then:
+        thrown(RuntimeException)
+    }
+
     def 'getRepoRelativeFilePathAtHeadRevision - when file exists on HEAD it should return repo-relative path'() {
         setup:
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> { Writer outWriter, String[] args ->
                 outWriter.write('subdir1/subdir2/file\n')
+                0
             }
         }
         def gitCommands = new GitCommands(gitRunner)
@@ -43,6 +101,7 @@ class GitCommandsSpec extends Specification {
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> {
                 // empty stdout
+                0
             }
         }
         def gitCommands = new GitCommands(gitRunner)
@@ -60,6 +119,7 @@ class GitCommandsSpec extends Specification {
             run(_, _) >> { Writer outWriter, String[] args ->
                 outWriter.write('line1\n')
                 outWriter.write('line2\n')
+                0
             }
         }
         def gitCommands = new GitCommands(gitRunner)

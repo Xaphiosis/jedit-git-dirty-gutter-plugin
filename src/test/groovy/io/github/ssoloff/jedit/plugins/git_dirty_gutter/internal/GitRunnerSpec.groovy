@@ -54,7 +54,7 @@ class GitRunnerSpec extends Specification {
         1 * processRunner.run(_, _, _, [gitPath.toString(), 'arg1', 'arg2'])
     }
 
-    def 'when the process exits without error it should capture stdout'() {
+    def 'when the process exits without error and when the exit code is zero it should capture stdout'() {
         setup:
         def processRunner = Stub(IProcessRunner)
         processRunner.run(_, _, _, _) >> { Writer outWriter, Writer errWriter, Path workingDirPath, String[] command ->
@@ -66,9 +66,29 @@ class GitRunnerSpec extends Specification {
         def outWriter = new StringWriter()
 
         when:
-        gitRunner.run(outWriter)
+        def exitCode = gitRunner.run(outWriter)
 
         then:
+        exitCode == 0
+        outWriter.toString() == 'stdout-line-1\nstdout-line-2\n'
+    }
+
+    def 'when the process exits without error and when the exit code is nonzero it should capture stdout'() {
+        setup:
+        def processRunner = Stub(IProcessRunner)
+        processRunner.run(_, _, _, _) >> { Writer outWriter, Writer errWriter, Path workingDirPath, String[] command ->
+            outWriter.write('stdout-line-1\n')
+            outWriter.write('stdout-line-2\n')
+            1
+        }
+        def gitRunner = createGitRunnerUnderTest(processRunner)
+        def outWriter = new StringWriter()
+
+        when:
+        def exitCode = gitRunner.run(outWriter)
+
+        then:
+        exitCode == 1
         outWriter.toString() == 'stdout-line-1\nstdout-line-2\n'
     }
 

@@ -56,13 +56,15 @@ final class GitRunner implements IGitRunner {
     }
 
     @Override
-    public void run(final Writer outWriter, final String... args)
+    public int run(final Writer outWriter, final String... args)
             throws GitException, IOException, InterruptedException {
         final StringWriter errWriter = new StringWriter();
         final String[] command = createCommand(args);
         final int exitCode = processRunner.run(outWriter, errWriter, workingDirPath, command);
-        if (exitCode != 0) {
-            throw new GitException(command, exitCode, errWriter.toString());
+        final String errorMessage = errWriter.toString();
+        if (!errorMessage.isEmpty()) {
+            throw new GitException(command, exitCode, errorMessage);
         }
+        return exitCode;
     }
 }
