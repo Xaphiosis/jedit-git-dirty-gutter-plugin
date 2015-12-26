@@ -45,18 +45,20 @@ final class GitCommands {
         this.gitRunner = gitRunner;
     }
 
-    private static RuntimeException createUnexpectedExitCodeException(final int exitCode) {
-        return new RuntimeException(String.format("unexpected Git exit code: %d", Integer.valueOf(exitCode))); //$NON-NLS-1$
+    private static GitException createUnexpectedGitExitCodeException(final String[] args, final int exitCode) {
+        return GitException.newBuilder() //
+                .withMessage("unexpected Git exit code") //$NON-NLS-1$
+                .withProgramArgs(args) //
+                .withExitCode(exitCode) //
+                .build();
     }
 
-    private static RuntimeException createUnexpectedOutputException(final List<String> lines) {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("unexpected Git output:\n"); //$NON-NLS-1$
-        for (final String line : lines) {
-            sb.append(line);
-            sb.append('\n');
-        }
-        return new RuntimeException(sb.toString());
+    private static GitException createUnexpectedGitOutputException(final String[] args, final List<String> lines) {
+        return GitException.newBuilder() //
+                .withMessage("unexpected Git output") //$NON-NLS-1$
+                .withProgramArgs(args) //
+                .withOutput(joinLines(lines)) //
+                .build();
     }
 
     /**
@@ -94,7 +96,7 @@ final class GitCommands {
         } else if (exitCode == 1) {
             return true;
         } else {
-            throw createUnexpectedExitCodeException(exitCode);
+            throw createUnexpectedGitExitCodeException(args, exitCode);
         }
     }
 
@@ -129,22 +131,31 @@ final class GitCommands {
         };
         final int exitCode = gitRunner.run(outWriter, args);
         if (exitCode != 0) {
-            throw createUnexpectedExitCodeException(exitCode);
+            throw createUnexpectedGitExitCodeException(args, exitCode);
         }
 
-        final List<String> lines = readAllLines(outWriter);
+        final List<String> lines = readAllLines(outWriter.toString());
         if (lines.size() == 0) {
             return null;
         } else if (lines.size() == 1) {
             return Paths.get(lines.get(0));
         } else {
-            throw createUnexpectedOutputException(lines);
+            throw createUnexpectedGitOutputException(args, lines);
         }
     }
 
-    private static List<String> readAllLines(final StringWriter writer) throws IOException {
+    private static String joinLines(final List<String> lines) {
+        final StringBuilder sb = new StringBuilder();
+        for (final String line : lines) {
+            sb.append(line);
+            sb.append('\n');
+        }
+        return sb.toString();
+    }
+
+    private static List<String> readAllLines(final String str) throws IOException {
         final List<String> lines = new ArrayList<>();
-        try (final BufferedReader reader = new BufferedReader(new StringReader(writer.toString()))) {
+        try (final BufferedReader reader = new BufferedReader(new StringReader(str))) {
             String line = null;
             while ((line = reader.readLine()) != null) {
                 lines.add(line);
@@ -178,7 +189,7 @@ final class GitCommands {
         };
         final int exitCode = gitRunner.run(writer, args);
         if (exitCode != 0) {
-            throw createUnexpectedExitCodeException(exitCode);
+            throw createUnexpectedGitExitCodeException(args, exitCode);
         }
     }
 }

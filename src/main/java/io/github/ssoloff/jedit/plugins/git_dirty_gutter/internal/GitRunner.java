@@ -55,15 +55,25 @@ final class GitRunner implements IGitRunner {
         return command;
     }
 
+    private GitException createGitExitedWithErrorException(final String[] args, final int exitCode,
+            final String error) {
+        return GitException.newBuilder() //
+                .withMessage("the Git process exited with an error") //$NON-NLS-1$
+                .withProgramPath(gitPath) //
+                .withProgramArgs(args) //
+                .withExitCode(exitCode) //
+                .withError(error) //
+                .build();
+    }
+
     @Override
     public int run(final Writer outWriter, final String... args)
             throws GitException, IOException, InterruptedException {
         final StringWriter errWriter = new StringWriter();
-        final String[] command = createCommand(args);
-        final int exitCode = processRunner.run(outWriter, errWriter, workingDirPath, command);
-        final String errorMessage = errWriter.toString();
-        if (!errorMessage.isEmpty()) {
-            throw new GitException(command, exitCode, errorMessage);
+        final int exitCode = processRunner.run(outWriter, errWriter, workingDirPath, createCommand(args));
+        final String error = errWriter.toString();
+        if (!error.isEmpty()) {
+            throw createGitExitedWithErrorException(args, exitCode, error);
         }
         return exitCode;
     }

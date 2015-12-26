@@ -18,56 +18,64 @@
 
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
 
+import java.nio.file.Path;
 import java.util.Arrays;
+import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * A checked exception that indicates a Git process exited with an error.
+ * A checked exception that indicates a Git process exited with an error or that
+ * the Git process produced an unexpected result (exit code, output, etc.).
  */
 final class GitException extends Exception {
     private static final long serialVersionUID = -4617699499893940183L;
 
-    private final String[] command;
-    private final String errorMessage;
-    private final int exitCode;
+    private final @Nullable String error;
+    private final @Nullable Integer exitCode;
+    private final @Nullable String message;
+    private final @Nullable String output;
+    private final @Nullable String[] programArgs;
+    private final @Nullable Path programPath;
 
     /**
      * Initializes a new instance of the {@code GitException} class.
      *
-     * @param command
-     *        The command that was run by the Git process.
+     * @param message
+     *        The exception detail message or {@code null} if not specified.
+     * @param programPath
+     *        The program path of the Git process or {@code null} if not
+     *        specified.
+     * @param programArgs
+     *        The program arguments to the Git process or {@code null} if not
+     *        specified.
      * @param exitCode
-     *        The exit code of the Git process.
-     * @param errorMessage
-     *        The error message, typically the content of the standard error
-     *        stream of the Git process.
+     *        The exit code of the Git process or {@code null} if not specified.
+     * @param output
+     *        The content of the standard output stream of the Git process or
+     *        {@code null} if not specified.
+     * @param error
+     *        The content of the standard error stream of the Git process or
+     *        {@code null} if not specified.
      */
-    GitException(final String[] command, final int exitCode, final String errorMessage) {
-        this.command = cloneArray(command);
-        this.errorMessage = errorMessage;
+    private GitException(final @Nullable String message, final @Nullable Path programPath,
+            final @Nullable String[] programArgs, final @Nullable Integer exitCode, final @Nullable String output,
+            final @Nullable String error) {
+        this.error = error;
         this.exitCode = exitCode;
-    }
-
-    @SuppressWarnings("null")
-    private static <T> T[] cloneArray(final T[] array) {
-        return array.clone();
-    }
-
-    /**
-     * Gets the command that was run by the Git process.
-     *
-     * @return The command that was run by the Git process.
-     */
-    String[] getCommand() {
-        return cloneArray(command);
+        this.message = message;
+        this.output = output;
+        this.programArgs = programArgs; // defensive copy already performed by builder
+        this.programPath = programPath;
     }
 
     /**
-     * Gets the error message.
+     * Gets the content of the standard error stream of the Git process.
      *
-     * @return The error message.
+     * @return The content of the standard error stream of the Git process or
+     *         {@code null} if not specified.
      */
-    String getErrorMessage() {
-        return errorMessage;
+    @Nullable
+    String getError() {
+        return error;
     }
 
     /**
@@ -75,17 +83,197 @@ final class GitException extends Exception {
      *
      * @return The exit code of the Git process.
      */
-    int getExitCode() {
+    @Nullable
+    Integer getExitCode() {
         return exitCode;
+    }
+
+    /**
+     * Gets the content of the standard output stream of the Git process.
+     *
+     * @return The content of the standard output stream of the Git process or
+     *         {@code null} if not specified.
+     */
+    @Nullable
+    String getOutput() {
+        return output;
+    }
+
+    /**
+     * Gets the program arguments to the Git process.
+     *
+     * @return The program arguments to the Git process or {@code null} if not
+     *         specified.
+     */
+    @Nullable
+    String[] getProgramArgs() {
+        return (programArgs != null) ? programArgs.clone() : null;
+    }
+
+    /**
+     * Gets the program path of the Git process.
+     *
+     * @return The program path of the Git process or {@code null} if not
+     *         specified.
+     */
+    @Nullable
+    Path getProgramPath() {
+        return programPath;
     }
 
     @Override
     public String getMessage() {
         final StringBuilder sb = new StringBuilder();
-        sb.append("Git process exited with an error\n"); //$NON-NLS-1$
-        sb.append(String.format("  command: %s\n", Arrays.toString(command))); //$NON-NLS-1$
-        sb.append(String.format("exit code: %d\n", Integer.valueOf(exitCode))); //$NON-NLS-1$
-        sb.append(String.format("    error: %s", errorMessage)); //$NON-NLS-1$
+
+        if (isPopulated(message)) {
+            sb.append(String.format("%s\n", message)); //$NON-NLS-1$
+        } else {
+            sb.append("an unspecified Git error has occurred\n"); //$NON-NLS-1$
+        }
+
+        if (isPopulated(programPath)) {
+            sb.append(String.format("program path: %s\n", programPath)); //$NON-NLS-1$
+        }
+
+        if (isPopulated(programArgs)) {
+            sb.append(String.format("program args: %s\n", Arrays.toString(programArgs))); //$NON-NLS-1$
+        }
+
+        if (isPopulated(exitCode)) {
+            sb.append(String.format("   exit code: %d\n", exitCode)); //$NON-NLS-1$
+        }
+
+        if (isPopulated(output)) {
+            sb.append(String.format("      output: %s\n", output)); //$NON-NLS-1$
+        }
+
+        if (isPopulated(error)) {
+            sb.append(String.format("       error: %s", error)); //$NON-NLS-1$
+        }
+
         return sb.toString();
+    }
+
+    private static boolean isPopulated(final @Nullable Object obj) {
+        return (obj != null);
+    }
+
+    private static boolean isPopulated(final @Nullable String str) {
+        return (str != null) && str.isEmpty();
+    }
+
+    /**
+     * Creates a new builder for creating instances of the {@code GitException}
+     * class.
+     *
+     * @return A new builder for creating instances of the {@code GitException}
+     *         class.
+     */
+    @SuppressWarnings("synthetic-access")
+    static Builder newBuilder() {
+        return new Builder();
+    }
+
+    /**
+     * A builder for creating instances of the {@code GitException} class.
+     */
+    static final class Builder {
+        private @Nullable String error = null;
+        private @Nullable Integer exitCode = null;
+        private @Nullable String message = null;
+        private @Nullable String output = null;
+        private @Nullable String[] programArgs = null;
+        private @Nullable Path programPath = null;
+
+        private Builder() {
+        }
+
+        /**
+         * Creates a new exception based on the state of the builder.
+         *
+         * @return A new exception based on the state of the builder.
+         */
+        @SuppressWarnings("synthetic-access")
+        GitException build() {
+            return new GitException(message, programPath, programArgs, exitCode, output, error);
+        }
+
+        /**
+         * Sets the content of the standard error stream of the Git process.
+         *
+         * @param error
+         *        The content of the standard error stream of the Git process.
+         *
+         * @return The builder.
+         */
+        Builder withError(@SuppressWarnings("hiding") final String error) {
+            this.error = error;
+            return this;
+        }
+
+        /**
+         * Sets the exit code of the Git process.
+         *
+         * @param exitCode
+         *        The exit code of the Git process.
+         *
+         * @return The builder.
+         */
+        Builder withExitCode(@SuppressWarnings("hiding") final int exitCode) {
+            this.exitCode = Integer.valueOf(exitCode);
+            return this;
+        }
+
+        /**
+         * Sets the exception detail message.
+         *
+         * @param message
+         *        The exception detail message.
+         *
+         * @return The builder.
+         */
+        Builder withMessage(@SuppressWarnings("hiding") final String message) {
+            this.message = message;
+            return this;
+        }
+
+        /**
+         * Sets the content of the standard output stream of the Git process.
+         *
+         * @param output
+         *        The content of the standard output stream of the Git process.
+         *
+         * @return The builder.
+         */
+        Builder withOutput(@SuppressWarnings("hiding") final String output) {
+            this.output = output;
+            return this;
+        }
+
+        /**
+         * Sets the program arguments to the Git process.
+         *
+         * @param programArgs
+         *        The program arguments to the Git process.
+         *
+         * @return The builder.
+         */
+        Builder withProgramArgs(@SuppressWarnings("hiding") final String[] programArgs) {
+            this.programArgs = programArgs.clone();
+            return this;
+        }
+
+        /**
+         * Sets the program path of the Git process.
+         *
+         * @param programPath
+         *        The program path of the Git process.
+         *
+         * @return The builder.
+         */
+        Builder withProgramPath(@SuppressWarnings("hiding") final Path programPath) {
+            this.programPath = programPath;
+            return this;
+        }
     }
 }

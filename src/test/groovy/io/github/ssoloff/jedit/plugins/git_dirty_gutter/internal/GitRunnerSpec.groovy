@@ -107,8 +107,9 @@ class GitRunnerSpec extends Specification {
 
         then:
         def e = thrown(GitException)
-        e.command == [gitPath, 'arg1', 'arg2'] as String[]
-        e.errorMessage == 'stderr-line-1\nstderr-line-2\n'
+        e.error == 'stderr-line-1\nstderr-line-2\n'
         e.exitCode == 1
+        e.programArgs == ['arg1', 'arg2'] as String[]
+        e.programPath == gitPath
     }
 }

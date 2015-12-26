@@ -76,7 +76,8 @@ class GitCommandsSpec extends Specification {
         gitCommands.diffFiles(Paths.get('original-file'), Paths.get('new-file'), writer)
 
         then:
-        thrown(RuntimeException)
+        def e = thrown(GitException)
+        e.exitCode != null
     }
 
     def 'getRepoRelativeFilePathAtHeadRevision - when file exists on HEAD it should return repo-relative path'() {
@@ -127,7 +128,8 @@ class GitCommandsSpec extends Specification {
         gitCommands.getRepoRelativeFilePathAtHeadRevision(Paths.get('/root/subdir1/subdir2/file'))
 
         then:
-        thrown(RuntimeException)
+        def e = thrown(GitException)
+        e.exitCode != null
     }
 
     def 'getRepoRelativeFilePathAtHeadRevision - when Git produces an unexpected output it should throw an exception'() {
@@ -145,7 +147,8 @@ class GitCommandsSpec extends Specification {
         gitCommands.getRepoRelativeFilePathAtHeadRevision(Paths.get('/root/subdir1/subdir2/file'))
 
         then:
-        thrown(RuntimeException)
+        def e = thrown(GitException)
+        e.output != null
     }
 
     def 'readFileContentAtHeadRevision - when file exists on HEAD it should read file content'() {
@@ -183,6 +186,7 @@ class GitCommandsSpec extends Specification {
         gitCommands.readFileContentAtHeadRevision(Paths.get('file'), writer)
 
         then:
-        thrown(RuntimeException)
+        def e = thrown(GitException)
+        e.exitCode != null
     }
 }
