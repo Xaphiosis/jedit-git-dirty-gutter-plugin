@@ -18,26 +18,25 @@
 
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal
 
+import static io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.DirtyMarkType.*
+
 import difflib.ChangeDelta
 import difflib.Chunk
+import difflib.DiffUtils
 import difflib.Patch
 import spock.lang.Specification
 
 class PatchAnalyzerSpec extends Specification {
-    def 'ctor - when patch contains context lines - should throw exception'() {
-        // --- from.change	2015-12-21 09:09:52.392320598 -0500
-        // +++ to.change	2015-12-21 09:10:01.216381102 -0500
-        // @@ -9,3 +9,3 @@
-        //  9
-        // -10/from
-        // +10/to
-        //  11
+    private Patch createPatch(List<String> oldLines, List<String> newLines) {
+        DiffUtils.diff(oldLines, newLines)
+    }
 
+    def 'ctor - when patch contains context lines it should throw an exception'() {
         setup:
         def patch = new Patch()
         patch.addDelta(new ChangeDelta(
-            new Chunk(8, ['9', '10/from', '11']),
-            new Chunk(8, ['9', '10/to', '11'])
+            new Chunk(8, ['9', '10/old', '11']),
+            new Chunk(8, ['9', '10/new', '11'])
         ))
 
         when:
@@ -47,227 +46,248 @@ class PatchAnalyzerSpec extends Specification {
         thrown(IllegalArgumentException)
     }
 
-    def 'getDirtyMarkForLine - should handle added lines'() {
-        // --- from.add	2015-12-21 17:53:29.082877088 -0500
-        // +++ to.add	2015-12-21 08:41:52.663714666 -0500
-        // @@ -0,0 +1 @@
-        // +1
-        // @@ -8,0 +10 @@
-        // +10
-        // @@ -17,0 +20 @@
-        // +20
-
+    def 'getDirtyMarkForLine - it should handle addition of the first line'() {
         setup:
-        def patch = new Patch()
-        patch.addDelta(new ChangeDelta(
-            new Chunk(0, []), // NB: difflib behavior: 0(1) -> -1(0) -> 0(0)
-            new Chunk(0, ['1'])
-        ))
-        patch.addDelta(new ChangeDelta(
-            new Chunk(7, []),
-            new Chunk(9, ['10'])
-        ))
-        patch.addDelta(new ChangeDelta(
-            new Chunk(16, []),
-            new Chunk(19, ['20'])
-        ))
-        def patchAnalyzer = new PatchAnalyzer(patch)
+        def oldLines = [     '2', '3', '']
+        def newLines = ['1', '2', '3', '']
+        def patchAnalyzer = new PatchAnalyzer(createPatch(oldLines, newLines))
 
         expect:
-        patchAnalyzer.getDirtyMarkForLine(0) == DirtyMarkType.ADDED
-        patchAnalyzer.getDirtyMarkForLine(1) == DirtyMarkType.UNCHANGED
-        patchAnalyzer.getDirtyMarkForLine(8) == DirtyMarkType.UNCHANGED
-        patchAnalyzer.getDirtyMarkForLine(9) == DirtyMarkType.ADDED
-        patchAnalyzer.getDirtyMarkForLine(10) == DirtyMarkType.UNCHANGED
-        patchAnalyzer.getDirtyMarkForLine(18) == DirtyMarkType.UNCHANGED
-        patchAnalyzer.getDirtyMarkForLine(19) == DirtyMarkType.ADDED
+        patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
+
+        where:
+        lineIndex << [0, 1]
+        dirtyMarkType << [ADDED, UNCHANGED]
     }
 
-    def 'getDirtyMarkForLine - should handle changed lines'() {
-        // --- from.change	2015-12-21 17:56:43.051161447 -0500
-        // +++ to.change	2015-12-21 17:56:53.987233859 -0500
-        // @@ -1 +1 @@
-        // -1/from
-        // +1/to
-        // @@ -10 +10 @@
-        // -10/from
-        // +10/to
-        // @@ -20 +20 @@
-        // -20/from
-        // +20/to
-
+    def 'getDirtyMarkForLine - it should handle addition of an intermediate line'() {
         setup:
-        def patch = new Patch()
-        patch.addDelta(new ChangeDelta(
-            new Chunk(0, ['1/from']),
-            new Chunk(0, ['1/to'])
-        ))
-        patch.addDelta(new ChangeDelta(
-            new Chunk(9, ['10/from']),
-            new Chunk(9, ['10/to'])
-        ))
-        patch.addDelta(new ChangeDelta(
-            new Chunk(19, ['20/from']),
-            new Chunk(19, ['20/to'])
-        ))
-        def patchAnalyzer = new PatchAnalyzer(patch)
+        def oldLines = ['1',      '3', '']
+        def newLines = ['1', '2', '3', '']
+        def patchAnalyzer = new PatchAnalyzer(createPatch(oldLines, newLines))
 
         expect:
-        patchAnalyzer.getDirtyMarkForLine(0) == DirtyMarkType.CHANGED
-        patchAnalyzer.getDirtyMarkForLine(1) == DirtyMarkType.UNCHANGED
-        patchAnalyzer.getDirtyMarkForLine(8) == DirtyMarkType.UNCHANGED
-        patchAnalyzer.getDirtyMarkForLine(9) == DirtyMarkType.CHANGED
-        patchAnalyzer.getDirtyMarkForLine(10) == DirtyMarkType.UNCHANGED
-        patchAnalyzer.getDirtyMarkForLine(18) == DirtyMarkType.UNCHANGED
-        patchAnalyzer.getDirtyMarkForLine(19) == DirtyMarkType.CHANGED
+        patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
+
+        where:
+        lineIndex << [0, 1, 2]
+        dirtyMarkType << [UNCHANGED, ADDED, UNCHANGED]
     }
 
-    def 'getDirtyMarkForLine - should handle removed lines'() {
-        // --- from.remove	2015-12-21 10:07:45.208277091 -0500
-        // +++ to.remove	2015-12-21 10:07:54.855343987 -0500
-        // @@ -1 +0,0 @@
-        // -1
-        // @@ -10 +8,0 @@
-        // -10
-        // @@ -20 +17,0 @@
-        // -20
-
+    def 'getDirtyMarkForLine - it should handle addition of the last line'() {
         setup:
-        def patch = new Patch()
-        patch.addDelta(new ChangeDelta(
-            new Chunk(0, ['1']),
-            new Chunk(0, []) // NB: difflib behavior: 0(1) -> -1(0) -> 0(0)
-        ))
-        patch.addDelta(new ChangeDelta(
-            new Chunk(9, ['10']),
-            new Chunk(7, [])
-        ))
-        patch.addDelta(new ChangeDelta(
-            new Chunk(19, ['20']),
-            new Chunk(16, [])
-        ))
-        def patchAnalyzer = new PatchAnalyzer(patch)
+        def oldLines = ['1', '2',      '']
+        def newLines = ['1', '2', '3', '']
+        def patchAnalyzer = new PatchAnalyzer(createPatch(oldLines, newLines))
 
         expect:
-        patchAnalyzer.getDirtyMarkForLine(0) == DirtyMarkType.REMOVED_ABOVE
-        patchAnalyzer.getDirtyMarkForLine(1) == DirtyMarkType.UNCHANGED
-        patchAnalyzer.getDirtyMarkForLine(6) == DirtyMarkType.UNCHANGED
-        patchAnalyzer.getDirtyMarkForLine(7) == DirtyMarkType.REMOVED_BELOW
-        patchAnalyzer.getDirtyMarkForLine(8) == DirtyMarkType.UNCHANGED
-        patchAnalyzer.getDirtyMarkForLine(15) == DirtyMarkType.UNCHANGED
-        patchAnalyzer.getDirtyMarkForLine(16) == DirtyMarkType.REMOVED_BELOW
+        patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
+
+        where:
+        lineIndex << [1, 2, 3]
+        dirtyMarkType << [UNCHANGED, ADDED, UNCHANGED]
     }
 
-    def 'getDirtyMarkForLine - should handle a mixed collection of added, changed, and removed lines'() {
-        // --- from.mixed	2015-12-21 17:33:49.971052965 -0500
-        // +++ to.mixed	2015-12-21 17:34:43.429408252 -0500
-        // @@ -0,0 +1,6 @@
-        // +This is an important
-        // +notice! It should
-        // +therefore be located at
-        // +the beginning of this
-        // +document!
-        // +
-        // @@ -8,7 +14 @@
-        // -compress the size of the
-        // -changes.
-        // -
-        // -This paragraph contains
-        // -text that is outdated.
-        // -It will be deleted in the
-        // -near future.
-        // +compress anything.
-        // @@ -17 +17 @@
-        // -check this dokument. On
-        // +check this document. On
-        // @@ -21 +20,0 @@
-        // -(pause)
-        // @@ -25,0 +25,4 @@
-        // +
-        // +This paragraph contains
-        // +important new additions
-        // +to this document.
-
+    def 'getDirtyMarkForLine - it should handle addition of the final newline'() {
         setup:
-        def patch = new Patch()
-        patch.addDelta(new ChangeDelta(
-            new Chunk(0, []), // NB: difflib behavior: 0(1) -> -1(0) -> 0(0)
-            new Chunk(0, [
-                'This is an important',
-                'notice! It should',
-                'therefore be located at',
-                'the beginning of this',
-                'document!',
-                ''
-            ])
-        ))
-        patch.addDelta(new ChangeDelta(
-            new Chunk(7, [
-                'compress the size of the',
-                'changes.',
-                '',
-                'This paragraph contains',
-                'text that is outdated.',
-                'It will be deleted in the',
-                'near future.'
-            ]),
-            new Chunk(13, [
-                'compress anything.'
-            ])
-        ))
-        patch.addDelta(new ChangeDelta(
-            new Chunk(16, [
-                'check this dokument. On'
-            ]),
-            new Chunk(16, [
-                'check this document. On'
-            ])
-        ))
-        patch.addDelta(new ChangeDelta(
-            new Chunk(20, [
-                '(pause)'
-            ]),
-            new Chunk(19, [])
-        ))
-        patch.addDelta(new ChangeDelta(
-            new Chunk(24, []),
-            new Chunk(24, [
-                '',
-                'This paragraph contains',
-                'important new additions',
-                'to this document.'
-            ])
-        ))
-        def patchAnalyzer = new PatchAnalyzer(patch)
+        def oldLines = ['1', '2', '3'    ]
+        def newLines = ['1', '2', '3', '']
+        def patchAnalyzer = new PatchAnalyzer(createPatch(oldLines, newLines))
 
         expect:
-        patchAnalyzer.getDirtyMarkForLine(0) == DirtyMarkType.ADDED
-        patchAnalyzer.getDirtyMarkForLine(1) == DirtyMarkType.ADDED
-        patchAnalyzer.getDirtyMarkForLine(2) == DirtyMarkType.ADDED
-        patchAnalyzer.getDirtyMarkForLine(3) == DirtyMarkType.ADDED
-        patchAnalyzer.getDirtyMarkForLine(4) == DirtyMarkType.ADDED
-        patchAnalyzer.getDirtyMarkForLine(5) == DirtyMarkType.ADDED
-        patchAnalyzer.getDirtyMarkForLine(6) == DirtyMarkType.UNCHANGED
-        patchAnalyzer.getDirtyMarkForLine(7) == DirtyMarkType.UNCHANGED
-        patchAnalyzer.getDirtyMarkForLine(8) == DirtyMarkType.UNCHANGED
-        patchAnalyzer.getDirtyMarkForLine(9) == DirtyMarkType.UNCHANGED
-        patchAnalyzer.getDirtyMarkForLine(10) == DirtyMarkType.UNCHANGED
-        patchAnalyzer.getDirtyMarkForLine(11) == DirtyMarkType.UNCHANGED
-        patchAnalyzer.getDirtyMarkForLine(12) == DirtyMarkType.UNCHANGED
-        patchAnalyzer.getDirtyMarkForLine(13) == DirtyMarkType.CHANGED
-        patchAnalyzer.getDirtyMarkForLine(14) == DirtyMarkType.UNCHANGED
-        patchAnalyzer.getDirtyMarkForLine(15) == DirtyMarkType.UNCHANGED
-        patchAnalyzer.getDirtyMarkForLine(16) == DirtyMarkType.CHANGED
-        patchAnalyzer.getDirtyMarkForLine(17) == DirtyMarkType.UNCHANGED
-        patchAnalyzer.getDirtyMarkForLine(18) == DirtyMarkType.UNCHANGED
-        patchAnalyzer.getDirtyMarkForLine(19) == DirtyMarkType.REMOVED_BELOW
-        patchAnalyzer.getDirtyMarkForLine(20) == DirtyMarkType.UNCHANGED
-        patchAnalyzer.getDirtyMarkForLine(21) == DirtyMarkType.UNCHANGED
-        patchAnalyzer.getDirtyMarkForLine(22) == DirtyMarkType.UNCHANGED
-        patchAnalyzer.getDirtyMarkForLine(23) == DirtyMarkType.UNCHANGED
-        patchAnalyzer.getDirtyMarkForLine(24) == DirtyMarkType.ADDED
-        patchAnalyzer.getDirtyMarkForLine(25) == DirtyMarkType.ADDED
-        patchAnalyzer.getDirtyMarkForLine(26) == DirtyMarkType.ADDED
-        patchAnalyzer.getDirtyMarkForLine(27) == DirtyMarkType.ADDED
+        patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
+
+        where:
+        lineIndex << [2, 3]
+        dirtyMarkType << [UNCHANGED, ADDED]
+    }
+
+    def 'getDirtyMarkForLine - it should handle modification of the first line'() {
+        setup:
+        def oldLines = ['1/old', '2', '3', '']
+        def newLines = ['1/new', '2', '3', '']
+        def patchAnalyzer = new PatchAnalyzer(createPatch(oldLines, newLines))
+
+        expect:
+        patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
+
+        where:
+        lineIndex << [0, 1]
+        dirtyMarkType << [CHANGED, UNCHANGED]
+    }
+
+    def 'getDirtyMarkForLine - it should handle modification of an intermediate line'() {
+        setup:
+        def oldLines = ['1', '2/old', '3', '']
+        def newLines = ['1', '2/new', '3', '']
+        def patchAnalyzer = new PatchAnalyzer(createPatch(oldLines, newLines))
+
+        expect:
+        patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
+
+        where:
+        lineIndex << [0, 1, 2]
+        dirtyMarkType << [UNCHANGED, CHANGED, UNCHANGED]
+    }
+
+    def 'getDirtyMarkForLine - it should handle modification of the last line'() {
+        setup:
+        def oldLines = ['1', '2', '3/old', '']
+        def newLines = ['1', '2', '3/new', '']
+        def patchAnalyzer = new PatchAnalyzer(createPatch(oldLines, newLines))
+
+        expect:
+        patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
+
+        where:
+        lineIndex << [1, 2, 3]
+        dirtyMarkType << [UNCHANGED, CHANGED, UNCHANGED]
+    }
+
+    def 'getDirtyMarkForLine - it should handle removal of the first line'() {
+        setup:
+        def oldLines = ['1', '2', '3', '']
+        def newLines = [     '2', '3', '']
+        def patchAnalyzer = new PatchAnalyzer(createPatch(oldLines, newLines))
+
+        expect:
+        patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
+
+        where:
+        lineIndex << [0, 1]
+        dirtyMarkType << [REMOVED_ABOVE, UNCHANGED]
+    }
+
+    def 'getDirtyMarkForLine - it should handle removal of an intermediate line'() {
+        setup:
+        def oldLines = ['1', '2', '3', '4', '5', '']
+        def newLines = ['1', '2',      '4', '5', '']
+        def patchAnalyzer = new PatchAnalyzer(createPatch(oldLines, newLines))
+
+        expect:
+        patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
+
+        where:
+        lineIndex << [0, 1, 2, 3]
+        dirtyMarkType << [UNCHANGED, REMOVED_BELOW, REMOVED_ABOVE, UNCHANGED]
+    }
+
+    def 'getDirtyMarkForLine - it should handle removal of the last line'() {
+        setup:
+        def oldLines = ['1', '2', '3', '']
+        def newLines = ['1', '2',      '']
+        def patchAnalyzer = new PatchAnalyzer(createPatch(oldLines, newLines))
+
+        expect:
+        patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
+
+        where:
+        lineIndex << [0, 1, 2]
+        dirtyMarkType << [UNCHANGED, REMOVED_BELOW, REMOVED_ABOVE]
+    }
+
+    def 'getDirtyMarkForLine - it should handle removal of lines above and below a single line'() {
+        setup:
+        def oldLines = ['1', '2', '3', '4', '5', '']
+        def newLines = ['1',      '3',      '5', '']
+        def patchAnalyzer = new PatchAnalyzer(createPatch(oldLines, newLines))
+
+        expect:
+        patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
+
+        where:
+        lineIndex << [0, 1, 2]
+        dirtyMarkType << [REMOVED_BELOW, REMOVED_ABOVE_AND_BELOW, REMOVED_ABOVE]
+    }
+
+    def 'getDirtyMarkForLine - it should handle removal of the final newline'() {
+        setup:
+        def oldLines = ['1', '2', '3', '']
+        def newLines = ['1', '2', '3'    ]
+        def patchAnalyzer = new PatchAnalyzer(createPatch(oldLines, newLines))
+
+        expect:
+        patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
+
+        where:
+        lineIndex << [1, 2]
+        dirtyMarkType << [UNCHANGED, REMOVED_BELOW]
+    }
+
+    def 'getDirtyMarkForLine - it should handle a mixed collection of added, changed, and removed lines'() {
+        setup:
+        def oldLines = [
+            'This part of the',
+            'document has stayed the',
+            'same from version to',
+            'version.  It shouldn\'t',
+            'be shown if it doesn\'t',
+            'change.  Otherwise, that',
+            'would not be helping to',
+            'compress the size of the',
+            'changes.',
+            '',
+            'This paragraph contains',
+            'text that is outdated.',
+            'It will be deleted in the',
+            'near future.',
+            '',
+            'It is important to spell',
+            'check this dokument. On',
+            'the other hand, a',
+            'misspelled word isn\'t',
+            'the end of the world.',
+            'Nothing in the rest of',
+            'this paragraph needs to',
+            'be changed. Things can',
+            'be added after it.',
+            ''
+        ]
+        def newLines = [
+            'This is an important',
+            'notice! It should',
+            'therefore be located at',
+            'the beginning of this',
+            'document!',
+            '',
+            'This part of the',
+            'document has stayed the',
+            'same from version to',
+            'version.  It shouldn\'t',
+            'be shown if it doesn\'t',
+            'change.  Otherwise, that',
+            'would not be helping to',
+            'compress anything.',
+            '',
+            'It is important to spell',
+            'check this document. On',
+            'the other hand, a',
+            'misspelled word isn\'t',
+            'the end of the world.',
+            'Nothing in the rest of',
+            'this paragraph needs to',
+            'be changed. Things can',
+            'be added after it.',
+            '',
+            'This paragraph contains',
+            'important new additions',
+            'to this document.',
+            ''
+        ]
+        def patchAnalyzer = new PatchAnalyzer(createPatch(oldLines, newLines))
+
+        expect:
+        patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
+
+        where:
+        lineIndex << (0..28).toList()
+        dirtyMarkType << [
+            ADDED, ADDED, ADDED, ADDED, ADDED,
+            ADDED, UNCHANGED, UNCHANGED, UNCHANGED, UNCHANGED,
+            UNCHANGED, UNCHANGED, UNCHANGED, CHANGED, REMOVED_BELOW,
+            REMOVED_ABOVE, CHANGED, UNCHANGED, UNCHANGED, UNCHANGED,
+            UNCHANGED, UNCHANGED, UNCHANGED, UNCHANGED, UNCHANGED,
+            ADDED, ADDED, ADDED, ADDED
+        ]
     }
 }

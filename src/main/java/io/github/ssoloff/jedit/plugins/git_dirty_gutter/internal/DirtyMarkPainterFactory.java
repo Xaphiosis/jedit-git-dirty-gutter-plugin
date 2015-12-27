@@ -89,6 +89,7 @@ final class DirtyMarkPainterFactory {
                 return context.getChangedDirtyMarkColor();
 
             case REMOVED_ABOVE:
+            case REMOVED_ABOVE_AND_BELOW:
             case REMOVED_BELOW:
                 return context.getRemovedDirtyMarkColor();
 
@@ -102,10 +103,12 @@ final class DirtyMarkPainterFactory {
     }
 
     private static boolean isBottomStripPainted(final DirtyMarkType dirtyMarkType) {
-        return dirtyMarkType == DirtyMarkType.REMOVED_BELOW;
+        return (dirtyMarkType == DirtyMarkType.REMOVED_BELOW)
+                || (dirtyMarkType == DirtyMarkType.REMOVED_ABOVE_AND_BELOW);
     }
 
     private static boolean isTopStripPainted(final DirtyMarkType dirtyMarkType) {
-        return dirtyMarkType == DirtyMarkType.REMOVED_ABOVE;
+        return (dirtyMarkType == DirtyMarkType.REMOVED_ABOVE)
+                || (dirtyMarkType == DirtyMarkType.REMOVED_ABOVE_AND_BELOW);
     }
 }

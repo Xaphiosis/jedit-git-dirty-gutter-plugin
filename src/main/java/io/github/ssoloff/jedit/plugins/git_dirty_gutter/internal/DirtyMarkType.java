@@ -34,6 +34,12 @@ enum DirtyMarkType {
     REMOVED_ABOVE,
 
     /**
+     * One or more lines have been removed above the line and one or more lines
+     * have been removed below the line since the last commit.
+     */
+    REMOVED_ABOVE_AND_BELOW,
+
+    /**
      * One or more lines have been removed below the line since the last commit.
      */
     REMOVED_BELOW,

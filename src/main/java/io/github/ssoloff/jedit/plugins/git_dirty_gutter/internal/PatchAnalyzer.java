@@ -89,17 +89,32 @@ final class PatchAnalyzer {
     DirtyMarkType getDirtyMarkForLine(final int lineIndex) {
         assert lineIndex >= 0;
 
-        final Delta delta = getDeltaForLine(lineIndex);
-        if (delta != null) {
-            if (DiffLibUtils.Delta.isContentAdded(delta)) {
+        boolean isContentRemovedAboveThisLine = false;
+        boolean isContentRemovedBelowThisLine = false;
+
+        final Delta deltaForThisLine = getDeltaForLine(lineIndex);
+        if (deltaForThisLine != null) {
+            if (DiffLibUtils.Delta.isContentAdded(deltaForThisLine)) {
                 return DirtyMarkType.ADDED;
-            } else if (DiffLibUtils.Delta.isContentChanged(delta)) {
+            } else if (DiffLibUtils.Delta.isContentChanged(deltaForThisLine)) {
                 return DirtyMarkType.CHANGED;
-            } else if (DiffLibUtils.Delta.isContentRemoved(delta)) {
-                return DiffLibUtils.RemoveDelta.isBeforeFirstLine(delta) //
-                        ? DirtyMarkType.REMOVED_ABOVE //
-                        : DirtyMarkType.REMOVED_BELOW;
+            } else {
+                isContentRemovedAboveThisLine = DiffLibUtils.Delta.isContentRemoved(deltaForThisLine);
             }
+        }
+
+        final Delta deltaForNextLine = getDeltaForLine(lineIndex + 1);
+        if (deltaForNextLine != null) {
+            final boolean isContentRemovedAboveNextLine = DiffLibUtils.Delta.isContentRemoved(deltaForNextLine);
+            isContentRemovedBelowThisLine = isContentRemovedAboveNextLine;
+        }
+
+        if (isContentRemovedAboveThisLine && !isContentRemovedBelowThisLine) {
+            return DirtyMarkType.REMOVED_ABOVE;
+        } else if (!isContentRemovedAboveThisLine && isContentRemovedBelowThisLine) {
+            return DirtyMarkType.REMOVED_BELOW;
+        } else if (isContentRemovedAboveThisLine && isContentRemovedBelowThisLine) {
+            return DirtyMarkType.REMOVED_ABOVE_AND_BELOW;
         }
 
         return DirtyMarkType.UNCHANGED;
