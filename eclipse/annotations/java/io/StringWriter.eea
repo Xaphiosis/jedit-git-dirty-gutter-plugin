@@ -1,0 +1,4 @@
+class java/io/StringWriter
+getBuffer
+ ()Ljava/lang/StringBuffer;
+ ()L1java/lang/StringBuffer;

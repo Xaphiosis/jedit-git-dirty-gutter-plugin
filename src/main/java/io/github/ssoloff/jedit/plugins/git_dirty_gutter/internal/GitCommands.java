@@ -18,14 +18,11 @@
 
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -57,7 +54,7 @@ final class GitCommands {
         return GitException.newBuilder() //
                 .withMessage("unexpected Git output") //$NON-NLS-1$
                 .withProgramArgs(args) //
-                .withOutput(joinLines(lines)) //
+                .withOutput(StringUtils.joinLinesWithImplicitFinalLine(lines)) //
                 .build();
     }
 
@@ -135,7 +132,7 @@ final class GitCommands {
             throw createUnexpectedGitExitCodeException(args, exitCode);
         }
 
-        final List<String> lines = readAllLines(outWriter.toString());
+        final List<String> lines = StringUtils.splitLinesWithImplicitFinalLine(outWriter.getBuffer());
         if (lines.size() == 0) {
             return null;
         } else if (lines.size() == 1) {
@@ -143,26 +140,6 @@ final class GitCommands {
         } else {
             throw createUnexpectedGitOutputException(args, lines);
         }
-    }
-
-    private static String joinLines(final List<String> lines) {
-        final StringBuilder sb = new StringBuilder();
-        for (final String line : lines) {
-            sb.append(line);
-            sb.append('\n');
-        }
-        return sb.toString();
-    }
-
-    private static List<String> readAllLines(final String str) throws IOException {
-        final List<String> lines = new ArrayList<>();
-        try (final BufferedReader reader = new BufferedReader(new StringReader(str))) {
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                lines.add(line);
-            }
-        }
-        return lines;
     }
 
     /**
