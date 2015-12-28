@@ -36,7 +36,7 @@ public final class GitDirtyLineProvider implements DirtyLineProvider {
 
     @Override
     public void detach(final Buffer buffer, final BufferHandler bufferHandler) {
-        // do nothing
+        ((GitBufferHandler) bufferHandler).stop();
     }
 
     @Override

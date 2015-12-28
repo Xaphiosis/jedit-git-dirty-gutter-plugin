@@ -28,6 +28,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.SwingWorker;
 import lcm.BufferHandler;
 import lcm.LCMPlugin;
 import lcm.painters.DirtyMarkPainter;
@@ -42,6 +43,7 @@ import org.gjt.sp.util.Log;
  */
 final class GitBufferHandler extends BufferAdapter implements BufferHandler {
     private final Buffer buffer;
+    private @Nullable CommitMonitorWorker commitMonitorWorker = null;
     private final DirtyMarkPainterFactory dirtyMarkPainterFactory = createDirtyMarkPainterFactory();
     private @Nullable Patch patch = null;
 
@@ -91,6 +93,9 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
         });
     }
 
+    /*
+     * This method is thread-safe.
+     */
     private GitCommands createGitCommands() throws IOException {
         final Path filePath = getFilePath();
         final Path workingDirPath = filePath.getParent();
@@ -110,6 +115,9 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
         return lines;
     }
 
+    /*
+     * This method is thread-safe.
+     */
     private Path getFilePath() {
         return Paths.get(buffer.getPath());
     }
@@ -152,6 +160,9 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
         }
     }
 
+    /*
+     * This method is thread-safe.
+     */
     private boolean isDirtyMarkProcessingEnabled() {
         try {
             if (buffer.isNewFile()) {
@@ -176,7 +187,35 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
 
     @Override
     public void start() {
+        startCommitMonitor();
         updatePatch();
+    }
+
+    private void startCommitMonitor() {
+        assert this.commitMonitorWorker == null;
+
+        @SuppressWarnings({
+            "hiding", "synthetic-access"
+        })
+        final CommitMonitorWorker commitMonitorWorker = new CommitMonitorWorker();
+        this.commitMonitorWorker = commitMonitorWorker;
+        commitMonitorWorker.execute();
+    }
+
+    /**
+     * Invoked when the handler has been detached from the buffer.
+     */
+    void stop() {
+        stopCommitMonitor();
+    }
+
+    private void stopCommitMonitor() {
+        @SuppressWarnings("hiding")
+        final CommitMonitorWorker commitMonitorWorker = this.commitMonitorWorker;
+        if (commitMonitorWorker != null) {
+            this.commitMonitorWorker = null;
+            commitMonitorWorker.cancel(true);
+        }
     }
 
     private void updatePatch() {
@@ -191,6 +230,51 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
         if (headRevisionLines != null) {
             patch = DiffUtils.diff(headRevisionLines, getBufferLines());
             LCMPlugin.getInstance().repaintAllTextAreas();
+        }
+    }
+
+    /**
+     * A background task to monitor the repository to detect when the file has
+     * been committed.
+     */
+    @SuppressWarnings("synthetic-access")
+    private final class CommitMonitorWorker extends SwingWorker<Void, Void> {
+        @Override
+        protected @Nullable Void doInBackground() throws Exception {
+            String previousCommitRef = null;
+
+            while (true) {
+                try {
+                    if (isDirtyMarkProcessingEnabled()) {
+                        final String currentCommitRef = getCommitRefAtHeadRevision();
+                        if ((currentCommitRef != null) && (previousCommitRef != currentCommitRef)) {
+                            previousCommitRef = currentCommitRef;
+                            publish();
+                        }
+                    } else {
+                        previousCommitRef = null;
+                    }
+
+                    Thread.sleep(5000);
+                } catch (final GitException | IOException e) {
+                    Log.log(Log.ERROR, this,
+                            String.format("failed to get commit ref for HEAD revision of file '%s'", getFilePath()), e); //$NON-NLS-1$
+                }
+            }
+        }
+
+        private @Nullable String getCommitRefAtHeadRevision() throws GitException, IOException, InterruptedException {
+            final GitCommands gitCommands = createGitCommands();
+            final Path repoRelativeFilePath = gitCommands.getRepoRelativeFilePathAtHeadRevision(getFilePath());
+            if (repoRelativeFilePath == null) {
+                return null;
+            }
+            return gitCommands.getCommitRefAtHeadRevision(repoRelativeFilePath);
+        }
+
+        @Override
+        protected void process(final List<Void> chunks) {
+            updatePatch();
         }
     }
 }
