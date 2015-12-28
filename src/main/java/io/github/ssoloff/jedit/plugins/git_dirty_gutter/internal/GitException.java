@@ -159,7 +159,7 @@ final class GitException extends Exception {
     }
 
     private static boolean isPopulated(final @Nullable String str) {
-        return (str != null) && str.isEmpty();
+        return (str != null) && !str.isEmpty();
     }
 
     /**
