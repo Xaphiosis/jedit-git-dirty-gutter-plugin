@@ -1,0 +1,4 @@
+class git/GitPlugin
+gitPath
+ ()Ljava/lang/String;
+ ()L1java/lang/String;

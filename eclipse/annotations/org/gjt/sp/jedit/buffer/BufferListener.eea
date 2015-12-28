@@ -1,0 +1,7 @@
+class org/gjt/sp/jedit/buffer/BufferListener
+contentInserted
+ (Lorg/gjt/sp/jedit/buffer/JEditBuffer;IIII)V
+ (L1org/gjt/sp/jedit/buffer/JEditBuffer;IIII)V
+contentRemoved
+ (Lorg/gjt/sp/jedit/buffer/JEditBuffer;IIII)V
+ (L1org/gjt/sp/jedit/buffer/JEditBuffer;IIII)V

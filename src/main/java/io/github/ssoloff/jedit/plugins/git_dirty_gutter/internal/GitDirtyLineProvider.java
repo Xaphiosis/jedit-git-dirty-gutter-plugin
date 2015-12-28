@@ -31,7 +31,7 @@ import org.gjt.sp.jedit.Buffer;
 public final class GitDirtyLineProvider implements DirtyLineProvider {
     @Override
     public BufferHandler attach(final Buffer buffer) {
-        return new GitBufferHandler();
+        return new GitBufferHandler(buffer);
     }
 
     @Override

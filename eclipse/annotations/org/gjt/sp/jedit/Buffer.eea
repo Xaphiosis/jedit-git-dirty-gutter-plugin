@@ -1,0 +1,4 @@
+class org/gjt/sp/jedit/Buffer
+getPath
+ ()Ljava/lang/String;
+ ()L1java/lang/String;
