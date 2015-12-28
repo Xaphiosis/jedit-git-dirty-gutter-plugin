@@ -267,7 +267,7 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
                         previousCommitRef = null;
                     }
 
-                    Thread.sleep(5000);
+                    Thread.sleep(Properties.getCommitMonitorPollTime());
                 } catch (final GitException | IOException e) {
                     Log.log(Log.ERROR, this,
                             String.format("failed to get commit ref for HEAD revision of file '%s'", getFilePath()), e); //$NON-NLS-1$

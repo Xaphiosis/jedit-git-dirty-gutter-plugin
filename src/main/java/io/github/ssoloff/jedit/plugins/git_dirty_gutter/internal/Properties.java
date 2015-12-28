@@ -23,11 +23,16 @@ import org.gjt.sp.jedit.jEdit;
 
 /**
  * Provides access to the plugin properties.
+ *
+ * <p>
+ * The methods of this class are thread-safe.
+ * </p>
  */
 final class Properties {
     private static final String PROP_PREFIX = "io.github.ssoloff.jedit.plugins.git_dirty_gutter.GitDirtyGutterPlugin."; //$NON-NLS-1$
     private static final String PROP_ADDED_DIRTY_MARK_COLOR = PROP_PREFIX + "addedDirtyMarkColor"; //$NON-NLS-1$
     private static final String PROP_CHANGED_DIRTY_MARK_COLOR = PROP_PREFIX + "changedDirtyMarkColor"; //$NON-NLS-1$
+    private static final String PROP_COMMIT_MONITOR_POLL_TIME = PROP_PREFIX + "commitMonitorPollTime"; //$NON-NLS-1$
     private static final String PROP_REMOVED_DIRTY_MARK_COLOR = PROP_PREFIX + "removedDirtyMarkColor"; //$NON-NLS-1$
 
     private Properties() {
@@ -49,6 +54,15 @@ final class Properties {
      */
     static Color getChangedDirtyMarkColor() {
         return jEdit.getColorProperty(PROP_CHANGED_DIRTY_MARK_COLOR, Color.ORANGE);
+    }
+
+    /**
+     * Gets the time (in milliseconds) between polling for new commits.
+     *
+     * @return The time (in milliseconds) between polling for new commits.
+     */
+    static int getCommitMonitorPollTime() {
+        return jEdit.getIntegerProperty(PROP_COMMIT_MONITOR_POLL_TIME, 5000);
     }
 
     /**
