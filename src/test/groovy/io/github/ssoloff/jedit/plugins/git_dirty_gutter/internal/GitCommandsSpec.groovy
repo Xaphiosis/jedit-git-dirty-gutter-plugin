@@ -22,6 +22,57 @@ import java.nio.file.Paths
 import spock.lang.Specification
 
 class GitCommandsSpec extends Specification {
+    def 'getCommitRefAtHeadRevision - when working directory is inside repo it should return commit ref'() {
+        setup:
+        def gitRunner = Stub(IGitRunner) {
+            run(_, _) >> { Writer outWriter, String[] args ->
+                outWriter.write('28573fea3903ca83e973ae9d05d5d32942d1589f\n')
+                0
+            }
+        }
+        def gitCommands = new GitCommands(gitRunner)
+
+        expect:
+        gitCommands.getCommitRefAtHeadRevision() == '28573fea3903ca83e973ae9d05d5d32942d1589f'
+    }
+
+    def 'getCommitRefAtHeadRevision - when Git returns an unexpected exit code it should throw an exception'() {
+        setup:
+        def gitRunner = Stub(IGitRunner) {
+            run(_, _) >> { Writer outWriter, String[] args ->
+                outWriter.write('28573fea3903ca83e973ae9d05d5d32942d1589f\n')
+                1
+            }
+        }
+        def gitCommands = new GitCommands(gitRunner)
+
+        when:
+        gitCommands.getCommitRefAtHeadRevision()
+
+        then:
+        def e = thrown(GitException)
+        e.exitCode != null
+    }
+
+    def 'getCommitRefAtHeadRevision - when Git produces an unexpected output it should throw an exception'() {
+        setup:
+        def gitRunner = Stub(IGitRunner) {
+            run(_, _) >> { Writer outWriter, String[] args ->
+                outWriter.write('28573fea3903ca83e973ae9d05d5d32942d1589f\n')
+                outWriter.write('a29cfccdb5beec24c9eca88cd0adecd0f165d7aa\n')
+                0
+            }
+        }
+        def gitCommands = new GitCommands(gitRunner)
+
+        when:
+        gitCommands.getCommitRefAtHeadRevision()
+
+        then:
+        def e = thrown(GitException)
+        e.output != null
+    }
+
     def 'getRepoRelativeFilePathAtHeadRevision - when file exists on HEAD it should return repo-relative path'() {
         setup:
         def gitRunner = Stub(IGitRunner) {

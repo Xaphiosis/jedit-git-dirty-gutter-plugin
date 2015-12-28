@@ -95,6 +95,26 @@ class GitCommandsIntegrationSpec extends Specification {
         deleteDirectory(repoPath)
     }
 
+    def 'getCommitRefAtHeadRevision - when working directory is inside repo it should return commit ref'() {
+        expect:
+        gitCommands.getCommitRefAtHeadRevision() ==~ /[0-9a-f]{40}/
+    }
+
+    def 'getCommitRefAtHeadRevision - when working directory is outside repo it should throw an exception'() {
+        setup:
+        def filePath = createTempFile()
+        def gitCommands = new GitCommands(createGitRunnerForRepo(filePath.parent))
+
+        when:
+        gitCommands.getCommitRefAtHeadRevision()
+
+        then:
+        thrown(GitException)
+
+        cleanup:
+        deleteFile(filePath)
+    }
+
     def 'getRepoRelativeFilePathAtHeadRevision - when file exists on HEAD it should return repo-relative path'() {
         setup:
         def filePath = repoPath.resolve('subdir1').resolve('file')
