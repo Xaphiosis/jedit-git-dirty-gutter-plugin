@@ -32,8 +32,11 @@ class GitCommandsSpec extends Specification {
         }
         def gitCommands = new GitCommands(gitRunner)
 
-        expect:
-        gitCommands.getCommitRefAtHeadRevision() == '28573fea3903ca83e973ae9d05d5d32942d1589f'
+        when:
+        def commitRef = gitCommands.getCommitRefAtHeadRevision(Paths.get('subdir1/file'))
+
+        then:
+        commitRef == '28573fea3903ca83e973ae9d05d5d32942d1589f'
     }
 
     def 'getCommitRefAtHeadRevision - when Git returns an unexpected exit code it should throw an exception'() {
@@ -47,7 +50,7 @@ class GitCommandsSpec extends Specification {
         def gitCommands = new GitCommands(gitRunner)
 
         when:
-        gitCommands.getCommitRefAtHeadRevision()
+        gitCommands.getCommitRefAtHeadRevision(Paths.get('subdir1/file'))
 
         then:
         def e = thrown(GitException)
@@ -66,7 +69,7 @@ class GitCommandsSpec extends Specification {
         def gitCommands = new GitCommands(gitRunner)
 
         when:
-        gitCommands.getCommitRefAtHeadRevision()
+        gitCommands.getCommitRefAtHeadRevision(Paths.get('subdir1/file'))
 
         then:
         def e = thrown(GitException)

@@ -95,18 +95,39 @@ class GitCommandsIntegrationSpec extends Specification {
         deleteDirectory(repoPath)
     }
 
-    def 'getCommitRefAtHeadRevision - when working directory is inside repo it should return commit ref'() {
-        expect:
-        gitCommands.getCommitRefAtHeadRevision() ==~ /[0-9a-f]{40}/
+    def 'getCommitRefAtHeadRevision - when file exists on HEAD it should return commit ref'() {
+        setup:
+        def filePath = repoPath.resolve('subdir1').resolve('file')
+        createNewFile(filePath)
+        addAndCommitFile(filePath)
+
+        when:
+        def commitRef = gitCommands.getCommitRefAtHeadRevision(repoPath.relativize(filePath))
+
+        then:
+        commitRef ==~ /[0-9a-f]{40}/
     }
 
-    def 'getCommitRefAtHeadRevision - when working directory is outside repo it should throw an exception'() {
+    def 'getCommitRefAtHeadRevision - when file is inside repo but does not exist on HEAD it should throw an exception'() {
+        setup:
+        def filePath = repoPath.resolve('subdir1').resolve('file')
+        createNewFile(filePath)
+        // do not commit so it does not exist on HEAD
+
+        when:
+        gitCommands.getCommitRefAtHeadRevision(repoPath.relativize(filePath))
+
+        then:
+        thrown(GitException)
+    }
+
+    def 'getCommitRefAtHeadRevision - when file is outside repo it should throw an exception'() {
         setup:
         def filePath = createTempFile()
         def gitCommands = new GitCommands(createGitRunnerForRepo(filePath.parent))
 
         when:
-        gitCommands.getCommitRefAtHeadRevision()
+        gitCommands.getCommitRefAtHeadRevision(filePath)
 
         then:
         thrown(GitException)

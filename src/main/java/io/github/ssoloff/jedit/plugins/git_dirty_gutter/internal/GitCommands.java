@@ -59,9 +59,15 @@ final class GitCommands {
     }
 
     /**
-     * Gets the SHA-1 commit reference at the HEAD revision.
+     * Gets the SHA-1 commit reference for the specified file at the HEAD
+     * revision.
      *
-     * @return The SHA-1 commit reference at the HEAD revision.
+     * @param repoRelativeFilePath
+     *        The repository-relative path of the file whose commit reference is
+     *        desired.
+     *
+     * @return The SHA-1 commit reference for the specified file at the HEAD
+     *         revision.
      *
      * @throws GitException
      *         If the Git process exits with an error.
@@ -70,11 +76,12 @@ final class GitCommands {
      * @throws InterruptedException
      *         If interrupted while waiting for the Git process to exit.
      */
-    String getCommitRefAtHeadRevision() throws GitException, IOException, InterruptedException {
+    String getCommitRefAtHeadRevision(final Path repoRelativeFilePath)
+            throws GitException, IOException, InterruptedException {
         final StringWriter outWriter = new StringWriter();
         final String[] args = new String[] {
             "rev-parse", //$NON-NLS-1$
-            "HEAD" //$NON-NLS-1$
+            String.format("HEAD:%s", repoRelativeFilePath) //$NON-NLS-1$
         };
         final int exitCode = gitRunner.run(outWriter, args);
         if (exitCode != 0) {
