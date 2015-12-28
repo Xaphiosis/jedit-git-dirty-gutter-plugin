@@ -91,7 +91,12 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
         });
     }
 
-    private static GitCommands createGitCommands(final Path workingDirPath) {
+    private GitCommands createGitCommands() throws IOException {
+        final Path filePath = getFilePath();
+        final Path workingDirPath = filePath.getParent();
+        if (workingDirPath == null) {
+            throw new IOException(String.format("unable to get directory for '%s'", filePath)); //$NON-NLS-1$
+        }
         final IGitRunner gitRunner = new GitRunner(new ProcessRunner(), Paths.get(GitPlugin.gitPath()), workingDirPath);
         return new GitCommands(gitRunner);
     }
@@ -103,6 +108,10 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
             lines.add(buffer.getLineText(lineIndex));
         }
         return lines;
+    }
+
+    private Path getFilePath() {
+        return Paths.get(buffer.getPath());
     }
 
     @Override
@@ -119,15 +128,10 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
     }
 
     private @Nullable List<String> getHeadRevisionLines() {
-        final Path filePath = Paths.get(buffer.getPath());
-        final Path workingDirPath = filePath.getParent();
-        if (workingDirPath == null) {
-            Log.log(Log.WARNING, this, String.format("unable to get directory for '%s'", filePath)); //$NON-NLS-1$
-            return null;
-        }
-
-        final GitCommands gitCommands = createGitCommands(workingDirPath);
+        final Path filePath = getFilePath();
         try {
+            final GitCommands gitCommands = createGitCommands();
+
             final Path repoRelativeFilePath = gitCommands.getRepoRelativeFilePathAtHeadRevision(filePath);
             if (repoRelativeFilePath == null) {
                 Log.log(Log.DEBUG, this, String.format("'%s' does not exist in Git repository", filePath)); //$NON-NLS-1$
