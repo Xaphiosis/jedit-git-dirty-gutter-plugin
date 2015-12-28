@@ -53,7 +53,7 @@ final class DiffLibUtils {
             assert lineIndex >= 0;
 
             final int chunkFirstLineIndex = chunk.getPosition();
-            final int chunkLastLineIndex = chunkFirstLineIndex + chunk.getLines().size() - 1;
+            final int chunkLastLineIndex = (chunkFirstLineIndex + chunk.getLines().size()) - 1;
             return (lineIndex >= chunkFirstLineIndex) && (lineIndex <= chunkLastLineIndex);
         }
     }
