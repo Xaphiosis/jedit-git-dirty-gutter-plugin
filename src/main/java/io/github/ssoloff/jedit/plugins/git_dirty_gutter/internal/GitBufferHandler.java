@@ -118,6 +118,18 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
     /*
      * This method is thread-safe.
      */
+    private @Nullable String getCommitRefAtHeadRevision() throws GitException, IOException, InterruptedException {
+        final GitCommands gitCommands = createGitCommands();
+        final Path repoRelativeFilePath = gitCommands.getRepoRelativeFilePathAtHeadRevision(getFilePath());
+        if (repoRelativeFilePath == null) {
+            return null;
+        }
+        return gitCommands.getCommitRefAtHeadRevision(repoRelativeFilePath);
+    }
+
+    /*
+     * This method is thread-safe.
+     */
     private Path getFilePath() {
         return Paths.get(buffer.getPath());
     }
@@ -261,15 +273,6 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
                             String.format("failed to get commit ref for HEAD revision of file '%s'", getFilePath()), e); //$NON-NLS-1$
                 }
             }
-        }
-
-        private @Nullable String getCommitRefAtHeadRevision() throws GitException, IOException, InterruptedException {
-            final GitCommands gitCommands = createGitCommands();
-            final Path repoRelativeFilePath = gitCommands.getRepoRelativeFilePathAtHeadRevision(getFilePath());
-            if (repoRelativeFilePath == null) {
-                return null;
-            }
-            return gitCommands.getCommitRefAtHeadRevision(repoRelativeFilePath);
         }
 
         @Override
