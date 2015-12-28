@@ -95,65 +95,6 @@ class GitCommandsIntegrationSpec extends Specification {
         deleteDirectory(repoPath)
     }
 
-    def 'diffFiles - when the files are the same it should produce an empty difference'() {
-        setup:
-        def originalFilePath = createTempFile()
-        createNewFile(originalFilePath, 'original\n')
-        def newFilePath = createTempFile()
-        createNewFile(newFilePath, 'original\n')
-        def writer = new StringWriter()
-
-        when:
-        def isDifferent = gitCommands.diffFiles(originalFilePath, newFilePath, writer)
-
-        then:
-        !isDifferent
-        writer.toString().isEmpty()
-
-        cleanup:
-        deleteFile(originalFilePath)
-        deleteFile(newFilePath)
-    }
-
-    def 'diffFiles - when the files are different it should produce the difference between the two files'() {
-        setup:
-        def originalFilePath = createTempFile()
-        createNewFile(originalFilePath, 'original\n')
-        def newFilePath = createTempFile()
-        createNewFile(newFilePath, 'new\n')
-        def writer = new StringWriter()
-
-        when:
-        def isDifferent = gitCommands.diffFiles(originalFilePath, newFilePath, writer)
-
-        then:
-        isDifferent
-        writer.toString() =~ /(?m)^@@ -1 \+1 @@\n-original\n\+new$/
-
-        cleanup:
-        deleteFile(originalFilePath)
-        deleteFile(newFilePath)
-    }
-
-    def 'diffFiles - it should produce a difference without any context lines'() {
-        setup:
-        def originalFilePath = createTempFile()
-        createNewFile(originalFilePath, 'context\noriginal\ncontext\n')
-        def newFilePath = createTempFile()
-        createNewFile(newFilePath, 'context\nnew\ncontext\n')
-        def writer = new StringWriter()
-
-        when:
-        gitCommands.diffFiles(originalFilePath, newFilePath, writer)
-
-        then:
-        writer.toString() =~ /(?m)^@@ -2 \+2 @@ context\n-original\n\+new$/
-
-        cleanup:
-        deleteFile(originalFilePath)
-        deleteFile(newFilePath)
-    }
-
     def 'getRepoRelativeFilePathAtHeadRevision - when file exists on HEAD it should return repo-relative path'() {
         setup:
         def filePath = repoPath.resolve('subdir1').resolve('file')

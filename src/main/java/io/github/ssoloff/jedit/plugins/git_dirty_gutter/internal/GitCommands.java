@@ -59,46 +59,6 @@ final class GitCommands {
     }
 
     /**
-     * Calculates the changes between two files and sends the difference in
-     * unified format to the specified writer.
-     *
-     * @param originalFilePath
-     *        The path to the file containing the original content.
-     * @param newFilePath
-     *        The path to the file containing the new content.
-     * @param writer
-     *        The writer that will receive the difference in unified format.
-     *
-     * @return {@code true} if the files are different; {@code false} if the
-     *         files are the same.
-     *
-     * @throws GitException
-     *         If the Git process exits with an error.
-     * @throws IOException
-     *         If an error occurs while processing the Git process output.
-     * @throws InterruptedException
-     *         If interrupted while waiting for the Git process to exit.
-     */
-    boolean diffFiles(final Path originalFilePath, final Path newFilePath, final Writer writer)
-            throws GitException, IOException, InterruptedException {
-        final String[] args = new String[] {
-            "diff", //$NON-NLS-1$
-            "--no-index", //$NON-NLS-1$
-            "--unified=0", //$NON-NLS-1$
-            originalFilePath.toString(), //
-            newFilePath.toString() //
-        };
-        final int exitCode = gitRunner.run(writer, args);
-        if (exitCode == 0) {
-            return false;
-        } else if (exitCode == 1) {
-            return true;
-        } else {
-            throw createUnexpectedGitExitCodeException(args, exitCode);
-        }
-    }
-
-    /**
      * Gets the repository-relative path of the specified file at the HEAD
      * revision.
      *
