@@ -152,8 +152,26 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
         }
     }
 
-    private boolean isBufferPatchable() {
-        return !buffer.isNewFile();
+    private boolean isDirtyMarkProcessingEnabled() {
+        try {
+            if (buffer.isNewFile()) {
+                return false;
+            }
+
+            final GitCommands gitCommands = createGitCommands();
+            return gitCommands.isInsideRepo();
+        } catch (final GitException | IOException e) {
+            Log.log(Log.ERROR, this, String.format("failed to determine if dirty mark processing enabled for file '%s'", //$NON-NLS-1$
+                    getFilePath()), e);
+            return false;
+        } catch (final InterruptedException e) {
+            Thread.currentThread().interrupt();
+            Log.log(Log.NOTICE, this,
+                    String.format("interrupted while determining if dirty mark processing enabled for file '%s'", //$NON-NLS-1$
+                            getFilePath()),
+                    e);
+            return false;
+        }
     }
 
     @Override
@@ -163,12 +181,16 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
 
     private void updatePatch() {
         patch = null;
-        if (isBufferPatchable()) {
-            final @Nullable List<String> headRevisionLines = getHeadRevisionLines();
-            if (headRevisionLines != null) {
-                patch = DiffUtils.diff(headRevisionLines, getBufferLines());
-                LCMPlugin.getInstance().repaintAllTextAreas();
-            }
+
+        if (!isDirtyMarkProcessingEnabled()) {
+            Log.log(Log.DEBUG, this, String.format("dirty mark processing not enabled for file '%s'", getFilePath())); //$NON-NLS-1$
+            return;
+        }
+
+        final @Nullable List<String> headRevisionLines = getHeadRevisionLines();
+        if (headRevisionLines != null) {
+            patch = DiffUtils.diff(headRevisionLines, getBufferLines());
+            LCMPlugin.getInstance().repaintAllTextAreas();
         }
     }
 }

@@ -33,6 +33,10 @@ class GitCommandsIntegrationSpec extends Specification {
     }
 
     private IGitRunner createGitRunner() {
+        createGitRunnerForRepo(repoPath)
+    }
+
+    private static IGitRunner createGitRunnerForRepo(Path repoPath) {
         new GitRunner(new ProcessRunner(), Paths.get('git'), repoPath)
     }
 
@@ -185,6 +189,37 @@ class GitCommandsIntegrationSpec extends Specification {
 
         then:
         thrown(GitException)
+
+        cleanup:
+        deleteFile(filePath)
+    }
+
+    def 'isInsideRepo - when working directory is inside repo work tree it should return true'() {
+        setup:
+        def filePath = repoPath.resolve('subdir1').resolve('file')
+        createNewFile(filePath)
+        addAndCommitFile(filePath)
+
+        expect:
+        gitCommands.isInsideRepo() == true
+    }
+
+    def 'isInsideRepo - when working directory is inside repo but outside work tree it should return false'() {
+        setup:
+        def workingDirPath = repoPath.resolve('.git')
+        def gitCommands = new GitCommands(createGitRunnerForRepo(workingDirPath))
+
+        expect:
+        gitCommands.isInsideRepo() == false
+    }
+
+    def 'isInsideRepo - when working directory is outside repo it should return false'() {
+        setup:
+        def filePath = createTempFile()
+        def gitCommands = new GitCommands(createGitRunnerForRepo(filePath.parent))
+
+        expect:
+        gitCommands.isInsideRepo() == false
 
         cleanup:
         deleteFile(filePath)

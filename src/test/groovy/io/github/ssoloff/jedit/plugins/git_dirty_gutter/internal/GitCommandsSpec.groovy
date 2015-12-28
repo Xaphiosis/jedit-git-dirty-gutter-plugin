@@ -151,6 +151,120 @@ class GitCommandsSpec extends Specification {
         e.output != null
     }
 
+    def 'isInsideRepo - when working directory is inside repo work tree it should return true'() {
+        setup:
+        def gitRunner = Stub(IGitRunner) {
+            run(_, _) >> { Writer outWriter, String[] args ->
+                outWriter.write('true\n')
+                0
+            }
+        }
+        def gitCommands = new GitCommands(gitRunner)
+
+        expect:
+        gitCommands.isInsideRepo() == true
+    }
+
+    def 'isInsideRepo - when working directory is inside repo but outside work tree it should return false'() {
+        setup:
+        def gitRunner = Stub(IGitRunner) {
+            run(_, _) >> { Writer outWriter, String[] args ->
+                outWriter.write('false\n')
+                0
+            }
+        }
+        def gitCommands = new GitCommands(gitRunner)
+
+        expect:
+        gitCommands.isInsideRepo() == false
+    }
+
+    def 'isInsideRepo - when working directory is outside repo it should return false'() {
+        setup:
+        def gitRunner = Stub(IGitRunner) {
+            run(_, _) >> {
+                // nonempty stderr
+                throw GitException.newBuilder().withExitCode(128).build()
+            }
+        }
+        def gitCommands = new GitCommands(gitRunner)
+
+        expect:
+        gitCommands.isInsideRepo() == false
+    }
+
+    def 'isInsideRepo - when Git returns an unexpected exit code it should throw an exception'() {
+        setup:
+        def gitRunner = Stub(IGitRunner) {
+            run(_, _) >> { Writer outWriter, String[] args ->
+                outWriter.write('true\n')
+                1
+            }
+        }
+        def gitCommands = new GitCommands(gitRunner)
+
+        when:
+        gitCommands.isInsideRepo()
+
+        then:
+        def e = thrown(GitException)
+        e.exitCode != null
+    }
+
+    def 'isInsideRepo - when Git produces an unexpected output with an unknown status it should throw an exception'() {
+        setup:
+        def gitRunner = Stub(IGitRunner) {
+            run(_, _) >> { Writer outWriter, String[] args ->
+                outWriter.write('other\n')
+                0
+            }
+        }
+        def gitCommands = new GitCommands(gitRunner)
+
+        when:
+        gitCommands.isInsideRepo()
+
+        then:
+        def e = thrown(GitException)
+        e.output != null
+    }
+
+    def 'isInsideRepo - when Git produces an unexpected output with additional lines it should throw an exception'() {
+        setup:
+        def gitRunner = Stub(IGitRunner) {
+            run(_, _) >> { Writer outWriter, String[] args ->
+                outWriter.write('true\n')
+                outWriter.write('true\n')
+                0
+            }
+        }
+        def gitCommands = new GitCommands(gitRunner)
+
+        when:
+        gitCommands.isInsideRepo()
+
+        then:
+        def e = thrown(GitException)
+        e.output != null
+    }
+
+    def 'isInsideRepo - when Git runner throws an unexpected exception it should throw an exception'() {
+        setup:
+        def gitRunner = Stub(IGitRunner) {
+            run(_, _) >> {
+                // nonempty stderr
+                throw GitException.newBuilder().withExitCode(129).build()
+            }
+        }
+        def gitCommands = new GitCommands(gitRunner)
+
+        when:
+        gitCommands.isInsideRepo()
+
+        then:
+        thrown(GitException)
+    }
+
     def 'readFileContentAtHeadRevision - when file exists on HEAD it should read file content'() {
         setup:
         def gitRunner = Stub(IGitRunner) {

@@ -143,6 +143,56 @@ final class GitCommands {
     }
 
     /**
+     * Indicates the working directory of the associated Git runner is located
+     * inside a Git repository.
+     *
+     * @return {@code true} if the working directory of the associated Git
+     *         runner is located inside a Git repository; otherwise
+     *         {@code false}.
+     *
+     * @throws GitException
+     *         If the Git process exits with an unexpected error.
+     * @throws IOException
+     *         If an error occurs while processing the Git process output.
+     * @throws InterruptedException
+     *         If interrupted while waiting for the Git process to exit.
+     */
+    boolean isInsideRepo() throws GitException, IOException, InterruptedException {
+        final StringWriter outWriter = new StringWriter();
+        final String[] args = new String[] {
+            "rev-parse", //$NON-NLS-1$
+            "--is-inside-work-tree" //$NON-NLS-1$
+        };
+        try {
+            final int exitCode = gitRunner.run(outWriter, args);
+            if (exitCode != 0) {
+                throw createUnexpectedGitExitCodeException(args, exitCode);
+            }
+
+            final List<String> lines = StringUtils.splitLinesWithImplicitFinalLine(outWriter.getBuffer());
+            if (lines.size() != 1) {
+                throw createUnexpectedGitOutputException(args, lines);
+            }
+
+            final String result = lines.get(0);
+            switch (result) {
+                case "true": //$NON-NLS-1$
+                    return true;
+                case "false": //$NON-NLS-1$
+                    return false;
+                default:
+                    throw createUnexpectedGitOutputException(args, lines);
+            }
+        } catch (final GitException e) {
+            final Integer exitCode = e.getExitCode();
+            if ((exitCode != null) && (exitCode.intValue() == 128)) {
+                return false;
+            }
+            throw e;
+        }
+    }
+
+    /**
      * Reads the content of the specified file at the HEAD revision and sends it
      * to the specified writer.
      *
