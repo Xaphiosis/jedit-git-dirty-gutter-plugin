@@ -31,7 +31,7 @@ final class GitException extends Exception {
 
     private final @Nullable String error;
     private final @Nullable Integer exitCode;
-    private final @Nullable String message;
+    private final @Nullable String messageSummary;
     private final @Nullable String output;
     private final @Nullable String[] programArgs;
     private final @Nullable Path programPath;
@@ -39,8 +39,8 @@ final class GitException extends Exception {
     /**
      * Initializes a new instance of the {@code GitException} class.
      *
-     * @param message
-     *        The exception detail message or {@code null} if not specified.
+     * @param messageSummary
+     *        The exception message summary or {@code null} if not specified.
      * @param programPath
      *        The program path of the Git process or {@code null} if not
      *        specified.
@@ -56,15 +56,24 @@ final class GitException extends Exception {
      *        The content of the standard error stream of the Git process or
      *        {@code null} if not specified.
      */
-    private GitException(final @Nullable String message, final @Nullable Path programPath,
+    private GitException(final @Nullable String messageSummary, final @Nullable Path programPath,
             final @Nullable String[] programArgs, final @Nullable Integer exitCode, final @Nullable String output,
             final @Nullable String error) {
         this.error = error;
         this.exitCode = exitCode;
-        this.message = message;
+        this.messageSummary = messageSummary;
         this.output = output;
         this.programArgs = programArgs; // defensive copy already performed by builder
         this.programPath = programPath;
+    }
+
+    /**
+     * Gets the default exception message summary.
+     *
+     * @return The default exception message summary.
+     */
+    static String getDefaultMessageSummary() {
+        return "an unspecified Git error has occurred"; //$NON-NLS-1$
     }
 
     /**
@@ -125,10 +134,10 @@ final class GitException extends Exception {
     public String getMessage() {
         final StringBuilder sb = new StringBuilder();
 
-        if (isPopulated(message)) {
-            sb.append(String.format("%s\n", message)); //$NON-NLS-1$
+        if (isPopulated(messageSummary)) {
+            sb.append(String.format("%s\n", messageSummary)); //$NON-NLS-1$
         } else {
-            sb.append("an unspecified Git error has occurred\n"); //$NON-NLS-1$
+            sb.append(String.format("%s\n", getDefaultMessageSummary())); //$NON-NLS-1$
         }
 
         if (isPopulated(programPath)) {
@@ -180,7 +189,7 @@ final class GitException extends Exception {
     static final class Builder {
         private @Nullable String error = null;
         private @Nullable Integer exitCode = null;
-        private @Nullable String message = null;
+        private @Nullable String messageSummary = null;
         private @Nullable String output = null;
         private @Nullable String[] programArgs = null;
         private @Nullable Path programPath = null;
@@ -195,7 +204,7 @@ final class GitException extends Exception {
          */
         @SuppressWarnings("synthetic-access")
         GitException build() {
-            return new GitException(message, programPath, programArgs, exitCode, output, error);
+            return new GitException(messageSummary, programPath, programArgs, exitCode, output, error);
         }
 
         /**
@@ -225,15 +234,15 @@ final class GitException extends Exception {
         }
 
         /**
-         * Sets the exception detail message.
+         * Sets the exception message summary.
          *
-         * @param message
-         *        The exception detail message.
+         * @param messageSummary
+         *        The exception message summary.
          *
          * @return The builder.
          */
-        Builder withMessage(@SuppressWarnings("hiding") final String message) {
-            this.message = message;
+        Builder withMessageSummary(@SuppressWarnings("hiding") final String messageSummary) {
+            this.messageSummary = messageSummary;
             return this;
         }
 

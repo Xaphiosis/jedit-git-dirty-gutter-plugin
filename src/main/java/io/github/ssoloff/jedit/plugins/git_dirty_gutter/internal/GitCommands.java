@@ -44,7 +44,7 @@ final class GitCommands {
 
     private static GitException createUnexpectedGitExitCodeException(final String[] args, final int exitCode) {
         return GitException.newBuilder() //
-                .withMessage("unexpected Git exit code") //$NON-NLS-1$
+                .withMessageSummary("unexpected Git exit code") //$NON-NLS-1$
                 .withProgramArgs(args) //
                 .withExitCode(exitCode) //
                 .build();
@@ -52,7 +52,7 @@ final class GitCommands {
 
     private static GitException createUnexpectedGitOutputException(final String[] args, final List<String> lines) {
         return GitException.newBuilder() //
-                .withMessage("unexpected Git output") //$NON-NLS-1$
+                .withMessageSummary("unexpected Git output") //$NON-NLS-1$
                 .withProgramArgs(args) //
                 .withOutput(StringUtils.joinLinesWithImplicitFinalLine(lines)) //
                 .build();
