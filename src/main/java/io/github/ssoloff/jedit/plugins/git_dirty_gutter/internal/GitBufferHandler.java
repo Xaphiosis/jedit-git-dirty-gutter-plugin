@@ -176,7 +176,7 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
 
     @Override
     public void start() {
-        // do nothing
+        updatePatch();
     }
 
     private void updatePatch() {
