@@ -16,7 +16,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
+package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git;
 
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -26,7 +26,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * A checked exception that indicates a Git process exited with an error or that
  * the Git process produced an unexpected result (exit code, output, etc.).
  */
-final class GitException extends Exception {
+public final class GitException extends Exception {
     private static final long serialVersionUID = -4617699499893940183L;
 
     private final @Nullable String error;
@@ -82,8 +82,7 @@ final class GitException extends Exception {
      * @return The content of the standard error stream of the Git process or
      *         {@code null} if not specified.
      */
-    @Nullable
-    String getError() {
+    public @Nullable String getError() {
         return error;
     }
 
@@ -92,8 +91,7 @@ final class GitException extends Exception {
      *
      * @return The exit code of the Git process.
      */
-    @Nullable
-    Integer getExitCode() {
+    public @Nullable Integer getExitCode() {
         return exitCode;
     }
 
@@ -103,8 +101,7 @@ final class GitException extends Exception {
      * @return The content of the standard output stream of the Git process or
      *         {@code null} if not specified.
      */
-    @Nullable
-    String getOutput() {
+    public @Nullable String getOutput() {
         return output;
     }
 
@@ -114,8 +111,7 @@ final class GitException extends Exception {
      * @return The program arguments to the Git process or {@code null} if not
      *         specified.
      */
-    @Nullable
-    String[] getProgramArgs() {
+    public @Nullable String[] getProgramArgs() {
         return (programArgs != null) ? programArgs.clone() : null;
     }
 
@@ -125,8 +121,7 @@ final class GitException extends Exception {
      * @return The program path of the Git process or {@code null} if not
      *         specified.
      */
-    @Nullable
-    Path getProgramPath() {
+    public @Nullable Path getProgramPath() {
         return programPath;
     }
 

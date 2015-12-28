@@ -16,7 +16,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
+package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,7 +26,7 @@ import java.util.regex.Pattern;
 /**
  * A collection of methods for working with strings and character sequences.
  */
-final class StringUtils {
+public final class StringUtils {
     private StringUtils() {
     }
 
@@ -63,7 +63,7 @@ final class StringUtils {
      *
      * @return A string containing the joined lines.
      */
-    static String joinLinesWithExplicitFinalLine(final List<? extends CharSequence> lines) {
+    public static String joinLinesWithExplicitFinalLine(final List<? extends CharSequence> lines) {
         return removeImplicitFinalLine(joinLinesWithImplicitFinalLine(lines));
     }
 
@@ -81,7 +81,7 @@ final class StringUtils {
      *
      * @return A string containing the joined lines.
      */
-    static String joinLinesWithImplicitFinalLine(final List<? extends CharSequence> lines) {
+    public static String joinLinesWithImplicitFinalLine(final List<? extends CharSequence> lines) {
         final StringBuilder sb = new StringBuilder();
         for (final CharSequence line : lines) {
             sb.append(line);
@@ -119,7 +119,7 @@ final class StringUtils {
      *
      * @return The collection of split lines.
      */
-    static List<String> splitLinesWithExplicitFinalLine(final CharSequence input) {
+    public static List<String> splitLinesWithExplicitFinalLine(final CharSequence input) {
         if (input.length() == 0) {
             return Collections.emptyList();
         }
@@ -142,7 +142,7 @@ final class StringUtils {
      *
      * @return The collection of split lines.
      */
-    static List<String> splitLinesWithImplicitFinalLine(final CharSequence input) {
+    public static List<String> splitLinesWithImplicitFinalLine(final CharSequence input) {
         return removeExplicitFinalLine(splitLinesWithExplicitFinalLine(input));
     }
 }

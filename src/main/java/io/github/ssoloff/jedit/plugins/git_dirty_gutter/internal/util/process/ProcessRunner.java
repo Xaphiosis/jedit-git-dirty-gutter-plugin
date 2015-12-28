@@ -16,7 +16,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
+package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process;
 
 import common.io.ProcessExecutor;
 import java.io.IOException;
@@ -28,13 +28,13 @@ import org.eclipse.jdt.annotation.Nullable;
  * Implementation of {@link IProcessRunner} that uses the jEdit common controls
  * plugin's {@code ProcessExecutor} to run the process.
  */
-final class ProcessRunner implements IProcessRunner {
+public final class ProcessRunner implements IProcessRunner {
     private final IProcessExecutorFactory processExecutorFactory;
 
     /**
      * Initializes a new instance of the {@code ProcessRunner} class.
      */
-    ProcessRunner() {
+    public ProcessRunner() {
         this(new IProcessExecutorFactory() {
             @Override
             public ProcessExecutor createProcessExecutor(final String... command) {

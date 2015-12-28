@@ -16,22 +16,32 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
+package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.ui;
 
-import common.io.ProcessExecutor;
+import java.awt.Color;
 
 /**
- * A factory for creating instances of {@link ProcessExecutor}.
+ * The execution context for an instance of {@code DirtyMarkPainterFactory}.
  */
-interface IProcessExecutorFactory {
+public interface IDirtyMarkPainterFactoryContext {
     /**
-     * Creates a new process executor.
+     * Gets the color used for added dirty marks.
      *
-     * @param command
-     *        The command to run. The first element is the process executable.
-     *        The remaining elements are the process arguments.
-     *
-     * @return A new process executor.
+     * @return The color used for added dirty marks.
      */
-    ProcessExecutor createProcessExecutor(String... command);
+    public Color getAddedDirtyMarkColor();
+
+    /**
+     * Gets the color used for changed dirty marks.
+     *
+     * @return The color used for changed dirty marks.
+     */
+    public Color getChangedDirtyMarkColor();
+
+    /**
+     * Gets the color used for removed dirty marks.
+     *
+     * @return The color used for removed dirty marks.
+     */
+    public Color getRemovedDirtyMarkColor();
 }

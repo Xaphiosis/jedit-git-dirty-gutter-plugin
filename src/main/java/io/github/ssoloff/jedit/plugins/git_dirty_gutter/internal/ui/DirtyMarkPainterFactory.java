@@ -16,8 +16,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
+package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.ui;
 
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.DirtyMarkType;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import lcm.painters.ColoredRectWithStripsPainter;
@@ -28,7 +29,7 @@ import org.gjt.sp.jedit.textarea.Gutter;
 /**
  * A factory for creating dirty mark painters for various types of dirty marks.
  */
-final class DirtyMarkPainterFactory {
+public final class DirtyMarkPainterFactory {
     private static final DirtyMarkPainter NULL_DIRTY_MARK_PAINTER = new DirtyMarkPainter() {
         @Override
         public void paint(final Graphics2D g, final Gutter gutter, final int y, final int height, final Buffer buffer,
@@ -45,7 +46,7 @@ final class DirtyMarkPainterFactory {
      * @param context
      *        The execution context for the factory.
      */
-    DirtyMarkPainterFactory(final IDirtyMarkPainterFactoryContext context) {
+    public DirtyMarkPainterFactory(final IDirtyMarkPainterFactoryContext context) {
         this.context = context;
     }
 
@@ -57,7 +58,7 @@ final class DirtyMarkPainterFactory {
      *
      * @return A new dirty mark painter.
      */
-    DirtyMarkPainter createDirtyMarkPainter(final DirtyMarkType dirtyMarkType) {
+    public DirtyMarkPainter createDirtyMarkPainter(final DirtyMarkType dirtyMarkType) {
         if (dirtyMarkType == DirtyMarkType.UNCHANGED) {
             return NULL_DIRTY_MARK_PAINTER;
         }

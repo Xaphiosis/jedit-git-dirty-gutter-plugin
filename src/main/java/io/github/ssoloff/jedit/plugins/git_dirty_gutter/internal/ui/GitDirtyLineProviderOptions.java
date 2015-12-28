@@ -16,8 +16,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
+package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.ui;
 
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.Properties;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import javax.swing.JComponent;
@@ -31,7 +32,7 @@ import org.gjt.sp.jedit.gui.ColorWellButton;
  * Implementation of {@link DirtyLineProviderOptions} for the Git dirty line
  * provider.
  */
-final class GitDirtyLineProviderOptions implements DirtyLineProviderOptions {
+public final class GitDirtyLineProviderOptions implements DirtyLineProviderOptions {
     private @Nullable Controls controls = null;
 
     private static void addComponent(final JPanel parent, final String labelText, final JComponent component) {

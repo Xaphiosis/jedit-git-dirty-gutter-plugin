@@ -18,6 +18,7 @@
 
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
 
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.ui.GitDirtyLineProviderOptions;
 import lcm.BufferHandler;
 import lcm.DirtyLineProvider;
 import lcm.DirtyLineProviderOptions;

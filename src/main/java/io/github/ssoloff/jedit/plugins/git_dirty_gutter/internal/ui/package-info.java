@@ -16,32 +16,13 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
-
-import java.awt.Color;
-
 /**
- * The execution context for an instance of {@code DirtyMarkPainterFactory}.
+ * Provides the user interface of the jEdit Git dirty gutter plugin.
+ *
+ * <p>
+ * This package is not intended for use outside this module.
+ * </p>
  */
-interface IDirtyMarkPainterFactoryContext {
-    /**
-     * Gets the color used for added dirty marks.
-     *
-     * @return The color used for added dirty marks.
-     */
-    Color getAddedDirtyMarkColor();
 
-    /**
-     * Gets the color used for changed dirty marks.
-     *
-     * @return The color used for changed dirty marks.
-     */
-    Color getChangedDirtyMarkColor();
-
-    /**
-     * Gets the color used for removed dirty marks.
-     *
-     * @return The color used for removed dirty marks.
-     */
-    Color getRemovedDirtyMarkColor();
-}
+@org.eclipse.jdt.annotation.NonNullByDefault
+package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.ui;

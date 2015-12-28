@@ -16,8 +16,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
+package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git;
 
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.StringUtils;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -29,7 +30,7 @@ import org.eclipse.jdt.annotation.Nullable;
 /**
  * A facade for running various custom Git commands required by the plugin.
  */
-final class GitCommands {
+public final class GitCommands {
     private final IGitRunner gitRunner;
 
     /**
@@ -38,7 +39,7 @@ final class GitCommands {
      * @param gitRunner
      *        The Git process runner.
      */
-    GitCommands(final IGitRunner gitRunner) {
+    public GitCommands(final IGitRunner gitRunner) {
         this.gitRunner = gitRunner;
     }
 
@@ -76,7 +77,7 @@ final class GitCommands {
      * @throws InterruptedException
      *         If interrupted while waiting for the Git process to exit.
      */
-    String getCommitRefAtHeadRevision(final Path repoRelativeFilePath)
+    public String getCommitRefAtHeadRevision(final Path repoRelativeFilePath)
             throws GitException, IOException, InterruptedException {
         final StringWriter outWriter = new StringWriter();
         final String[] args = new String[] {
@@ -116,8 +117,7 @@ final class GitCommands {
      * @throws InterruptedException
      *         If interrupted while waiting for the Git process to exit.
      */
-    @Nullable
-    Path getRepoRelativeFilePathAtHeadRevision(final Path filePath)
+    public @Nullable Path getRepoRelativeFilePathAtHeadRevision(final Path filePath)
             throws GitException, IOException, InterruptedException {
         final StringWriter outWriter = new StringWriter();
         final String[] args = new String[] {
@@ -157,7 +157,7 @@ final class GitCommands {
      * @throws InterruptedException
      *         If interrupted while waiting for the Git process to exit.
      */
-    boolean isInsideRepo() throws GitException, IOException, InterruptedException {
+    public boolean isInsideRepo() throws GitException, IOException, InterruptedException {
         final StringWriter outWriter = new StringWriter();
         final String[] args = new String[] {
             "rev-parse", //$NON-NLS-1$
@@ -209,7 +209,7 @@ final class GitCommands {
      * @throws InterruptedException
      *         If interrupted while waiting for the Git process to exit.
      */
-    void readFileContentAtHeadRevision(final Path repoRelativeFilePath, final Writer writer)
+    public void readFileContentAtHeadRevision(final Path repoRelativeFilePath, final Writer writer)
             throws GitException, IOException, InterruptedException {
         final String[] args = new String[] {
             "show", //$NON-NLS-1$

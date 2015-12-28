@@ -16,8 +16,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
+package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git;
 
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.IProcessRunner;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -26,7 +27,7 @@ import java.nio.file.Path;
 /**
  * Implementation of {@link IGitRunner}.
  */
-final class GitRunner implements IGitRunner {
+public final class GitRunner implements IGitRunner {
     private final Path gitPath;
     private final IProcessRunner processRunner;
     private final Path workingDirPath;
@@ -42,7 +43,7 @@ final class GitRunner implements IGitRunner {
      *        The path to the process working directory, typically a directory
      *        within the Git repository that is the target of the command.
      */
-    GitRunner(final IProcessRunner processRunner, final Path gitPath, final Path workingDirPath) {
+    public GitRunner(final IProcessRunner processRunner, final Path gitPath, final Path workingDirPath) {
         this.gitPath = gitPath;
         this.processRunner = processRunner;
         this.workingDirPath = workingDirPath;

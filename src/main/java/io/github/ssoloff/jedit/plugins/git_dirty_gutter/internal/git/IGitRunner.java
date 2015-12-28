@@ -16,7 +16,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
+package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git;
 
 import java.io.IOException;
 import java.io.Writer;
@@ -24,7 +24,7 @@ import java.io.Writer;
 /**
  * A Git process runner.
  */
-interface IGitRunner {
+public interface IGitRunner {
     /**
      * Runs a new Git process.
      *
@@ -43,5 +43,5 @@ interface IGitRunner {
      * @throws InterruptedException
      *         If interrupted while waiting for the Git process to exit.
      */
-    int run(Writer outWriter, String... args) throws GitException, IOException, InterruptedException;
+    public int run(Writer outWriter, String... args) throws GitException, IOException, InterruptedException;
 }

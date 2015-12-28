@@ -16,7 +16,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
+package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model;
 
 import difflib.Chunk;
 import difflib.Delta;
@@ -32,7 +32,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * <i>any</i> context lines will result in an exception being thrown.
  * </p>
  */
-final class PatchAnalyzer {
+public final class PatchAnalyzer {
     /** The patch to analyze. */
     private final Patch patch;
 
@@ -45,7 +45,7 @@ final class PatchAnalyzer {
      * @throws IllegalArgumentException
      *         If {@code patch} contains any context lines.
      */
-    PatchAnalyzer(final Patch patch) {
+    public PatchAnalyzer(final Patch patch) {
         if (DiffLibUtils.Patch.isContextLinePresent(patch)) {
             throw new IllegalArgumentException("patch must not contain any context lines"); //$NON-NLS-1$
         }
@@ -86,7 +86,7 @@ final class PatchAnalyzer {
      *
      * @return The type of dirty mark associated with the specified line.
      */
-    DirtyMarkType getDirtyMarkForLine(final int lineIndex) {
+    public DirtyMarkType getDirtyMarkForLine(final int lineIndex) {
         assert lineIndex >= 0;
 
         boolean isContentRemovedAboveThisLine = false;

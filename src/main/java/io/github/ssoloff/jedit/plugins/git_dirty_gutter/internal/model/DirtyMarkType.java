@@ -16,12 +16,12 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
+package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model;
 
 /**
  * The type of dirty mark associated with a line.
  */
-enum DirtyMarkType {
+public enum DirtyMarkType {
     /** The line was added since the last commit. */
     ADDED,
 

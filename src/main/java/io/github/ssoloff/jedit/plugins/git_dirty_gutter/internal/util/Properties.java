@@ -16,7 +16,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
+package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util;
 
 import java.awt.Color;
 import org.gjt.sp.jedit.jEdit;
@@ -28,7 +28,7 @@ import org.gjt.sp.jedit.jEdit;
  * The methods of this class are thread-safe.
  * </p>
  */
-final class Properties {
+public final class Properties {
     private static final String PROP_PREFIX = "io.github.ssoloff.jedit.plugins.git_dirty_gutter.GitDirtyGutterPlugin."; //$NON-NLS-1$
     private static final String PROP_ADDED_DIRTY_MARK_COLOR = PROP_PREFIX + "addedDirtyMarkColor"; //$NON-NLS-1$
     private static final String PROP_CHANGED_DIRTY_MARK_COLOR = PROP_PREFIX + "changedDirtyMarkColor"; //$NON-NLS-1$
@@ -43,7 +43,7 @@ final class Properties {
      *
      * @return The color used for added dirty marks.
      */
-    static Color getAddedDirtyMarkColor() {
+    public static Color getAddedDirtyMarkColor() {
         return jEdit.getColorProperty(PROP_ADDED_DIRTY_MARK_COLOR, Color.GREEN);
     }
 
@@ -52,7 +52,7 @@ final class Properties {
      *
      * @return The color used for changed dirty marks.
      */
-    static Color getChangedDirtyMarkColor() {
+    public static Color getChangedDirtyMarkColor() {
         return jEdit.getColorProperty(PROP_CHANGED_DIRTY_MARK_COLOR, Color.ORANGE);
     }
 
@@ -61,7 +61,7 @@ final class Properties {
      *
      * @return The time (in milliseconds) between polling for new commits.
      */
-    static int getCommitMonitorPollTime() {
+    public static int getCommitMonitorPollTime() {
         return jEdit.getIntegerProperty(PROP_COMMIT_MONITOR_POLL_TIME, 5000);
     }
 
@@ -70,7 +70,7 @@ final class Properties {
      *
      * @return The color used for removed dirty marks.
      */
-    static Color getRemovedDirtyMarkColor() {
+    public static Color getRemovedDirtyMarkColor() {
         return jEdit.getColorProperty(PROP_REMOVED_DIRTY_MARK_COLOR, Color.RED);
     }
 
@@ -80,7 +80,7 @@ final class Properties {
      * @param addedDirtyMarkColor
      *        The color used for added dirty marks.
      */
-    static void setAddedDirtyMarkColor(final Color addedDirtyMarkColor) {
+    public static void setAddedDirtyMarkColor(final Color addedDirtyMarkColor) {
         jEdit.setColorProperty(PROP_ADDED_DIRTY_MARK_COLOR, addedDirtyMarkColor);
     }
 
@@ -90,7 +90,7 @@ final class Properties {
      * @param changedDirtyMarkColor
      *        The color used for changed dirty marks.
      */
-    static void setChangedDirtyMarkColor(final Color changedDirtyMarkColor) {
+    public static void setChangedDirtyMarkColor(final Color changedDirtyMarkColor) {
         jEdit.setColorProperty(PROP_CHANGED_DIRTY_MARK_COLOR, changedDirtyMarkColor);
     }
 
@@ -100,7 +100,7 @@ final class Properties {
      * @param removedDirtyMarkColor
      *        The color used for removed dirty marks.
      */
-    static void setRemovedDirtyMarkColor(final Color removedDirtyMarkColor) {
+    public static void setRemovedDirtyMarkColor(final Color removedDirtyMarkColor) {
         jEdit.setColorProperty(PROP_REMOVED_DIRTY_MARK_COLOR, removedDirtyMarkColor);
     }
 }

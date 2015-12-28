@@ -16,38 +16,22 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
+package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process;
 
-import java.io.IOException;
-import java.io.Writer;
-import java.nio.file.Path;
+import common.io.ProcessExecutor;
 
 /**
- * A process runner.
+ * A factory for creating instances of {@link ProcessExecutor}.
  */
-interface IProcessRunner {
+interface IProcessExecutorFactory {
     /**
-     * Runs a new process.
+     * Creates a new process executor.
      *
-     * @param outWriter
-     *        The writer that will receive the content of the standard output
-     *        stream of the process.
-     * @param errWriter
-     *        The writer that will receive the content of the standard error
-     *        stream of the process.
-     * @param workingDirPath
-     *        The path to the process working directory.
      * @param command
      *        The command to run. The first element is the process executable.
      *        The remaining elements are the process arguments.
      *
-     * @return The exit code of the process.
-     *
-     * @throws IOException
-     *         If an error occurs while running the process.
-     * @throws InterruptedException
-     *         If interrupted while waiting for the process to exit.
+     * @return A new process executor.
      */
-    int run(Writer outWriter, Writer errWriter, Path workingDirPath, String... command)
-            throws IOException, InterruptedException;
+    ProcessExecutor createProcessExecutor(String... command);
 }
