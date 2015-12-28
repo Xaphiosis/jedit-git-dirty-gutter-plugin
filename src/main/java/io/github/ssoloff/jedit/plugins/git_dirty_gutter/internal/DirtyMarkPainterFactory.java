@@ -37,7 +37,7 @@ final class DirtyMarkPainterFactory {
         }
     };
 
-    private final DirtyMarkPainterFactoryContext context;
+    private final IDirtyMarkPainterFactoryContext context;
 
     /**
      * Initializes a new instance of the {@code DirtyMarkPainterFactory} class.
@@ -45,7 +45,7 @@ final class DirtyMarkPainterFactory {
      * @param context
      *        The execution context for the factory.
      */
-    DirtyMarkPainterFactory(final DirtyMarkPainterFactoryContext context) {
+    DirtyMarkPainterFactory(final IDirtyMarkPainterFactoryContext context) {
         this.context = context;
     }
 

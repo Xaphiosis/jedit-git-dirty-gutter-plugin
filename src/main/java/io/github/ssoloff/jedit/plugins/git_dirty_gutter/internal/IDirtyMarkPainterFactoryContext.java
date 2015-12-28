@@ -23,7 +23,7 @@ import java.awt.Color;
 /**
  * The execution context for an instance of {@code DirtyMarkPainterFactory}.
  */
-interface DirtyMarkPainterFactoryContext {
+interface IDirtyMarkPainterFactoryContext {
     /**
      * Gets the color used for added dirty marks.
      *

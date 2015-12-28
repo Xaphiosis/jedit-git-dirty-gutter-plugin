@@ -73,7 +73,7 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
     }
 
     private static DirtyMarkPainterFactory createDirtyMarkPainterFactory() {
-        return new DirtyMarkPainterFactory(new DirtyMarkPainterFactoryContext() {
+        return new DirtyMarkPainterFactory(new IDirtyMarkPainterFactoryContext() {
             @Override
             public Color getAddedDirtyMarkColor() {
                 return Properties.getAddedDirtyMarkColor();
