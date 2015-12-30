@@ -150,17 +150,17 @@ class GitCommandsIntegrationSpec extends Specification {
         repoRelativeFilePath == repoPath.relativize(filePath)
     }
 
-    def 'getRepoRelativeFilePathAtHeadRevision - when file is inside repo but does not exist on HEAD it should return null'() {
+    def 'getRepoRelativeFilePathAtHeadRevision - when file is inside repo but does not exist on HEAD it should throw an exception'() {
         setup:
         def filePath = repoPath.resolve('subdir1').resolve('file')
         createNewFile(filePath)
         // do not commit so it does not exist on HEAD
 
         when:
-        def repoRelativeFilePath = gitCommands.getRepoRelativeFilePathAtHeadRevision(filePath)
+        gitCommands.getRepoRelativeFilePathAtHeadRevision(filePath)
 
         then:
-        repoRelativeFilePath == null
+        thrown(GitException)
     }
 
     def 'getRepoRelativeFilePathAtHeadRevision - when file is outside repo it should throw an exception'() {
@@ -177,32 +177,41 @@ class GitCommandsIntegrationSpec extends Specification {
         deleteFile(filePath)
     }
 
-    def 'isInsideRepo - when working directory is inside repo work tree it should return true'() {
+    def 'isFilePresentAtHeadRevision - when file exists on HEAD it should return true'() {
         setup:
         def filePath = repoPath.resolve('subdir1').resolve('file')
         createNewFile(filePath)
         addAndCommitFile(filePath)
 
-        expect:
-        gitCommands.isInsideRepo() == true
+        when:
+        def result = gitCommands.isFilePresentAtHeadRevision(filePath)
+
+        then:
+        result == true
     }
 
-    def 'isInsideRepo - when working directory is inside repo but outside work tree it should return false'() {
+    def 'isFilePresentAtHeadRevision - when file is inside repo but does not exist on HEAD it should return false'() {
         setup:
-        def workingDirPath = repoPath.resolve('.git')
-        def gitCommands = new GitCommands(createGitRunnerForRepo(workingDirPath))
+        def filePath = repoPath.resolve('subdir1').resolve('file')
+        createNewFile(filePath)
+        // do not commit so it does not exist on HEAD
 
-        expect:
-        gitCommands.isInsideRepo() == false
+        when:
+        def result = gitCommands.isFilePresentAtHeadRevision(filePath)
+
+        then:
+        result == false
     }
 
-    def 'isInsideRepo - when working directory is outside repo it should return false'() {
+    def 'isFilePresentAtHeadRevision - when file is outside repo it should return false'() {
         setup:
         def filePath = createTempFile()
-        def gitCommands = new GitCommands(createGitRunnerForRepo(filePath.parent))
 
-        expect:
-        gitCommands.isInsideRepo() == false
+        when:
+        def result = gitCommands.isFilePresentAtHeadRevision(filePath)
+
+        then:
+        result == false
 
         cleanup:
         deleteFile(filePath)

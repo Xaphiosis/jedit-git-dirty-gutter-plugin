@@ -25,12 +25,11 @@ import java.io.Writer;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * A facade for running various custom Git commands required by the plugin.
  */
-public final class GitCommands {
+final class GitCommands {
     private final IGitRunner gitRunner;
 
     /**
@@ -39,7 +38,7 @@ public final class GitCommands {
      * @param gitRunner
      *        The Git process runner.
      */
-    public GitCommands(final IGitRunner gitRunner) {
+    GitCommands(final IGitRunner gitRunner) {
         this.gitRunner = gitRunner;
     }
 
@@ -77,7 +76,7 @@ public final class GitCommands {
      * @throws InterruptedException
      *         If interrupted while waiting for the Git process to exit.
      */
-    public String getCommitRefAtHeadRevision(final Path repoRelativeFilePath)
+    String getCommitRefAtHeadRevision(final Path repoRelativeFilePath)
             throws GitException, IOException, InterruptedException {
         final StringWriter outWriter = new StringWriter();
         final String[] args = new String[] {
@@ -107,8 +106,7 @@ public final class GitCommands {
      *        The path to the file whose repository-relative path is desired.
      *
      * @return The repository-relative path of the specified file at the HEAD
-     *         revision or {@code null} if the file does not exist in the
-     *         repository at the HEAD revision.
+     *         revision.
      *
      * @throws GitException
      *         If the Git process exits with an error.
@@ -117,7 +115,7 @@ public final class GitCommands {
      * @throws InterruptedException
      *         If interrupted while waiting for the Git process to exit.
      */
-    public @Nullable Path getRepoRelativeFilePathAtHeadRevision(final Path filePath)
+    Path getRepoRelativeFilePathAtHeadRevision(final Path filePath)
             throws GitException, IOException, InterruptedException {
         final StringWriter outWriter = new StringWriter();
         final String[] args = new String[] {
@@ -133,22 +131,22 @@ public final class GitCommands {
         }
 
         final List<String> lines = StringUtils.splitLinesWithImplicitFinalLine(outWriter.getBuffer());
-        if (lines.size() == 0) {
-            return null;
-        } else if (lines.size() == 1) {
-            return Paths.get(lines.get(0));
-        } else {
+        if (lines.size() != 1) {
             throw createUnexpectedGitOutputException(args, lines);
         }
+
+        return Paths.get(lines.get(0));
     }
 
     /**
-     * Indicates the working directory of the associated Git runner is located
-     * inside a Git repository.
+     * Indicates the specified file exists at the HEAD revision.
      *
-     * @return {@code true} if the working directory of the associated Git
-     *         runner is located inside a Git repository; otherwise
-     *         {@code false}.
+     * @param filePath
+     *        The path to the file whose existence at the HEAD revision is to be
+     *        determined.
+     *
+     * @return {@code true} if the specified file exists at the HEAD revision;
+     *         otherwise {@code false}.
      *
      * @throws GitException
      *         If the Git process exits with an unexpected error.
@@ -157,31 +155,19 @@ public final class GitCommands {
      * @throws InterruptedException
      *         If interrupted while waiting for the Git process to exit.
      */
-    public boolean isInsideRepo() throws GitException, IOException, InterruptedException {
+    boolean isFilePresentAtHeadRevision(final Path filePath) throws GitException, IOException, InterruptedException {
         final StringWriter outWriter = new StringWriter();
         final String[] args = new String[] {
-            "rev-parse", //$NON-NLS-1$
-            "--is-inside-work-tree" //$NON-NLS-1$
+            "ls-tree", //$NON-NLS-1$
+            "--full-name", //$NON-NLS-1$
+            "--name-only", //$NON-NLS-1$
+            "HEAD", //$NON-NLS-1$
+            filePath.toString() //
         };
         try {
             final int exitCode = gitRunner.run(outWriter, args);
             if (exitCode != 0) {
-                throw createUnexpectedGitExitCodeException(args, exitCode);
-            }
-
-            final List<String> lines = StringUtils.splitLinesWithImplicitFinalLine(outWriter.getBuffer());
-            if (lines.size() != 1) {
-                throw createUnexpectedGitOutputException(args, lines);
-            }
-
-            final String result = lines.get(0);
-            switch (result) {
-                case "true": //$NON-NLS-1$
-                    return true;
-                case "false": //$NON-NLS-1$
-                    return false;
-                default:
-                    throw createUnexpectedGitOutputException(args, lines);
+                return false;
             }
         } catch (final GitException e) {
             final Integer exitCode = e.getExitCode();
@@ -190,6 +176,13 @@ public final class GitCommands {
             }
             throw e;
         }
+
+        final List<String> lines = StringUtils.splitLinesWithImplicitFinalLine(outWriter.getBuffer());
+        if (lines.size() != 1) {
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -209,7 +202,7 @@ public final class GitCommands {
      * @throws InterruptedException
      *         If interrupted while waiting for the Git process to exit.
      */
-    public void readFileContentAtHeadRevision(final Path repoRelativeFilePath, final Writer writer)
+    void readFileContentAtHeadRevision(final Path repoRelativeFilePath, final Writer writer)
             throws GitException, IOException, InterruptedException {
         final String[] args = new String[] {
             "show", //$NON-NLS-1$

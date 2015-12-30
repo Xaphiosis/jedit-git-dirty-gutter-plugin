@@ -18,27 +18,26 @@
 
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
 
-import difflib.DiffUtils;
 import difflib.Patch;
 import git.GitPlugin;
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git.GitCommands;
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git.GitException;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git.GitRunner;
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git.GitTasks;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git.IGitRunner;
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git.IGitRunnerFactory;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.DirtyMarkType;
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.IBuffer;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.PatchAnalyzer;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.ui.DirtyMarkPainterFactory;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.ui.IDirtyMarkPainterFactoryContext;
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.ILog;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.Properties;
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.StringUtils;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.ProcessRunner;
 import java.awt.Color;
-import java.io.IOException;
-import java.io.StringWriter;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 import javax.swing.SwingWorker;
 import lcm.BufferHandler;
 import lcm.LCMPlugin;
@@ -85,6 +84,31 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
         updatePatch();
     }
 
+    /*
+     * This method is thread-safe.
+     * The returned {@code IBuffer} is thread-safe.
+     */
+    private IBuffer createBufferAdapter() {
+        @SuppressWarnings("synthetic-access")
+        final IBuffer bufferAdapter = new IBuffer() {
+            @Override
+            public List<String> getLines() {
+                final int lineCount = buffer.getLineCount();
+                final List<String> lines = new ArrayList<>(lineCount);
+                for (int lineIndex = 0; lineIndex < lineCount; ++lineIndex) {
+                    lines.add(buffer.getLineText(lineIndex));
+                }
+                return lines;
+            }
+
+            @Override
+            public Path getFilePath() {
+                return Paths.get(buffer.getPath());
+            }
+        };
+        return bufferAdapter;
+    }
+
     private static DirtyMarkPainterFactory createDirtyMarkPainterFactory() {
         return new DirtyMarkPainterFactory(new IDirtyMarkPainterFactoryContext() {
             @Override
@@ -107,42 +131,35 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
     /*
      * This method is thread-safe.
      */
-    private GitCommands createGitCommands() throws IOException {
-        final Path filePath = getFilePath();
-        final Path workingDirPath = filePath.getParent();
-        if (workingDirPath == null) {
-            throw new IOException(String.format("unable to get directory for '%s'", filePath)); //$NON-NLS-1$
-        }
-        final IGitRunner gitRunner = new GitRunner(new ProcessRunner(), Paths.get(GitPlugin.gitPath()), workingDirPath);
-        return new GitCommands(gitRunner);
-    }
-
-    private List<String> getBufferLines() {
-        final int lineCount = buffer.getLineCount();
-        final List<String> lines = new ArrayList<>(lineCount);
-        for (int lineIndex = 0; lineIndex < lineCount; ++lineIndex) {
-            lines.add(buffer.getLineText(lineIndex));
-        }
-        return lines;
+    private static IGitRunnerFactory createGitRunnerFactory() {
+        return new IGitRunnerFactory() {
+            @Override
+            public IGitRunner createGitRunner(final Path workingDirPath) {
+                return new GitRunner(new ProcessRunner(), Paths.get(GitPlugin.gitPath()), workingDirPath);
+            }
+        };
     }
 
     /*
      * This method is thread-safe.
      */
-    private @Nullable String getCommitRefAtHeadRevision() throws GitException, IOException, InterruptedException {
-        final GitCommands gitCommands = createGitCommands();
-        final Path repoRelativeFilePath = gitCommands.getRepoRelativeFilePathAtHeadRevision(getFilePath());
-        if (repoRelativeFilePath == null) {
-            return null;
-        }
-        return gitCommands.getCommitRefAtHeadRevision(repoRelativeFilePath);
-    }
+    private static ILog createLogAdapter() {
+        return new ILog() {
+            @Override
+            public void logDebug(final Object source, final String message) {
+                Log.log(Log.DEBUG, source, message);
+            }
 
-    /*
-     * This method is thread-safe.
-     */
-    private Path getFilePath() {
-        return Paths.get(buffer.getPath());
+            @Override
+            public void logError(final Object source, final String message, final Throwable t) {
+                Log.log(Log.ERROR, source, message, t);
+            }
+
+            @Override
+            public void logWarning(final Object source, final String message, final Throwable t) {
+                Log.log(Log.WARNING, source, message, t);
+            }
+        };
     }
 
     @Override
@@ -156,56 +173,6 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
         final PatchAnalyzer patchAnalyzer = new PatchAnalyzer(patch);
         final DirtyMarkType dirtyMarkType = patchAnalyzer.getDirtyMarkForLine(lineIndex);
         return dirtyMarkPainterFactory.createDirtyMarkPainter(dirtyMarkType);
-    }
-
-    private @Nullable List<String> getHeadRevisionLines() {
-        final Path filePath = getFilePath();
-        try {
-            final GitCommands gitCommands = createGitCommands();
-
-            final Path repoRelativeFilePath = gitCommands.getRepoRelativeFilePathAtHeadRevision(filePath);
-            if (repoRelativeFilePath == null) {
-                Log.log(Log.DEBUG, this, String.format("'%s' does not exist in Git repository", filePath)); //$NON-NLS-1$
-                return null;
-            }
-
-            final StringWriter headRevisionFileWriter = new StringWriter();
-            gitCommands.readFileContentAtHeadRevision(repoRelativeFilePath, headRevisionFileWriter);
-            return StringUtils.splitLinesWithExplicitFinalLine(headRevisionFileWriter.getBuffer());
-        } catch (final IOException | GitException e) {
-            Log.log(Log.ERROR, this, String.format("failed to get HEAD revision of file '%s'", filePath), e); //$NON-NLS-1$
-            return null;
-        } catch (final InterruptedException e) {
-            Thread.currentThread().interrupt();
-            Log.log(Log.NOTICE, this, String.format("interrupted while getting HEAD revision of file '%s'", filePath), //$NON-NLS-1$
-                    e);
-            return null;
-        }
-    }
-
-    /*
-     * This method is thread-safe.
-     */
-    private boolean isDirtyMarkProcessingEnabled() {
-        try {
-            if (buffer.isNewFile()) {
-                return false;
-            }
-
-            final GitCommands gitCommands = createGitCommands();
-            return gitCommands.isInsideRepo();
-        } catch (final GitException | IOException e) {
-            Log.log(Log.ERROR, this, String.format("failed to determine if dirty mark processing enabled for file '%s'", //$NON-NLS-1$
-                    getFilePath()), e);
-            return false;
-        } catch (final InterruptedException e) {
-            Thread.currentThread().interrupt();
-            Log.log(Log.NOTICE, this,
-                    String.format("interrupted while determining if dirty mark processing enabled for file '%s'", //$NON-NLS-1$
-                            getFilePath()),
-                    e);
-            return false;
-        }
     }
 
     @Override
@@ -242,18 +209,16 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
     }
 
     private void updatePatch() {
-        patch = null;
-
-        if (!isDirtyMarkProcessingEnabled()) {
-            Log.log(Log.DEBUG, this, String.format("dirty mark processing not enabled for file '%s'", getFilePath())); //$NON-NLS-1$
-            return;
+        // TODO: try-catch temporary until we move running task to a SwingWorker
+        try {
+            final GitTasks gitTasks = new GitTasks(createGitRunnerFactory(), createLogAdapter());
+            patch = gitTasks.createPatchBetweenHeadRevisionAndCurrentState(createBufferAdapter());
+        } catch (@SuppressWarnings("unused") final InterruptedException e) {
+            Thread.currentThread().interrupt();
+            patch = null;
         }
 
-        final @Nullable List<String> headRevisionLines = getHeadRevisionLines();
-        if (headRevisionLines != null) {
-            patch = DiffUtils.diff(headRevisionLines, getBufferLines());
-            LCMPlugin.getInstance().repaintAllTextAreas();
-        }
+        LCMPlugin.getInstance().repaintAllTextAreas();
     }
 
     /**
@@ -264,25 +229,16 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
     private final class CommitMonitorWorker extends SwingWorker<Void, Void> {
         @Override
         protected @Nullable Void doInBackground() throws Exception {
-            String previousCommitRef = null;
+            final AtomicReference<String> commitRefRef = new AtomicReference<>();
+            final IBuffer bufferAdapter = createBufferAdapter();
 
             while (true) {
-                try {
-                    if (isDirtyMarkProcessingEnabled()) {
-                        final String currentCommitRef = getCommitRefAtHeadRevision();
-                        if ((currentCommitRef != null) && (previousCommitRef != currentCommitRef)) {
-                            previousCommitRef = currentCommitRef;
-                            publish();
-                        }
-                    } else {
-                        previousCommitRef = null;
-                    }
-
-                    Thread.sleep(Properties.getCommitMonitorPollTime());
-                } catch (final GitException | IOException e) {
-                    Log.log(Log.ERROR, this,
-                            String.format("failed to get commit ref for HEAD revision of file '%s'", getFilePath()), e); //$NON-NLS-1$
+                final GitTasks gitTasks = new GitTasks(createGitRunnerFactory(), createLogAdapter());
+                if (gitTasks.hasHeadRevisionChanged(bufferAdapter, commitRefRef)) {
+                    publish();
                 }
+
+                Thread.sleep(Properties.getCommitMonitorPollTime());
             }
         }
 
