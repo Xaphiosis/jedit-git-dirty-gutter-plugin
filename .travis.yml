@@ -4,4 +4,4 @@ jdk:
 script:
   - ./gradlew --info check
 after_success:
-  - ./gradlew jacocoTestReport jacocoIntegrationTestReport coveralls
+  - ./gradlew jacocoCoverallsReport coveralls

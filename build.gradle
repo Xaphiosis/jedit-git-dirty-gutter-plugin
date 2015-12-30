@@ -50,6 +50,26 @@ task integrationTest(type: Test) {
     classpath = sourceSets.integrationTest.runtimeClasspath
 }
 
+task jacocoCoverallsReport(type: JacocoReport) {
+    description = 'Generates code coverage report for all tests suitable for Coveralls.'
+    group = 'Verification'
+
+    sourceSets sourceSets.main
+    executionData test, integrationTest
+
+    // coveralls plugin is hard-coded to look for reports associated with "jacocoTestReport" task
+    reports {
+        html {
+            destination = jacocoTestReport.reports.html.destination
+            enabled = true
+        }
+        xml {
+            destination = jacocoTestReport.reports.xml.destination
+            enabled = true
+        }
+    }
+}
+
 task jacocoIntegrationTestReport(type: JacocoReport) {
     description = 'Generates code coverage report for the integration tests.'
     group = 'Verification'
