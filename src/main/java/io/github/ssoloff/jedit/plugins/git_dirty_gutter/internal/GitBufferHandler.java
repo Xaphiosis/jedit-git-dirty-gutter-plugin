@@ -28,12 +28,10 @@ import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.DirtyMark
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.IBuffer;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.PatchAnalyzer;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.ui.DirtyMarkPainterFactory;
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.ui.IDirtyMarkPainterFactoryContext;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.AutoResetEvent;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.ILog;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.Properties;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.ProcessRunner;
-import java.awt.Color;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -55,7 +53,6 @@ import org.gjt.sp.util.Log;
  */
 final class GitBufferHandler extends BufferAdapter implements BufferHandler {
     private final Buffer buffer;
-    private final DirtyMarkPainterFactory dirtyMarkPainterFactory = createDirtyMarkPainterFactory();
     private @Nullable Patch patch = null;
     private final PatchWorker patchWorker = new PatchWorker();
 
@@ -86,25 +83,6 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
         updatePatch();
     }
 
-    private static DirtyMarkPainterFactory createDirtyMarkPainterFactory() {
-        return new DirtyMarkPainterFactory(new IDirtyMarkPainterFactoryContext() {
-            @Override
-            public Color getAddedDirtyMarkColor() {
-                return Properties.getAddedDirtyMarkColor();
-            }
-
-            @Override
-            public Color getChangedDirtyMarkColor() {
-                return Properties.getChangedDirtyMarkColor();
-            }
-
-            @Override
-            public Color getRemovedDirtyMarkColor() {
-                return Properties.getRemovedDirtyMarkColor();
-            }
-        });
-    }
-
     @Override
     public @Nullable DirtyMarkPainter getDirtyMarkPainter(final Buffer unusedBuffer, final int lineIndex) {
         @SuppressWarnings("hiding")
@@ -115,7 +93,7 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
 
         final PatchAnalyzer patchAnalyzer = new PatchAnalyzer(patch);
         final DirtyMarkType dirtyMarkType = patchAnalyzer.getDirtyMarkForLine(lineIndex);
-        return dirtyMarkPainterFactory.createDirtyMarkPainter(dirtyMarkType);
+        return DirtyMarkPainterFactory.createDirtyMarkPainter(dirtyMarkType);
     }
 
     private void setPatch(final @Nullable Patch patch) {

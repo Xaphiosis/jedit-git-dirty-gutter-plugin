@@ -19,6 +19,7 @@
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.ui;
 
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.DirtyMarkType;
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.Properties;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import lcm.painters.ColoredRectWithStripsPainter;
@@ -38,16 +39,7 @@ public final class DirtyMarkPainterFactory {
         }
     };
 
-    private final IDirtyMarkPainterFactoryContext context;
-
-    /**
-     * Initializes a new instance of the {@code DirtyMarkPainterFactory} class.
-     *
-     * @param context
-     *        The execution context for the factory.
-     */
-    public DirtyMarkPainterFactory(final IDirtyMarkPainterFactoryContext context) {
-        this.context = context;
+    private DirtyMarkPainterFactory() {
     }
 
     /**
@@ -58,7 +50,7 @@ public final class DirtyMarkPainterFactory {
      *
      * @return A new dirty mark painter.
      */
-    public DirtyMarkPainter createDirtyMarkPainter(final DirtyMarkType dirtyMarkType) {
+    public static DirtyMarkPainter createDirtyMarkPainter(final DirtyMarkType dirtyMarkType) {
         if (dirtyMarkType == DirtyMarkType.UNCHANGED) {
             return NULL_DIRTY_MARK_PAINTER;
         }
@@ -81,18 +73,18 @@ public final class DirtyMarkPainterFactory {
         return dirtyMarkPainter;
     }
 
-    private Color getColor(final DirtyMarkType dirtyMarkType) {
+    private static Color getColor(final DirtyMarkType dirtyMarkType) {
         switch (dirtyMarkType) {
             case ADDED:
-                return context.getAddedDirtyMarkColor();
+                return Properties.getAddedDirtyMarkColor();
 
             case CHANGED:
-                return context.getChangedDirtyMarkColor();
+                return Properties.getChangedDirtyMarkColor();
 
             case REMOVED_ABOVE:
             case REMOVED_ABOVE_AND_BELOW:
             case REMOVED_BELOW:
-                return context.getRemovedDirtyMarkColor();
+                return Properties.getRemovedDirtyMarkColor();
 
             default:
                 throw new AssertionError("unsupported dirty mark type"); //$NON-NLS-1$
