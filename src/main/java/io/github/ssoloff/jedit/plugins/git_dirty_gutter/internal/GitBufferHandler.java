@@ -29,6 +29,7 @@ import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.IBuffer;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.PatchAnalyzer;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.ui.DirtyMarkPainterFactory;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.ui.IDirtyMarkPainterFactoryContext;
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.AutoResetEvent;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.ILog;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.Properties;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.ProcessRunner;
@@ -37,6 +38,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.swing.SwingWorker;
 import lcm.BufferHandler;
@@ -53,9 +55,9 @@ import org.gjt.sp.util.Log;
  */
 final class GitBufferHandler extends BufferAdapter implements BufferHandler {
     private final Buffer buffer;
-    private @Nullable CommitMonitorWorker commitMonitorWorker = null;
     private final DirtyMarkPainterFactory dirtyMarkPainterFactory = createDirtyMarkPainterFactory();
     private @Nullable Patch patch = null;
+    private final PatchWorker patchWorker = new PatchWorker();
 
     /**
      * Initializes a new instance of the {@code GitBufferHandler} class.
@@ -84,31 +86,6 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
         updatePatch();
     }
 
-    /*
-     * This method is thread-safe.
-     * The returned {@code IBuffer} is thread-safe.
-     */
-    private IBuffer createBufferAdapter() {
-        @SuppressWarnings("synthetic-access")
-        final IBuffer bufferAdapter = new IBuffer() {
-            @Override
-            public List<String> getLines() {
-                final int lineCount = buffer.getLineCount();
-                final List<String> lines = new ArrayList<>(lineCount);
-                for (int lineIndex = 0; lineIndex < lineCount; ++lineIndex) {
-                    lines.add(buffer.getLineText(lineIndex));
-                }
-                return lines;
-            }
-
-            @Override
-            public Path getFilePath() {
-                return Paths.get(buffer.getPath());
-            }
-        };
-        return bufferAdapter;
-    }
-
     private static DirtyMarkPainterFactory createDirtyMarkPainterFactory() {
         return new DirtyMarkPainterFactory(new IDirtyMarkPainterFactoryContext() {
             @Override
@@ -128,40 +105,6 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
         });
     }
 
-    /*
-     * This method is thread-safe.
-     */
-    private static IGitRunnerFactory createGitRunnerFactory() {
-        return new IGitRunnerFactory() {
-            @Override
-            public IGitRunner createGitRunner(final Path workingDirPath) {
-                return new GitRunner(new ProcessRunner(), Paths.get(GitPlugin.gitPath()), workingDirPath);
-            }
-        };
-    }
-
-    /*
-     * This method is thread-safe.
-     */
-    private static ILog createLogAdapter() {
-        return new ILog() {
-            @Override
-            public void logDebug(final Object source, final String message) {
-                Log.log(Log.DEBUG, source, message);
-            }
-
-            @Override
-            public void logError(final Object source, final String message, final Throwable t) {
-                Log.log(Log.ERROR, source, message, t);
-            }
-
-            @Override
-            public void logWarning(final Object source, final String message, final Throwable t) {
-                Log.log(Log.WARNING, source, message, t);
-            }
-        };
-    }
-
     @Override
     public @Nullable DirtyMarkPainter getDirtyMarkPainter(final Buffer unusedBuffer, final int lineIndex) {
         @SuppressWarnings("hiding")
@@ -175,76 +118,116 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
         return dirtyMarkPainterFactory.createDirtyMarkPainter(dirtyMarkType);
     }
 
+    private void setPatch(final @Nullable Patch patch) {
+        this.patch = patch;
+        LCMPlugin.getInstance().repaintAllTextAreas();
+    }
+
     @Override
     public void start() {
-        startCommitMonitor();
+        startPatchWorker();
         updatePatch();
     }
 
-    private void startCommitMonitor() {
-        assert this.commitMonitorWorker == null;
-
-        @SuppressWarnings({
-            "hiding", "synthetic-access"
-        })
-        final CommitMonitorWorker commitMonitorWorker = new CommitMonitorWorker();
-        this.commitMonitorWorker = commitMonitorWorker;
-        commitMonitorWorker.execute();
+    private void startPatchWorker() {
+        patchWorker.execute();
     }
 
     /**
      * Invoked when the handler has been detached from the buffer.
      */
     void stop() {
-        stopCommitMonitor();
+        stopPatchWorker();
     }
 
-    private void stopCommitMonitor() {
-        @SuppressWarnings("hiding")
-        final CommitMonitorWorker commitMonitorWorker = this.commitMonitorWorker;
-        if (commitMonitorWorker != null) {
-            this.commitMonitorWorker = null;
-            commitMonitorWorker.cancel(true);
-        }
+    private void stopPatchWorker() {
+        patchWorker.cancel(true);
     }
 
     private void updatePatch() {
-        // TODO: try-catch temporary until we move running task to a SwingWorker
-        try {
-            final GitTasks gitTasks = new GitTasks(createGitRunnerFactory(), createLogAdapter());
-            patch = gitTasks.createPatchBetweenHeadRevisionAndCurrentState(createBufferAdapter());
-        } catch (@SuppressWarnings("unused") final InterruptedException e) {
-            Thread.currentThread().interrupt();
-            patch = null;
-        }
-
-        LCMPlugin.getInstance().repaintAllTextAreas();
+        patchWorker.updatePatch();
     }
 
     /**
-     * A background task to monitor the repository to detect when the file has
-     * been committed.
+     * A background task that is responsible for updating the patch associated
+     * with the buffer when requested or when a change in the repository is
+     * detected.
      */
     @SuppressWarnings("synthetic-access")
-    private final class CommitMonitorWorker extends SwingWorker<Void, Void> {
-        @Override
-        protected @Nullable Void doInBackground() throws Exception {
-            final AtomicReference<String> commitRefRef = new AtomicReference<>();
-            final IBuffer bufferAdapter = createBufferAdapter();
+    private final class PatchWorker extends SwingWorker<Void, Patch> {
+        private final AutoResetEvent updatePatchEvent = new AutoResetEvent();
 
-            while (true) {
-                final GitTasks gitTasks = new GitTasks(createGitRunnerFactory(), createLogAdapter());
-                if (gitTasks.hasHeadRevisionChanged(bufferAdapter, commitRefRef)) {
-                    publish();
+        PatchWorker() {
+        }
+
+        private IBuffer createBufferAdapter() {
+            return new IBuffer() {
+                @Override
+                public List<String> getLines() {
+                    final int lineCount = buffer.getLineCount();
+                    final List<String> lines = new ArrayList<>(lineCount);
+                    for (int lineIndex = 0; lineIndex < lineCount; ++lineIndex) {
+                        lines.add(buffer.getLineText(lineIndex));
+                    }
+                    return lines;
                 }
 
-                Thread.sleep(Properties.getCommitMonitorPollTime());
+                @Override
+                public Path getFilePath() {
+                    return Paths.get(buffer.getPath());
+                }
+            };
+        }
+
+        private GitTasks createGitTasks() {
+            final IGitRunnerFactory gitRunnerFactory = new IGitRunnerFactory() {
+                @Override
+                public IGitRunner createGitRunner(final Path workingDirPath) {
+                    return new GitRunner(new ProcessRunner(), Paths.get(GitPlugin.gitPath()), workingDirPath);
+                }
+            };
+            final ILog log = new ILog() {
+                @Override
+                public void logDebug(final Object source, final String message) {
+                    Log.log(Log.DEBUG, source, message);
+                }
+
+                @Override
+                public void logError(final Object source, final String message, final Throwable t) {
+                    Log.log(Log.ERROR, source, message, t);
+                }
+
+                @Override
+                public void logWarning(final Object source, final String message, final Throwable t) {
+                    Log.log(Log.WARNING, source, message, t);
+                }
+            };
+            return new GitTasks(gitRunnerFactory, log);
+        }
+
+        @Override
+        protected @Nullable Void doInBackground() throws Exception {
+            final IBuffer bufferAdapter = createBufferAdapter();
+            final AtomicReference<String> commitRefRef = new AtomicReference<>();
+
+            while (true) {
+                // NB: create GitTasks each time through loop to pick up any change in GitPlugin.gitPath()
+                final GitTasks gitTasks = createGitTasks();
+                if (updatePatchEvent.await(Properties.getCommitMonitorPollTime(), TimeUnit.MILLISECONDS)
+                        || gitTasks.hasHeadRevisionChanged(bufferAdapter, commitRefRef)) {
+                    publish(gitTasks.createPatchBetweenHeadRevisionAndCurrentState(bufferAdapter));
+                }
             }
         }
 
         @Override
-        protected void process(final List<Void> chunks) {
-            updatePatch();
+        protected void process(final List<Patch> patches) {
+            assert patches.size() == 1;
+            setPatch(patches.get(0));
+        }
+
+        void updatePatch() {
+            updatePatchEvent.signal();
         }
     }
 }
