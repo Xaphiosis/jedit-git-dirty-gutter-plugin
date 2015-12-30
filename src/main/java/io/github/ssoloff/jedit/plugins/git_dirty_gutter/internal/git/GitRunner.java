@@ -60,6 +60,7 @@ public final class GitRunner implements IGitRunner {
             final String error) {
         return GitException.newBuilder() //
                 .withMessageSummary("the Git process exited with an error") //$NON-NLS-1$
+                .withWorkingDirPath(workingDirPath) //
                 .withProgramPath(gitPath) //
                 .withProgramArgs(args) //
                 .withExitCode(exitCode) //

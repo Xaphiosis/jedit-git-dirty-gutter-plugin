@@ -35,12 +35,16 @@ public final class GitException extends Exception {
     private final @Nullable String output;
     private final @Nullable String[] programArgs;
     private final @Nullable Path programPath;
+    private final @Nullable Path workingDirPath;
 
     /**
      * Initializes a new instance of the {@code GitException} class.
      *
      * @param messageSummary
      *        The exception message summary or {@code null} if not specified.
+     * @param workingDirPath
+     *        The working directory path of the Git process or {@code null} if
+     *        not specified.
      * @param programPath
      *        The program path of the Git process or {@code null} if not
      *        specified.
@@ -56,15 +60,16 @@ public final class GitException extends Exception {
      *        The content of the standard error stream of the Git process or
      *        {@code null} if not specified.
      */
-    private GitException(final @Nullable String messageSummary, final @Nullable Path programPath,
-            final @Nullable String[] programArgs, final @Nullable Integer exitCode, final @Nullable String output,
-            final @Nullable String error) {
+    private GitException(final @Nullable String messageSummary, final @Nullable Path workingDirPath,
+            final @Nullable Path programPath, final @Nullable String[] programArgs, final @Nullable Integer exitCode,
+            final @Nullable String output, final @Nullable String error) {
         this.error = error;
         this.exitCode = exitCode;
         this.messageSummary = messageSummary;
         this.output = output;
         this.programArgs = programArgs; // defensive copy already performed by builder
         this.programPath = programPath;
+        this.workingDirPath = workingDirPath;
     }
 
     /**
@@ -93,6 +98,43 @@ public final class GitException extends Exception {
      */
     public @Nullable Integer getExitCode() {
         return exitCode;
+    }
+
+    @Override
+    public String getMessage() {
+        final StringBuilder sb = new StringBuilder();
+
+        if (isPopulated(messageSummary)) {
+            sb.append(String.format("%s\n", messageSummary)); //$NON-NLS-1$
+        } else {
+            sb.append(String.format("%s\n", getDefaultMessageSummary())); //$NON-NLS-1$
+        }
+
+        if (isPopulated(workingDirPath)) {
+            sb.append(String.format("working dir path: %s\n", workingDirPath)); //$NON-NLS-1$
+        }
+
+        if (isPopulated(programPath)) {
+            sb.append(String.format("    program path: %s\n", programPath)); //$NON-NLS-1$
+        }
+
+        if (isPopulated(programArgs)) {
+            sb.append(String.format("    program args: %s\n", Arrays.toString(programArgs))); //$NON-NLS-1$
+        }
+
+        if (isPopulated(exitCode)) {
+            sb.append(String.format("       exit code: %d\n", exitCode)); //$NON-NLS-1$
+        }
+
+        if (isPopulated(output)) {
+            sb.append(String.format("          output: %s\n", output)); //$NON-NLS-1$
+        }
+
+        if (isPopulated(error)) {
+            sb.append(String.format("           error: %s", error)); //$NON-NLS-1$
+        }
+
+        return sb.toString();
     }
 
     /**
@@ -125,37 +167,14 @@ public final class GitException extends Exception {
         return programPath;
     }
 
-    @Override
-    public String getMessage() {
-        final StringBuilder sb = new StringBuilder();
-
-        if (isPopulated(messageSummary)) {
-            sb.append(String.format("%s\n", messageSummary)); //$NON-NLS-1$
-        } else {
-            sb.append(String.format("%s\n", getDefaultMessageSummary())); //$NON-NLS-1$
-        }
-
-        if (isPopulated(programPath)) {
-            sb.append(String.format("program path: %s\n", programPath)); //$NON-NLS-1$
-        }
-
-        if (isPopulated(programArgs)) {
-            sb.append(String.format("program args: %s\n", Arrays.toString(programArgs))); //$NON-NLS-1$
-        }
-
-        if (isPopulated(exitCode)) {
-            sb.append(String.format("   exit code: %d\n", exitCode)); //$NON-NLS-1$
-        }
-
-        if (isPopulated(output)) {
-            sb.append(String.format("      output: %s\n", output)); //$NON-NLS-1$
-        }
-
-        if (isPopulated(error)) {
-            sb.append(String.format("       error: %s", error)); //$NON-NLS-1$
-        }
-
-        return sb.toString();
+    /**
+     * Gets the working directory path of the Git process.
+     *
+     * @return The working directory path of the Git process or {@code null} if
+     *         not specified.
+     */
+    public @Nullable Path getWorkingDirPath() {
+        return workingDirPath;
     }
 
     private static boolean isPopulated(final @Nullable Object obj) {
@@ -188,6 +207,7 @@ public final class GitException extends Exception {
         private @Nullable String output = null;
         private @Nullable String[] programArgs = null;
         private @Nullable Path programPath = null;
+        private @Nullable Path workingDirPath = null;
 
         private Builder() {
         }
@@ -199,7 +219,7 @@ public final class GitException extends Exception {
          */
         @SuppressWarnings("synthetic-access")
         GitException build() {
-            return new GitException(messageSummary, programPath, programArgs, exitCode, output, error);
+            return new GitException(messageSummary, workingDirPath, programPath, programArgs, exitCode, output, error);
         }
 
         /**
@@ -277,6 +297,19 @@ public final class GitException extends Exception {
          */
         Builder withProgramPath(@SuppressWarnings("hiding") final Path programPath) {
             this.programPath = programPath;
+            return this;
+        }
+
+        /**
+         * Sets the working directory path of the Git process.
+         *
+         * @param workingDirPath
+         *        The working directory path of the Git process.
+         *
+         * @return The builder.
+         */
+        Builder withWorkingDirPath(@SuppressWarnings("hiding") final Path workingDirPath) {
+            this.workingDirPath = workingDirPath;
             return this;
         }
     }

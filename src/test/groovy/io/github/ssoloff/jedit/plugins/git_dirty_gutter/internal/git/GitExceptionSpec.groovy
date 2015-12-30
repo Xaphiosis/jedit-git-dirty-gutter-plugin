@@ -47,6 +47,22 @@ class GitExceptionSpec extends Specification {
         e.message.startsWith(GitException.defaultMessageSummary)
     }
 
+    def 'getMessage - when the working directory path is specified it should include the working directory path'() {
+        setup:
+        def e = GitException.newBuilder().withWorkingDirPath(Paths.get('/path/to/working-dir')).build()
+
+        expect:
+        e.message =~ /(?m)^\s*working dir path:/
+    }
+
+    def 'getMessage - when the working directory path is not specified it should not include the working directory path'() {
+        setup:
+        def e = GitException.newBuilder().build()
+
+        expect:
+        e.message !=~ /(?m)^\s*working dir path:/
+    }
+
     def 'getMessage - when the program path is specified it should include the program path'() {
         setup:
         def e = GitException.newBuilder().withProgramPath(Paths.get('/path/to/program')).build()
