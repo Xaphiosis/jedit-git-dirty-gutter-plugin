@@ -26,6 +26,7 @@ import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.IBuffer;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.PatchAnalyzer;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.AutoResetEvent;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.ILog;
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.ISupplier;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.Properties;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.ProcessRunner;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.GitRunner;
@@ -157,10 +158,16 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
             final IGitRunnerFactory gitRunnerFactory = new IGitRunnerFactory() {
                 @Override
                 public IGitRunner createGitRunner(final Path workingDirPath) {
-                    return new GitRunner(new ProcessRunner(), workingDirPath, Paths.get(GitPlugin.gitPath()));
+                    final ISupplier<Path> programPathSupplier = new ISupplier<Path>() {
+                        @Override
+                        public Path get() {
+                            return Paths.get(GitPlugin.gitPath());
+                        }
+                    };
+                    return new GitRunner(new ProcessRunner(), workingDirPath, programPathSupplier);
                 }
             };
-            final ILog log = new ILog() {
+            final ILog logAdapter = new ILog() {
                 @Override
                 public void logDebug(final Object source, final String message) {
                     Log.log(Log.DEBUG, source, message);
@@ -176,16 +183,14 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
                     Log.log(Log.WARNING, source, message, t);
                 }
             };
-            return new BufferAnalyzer(bufferAdapter, gitRunnerFactory, log);
+            return new BufferAnalyzer(bufferAdapter, gitRunnerFactory, logAdapter);
         }
 
         @Override
         protected @Nullable Void doInBackground() throws Exception {
+            final BufferAnalyzer bufferAnalyzer = createBufferAnalyzer();
             final AtomicReference<String> commitRefRef = new AtomicReference<>();
-
             while (true) {
-                // NB: create BufferAnalyzer each time through loop to pick up any change in GitPlugin.gitPath()
-                final BufferAnalyzer bufferAnalyzer = createBufferAnalyzer();
                 if (isPatchUpdatePending() || bufferAnalyzer.hasHeadRevisionChanged(commitRefRef)) {
                     publish(bufferAnalyzer.createPatchBetweenHeadRevisionAndCurrentState());
                 }
