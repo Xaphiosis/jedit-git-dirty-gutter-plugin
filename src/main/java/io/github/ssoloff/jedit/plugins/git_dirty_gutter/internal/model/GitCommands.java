@@ -16,8 +16,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git;
+package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model;
 
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git.GitException;
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git.IGitRunner;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.StringUtils;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -27,7 +29,7 @@ import java.nio.file.Paths;
 import java.util.List;
 
 /**
- * A facade for running various custom Git commands required by the plugin.
+ * A facade for running various custom Git commands required by the model.
  */
 final class GitCommands {
     private final IGitRunner gitRunner;

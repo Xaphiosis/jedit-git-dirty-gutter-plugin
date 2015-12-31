@@ -21,9 +21,9 @@ package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.ui;
 import difflib.Patch;
 import git.GitPlugin;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git.GitRunner;
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git.GitTasks;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git.IGitRunner;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git.IGitRunnerFactory;
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.BufferAnalyzer;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.DirtyMarkType;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.IBuffer;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.PatchAnalyzer;
@@ -156,7 +156,7 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
             };
         }
 
-        private GitTasks createGitTasks() {
+        private BufferAnalyzer createBufferAnalyzer() {
             final IGitRunnerFactory gitRunnerFactory = new IGitRunnerFactory() {
                 @Override
                 public IGitRunner createGitRunner(final Path workingDirPath) {
@@ -179,7 +179,7 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
                     Log.log(Log.WARNING, source, message, t);
                 }
             };
-            return new GitTasks(gitRunnerFactory, log);
+            return new BufferAnalyzer(gitRunnerFactory, log);
         }
 
         @Override
@@ -188,11 +188,11 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
             final AtomicReference<String> commitRefRef = new AtomicReference<>();
 
             while (true) {
-                // NB: create GitTasks each time through loop to pick up any change in GitPlugin.gitPath()
-                final GitTasks gitTasks = createGitTasks();
+                // NB: create BufferAnalyzer each time through loop to pick up any change in GitPlugin.gitPath()
+                final BufferAnalyzer bufferAnalyzer = createBufferAnalyzer();
                 if (updatePatchEvent.await(Properties.getCommitMonitorPollTime(), TimeUnit.MILLISECONDS)
-                        || gitTasks.hasHeadRevisionChanged(bufferAdapter, commitRefRef)) {
-                    publish(gitTasks.createPatchBetweenHeadRevisionAndCurrentState(bufferAdapter));
+                        || bufferAnalyzer.hasHeadRevisionChanged(bufferAdapter, commitRefRef)) {
+                    publish(bufferAnalyzer.createPatchBetweenHeadRevisionAndCurrentState(bufferAdapter));
                 }
             }
         }

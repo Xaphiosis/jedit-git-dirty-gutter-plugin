@@ -16,8 +16,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git
+package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model
 
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git.GitException
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git.GitRunner
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git.IGitRunner
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.ProcessRunner
 import java.nio.file.Files
 import java.nio.file.Path

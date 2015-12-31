@@ -16,9 +16,11 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git
+package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model
 
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.IBuffer
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git.GitRunner
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git.IGitRunner
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git.IGitRunnerFactory
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.ILog
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.ProcessRunner
 import java.nio.charset.Charset
@@ -28,10 +30,10 @@ import java.nio.file.Paths
 import java.util.concurrent.atomic.AtomicReference
 import spock.lang.Specification
 
-class GitTasksIntegrationSpec extends Specification {
+class BufferAnalyzerIntegrationSpec extends Specification {
     private def repoPath = createTempDirectory()
     private def gitRunnerFactory = createGitRunnerFactory()
-    private def gitTasks = createGitTasks()
+    private def bufferAnalyzer = createBufferAnalyzer()
 
     private void addAndCommitFile(Path filePath) {
         runGit('add', filePath)
@@ -61,8 +63,8 @@ class GitTasksIntegrationSpec extends Specification {
         gitRunnerFactory.createGitRunner(repoPath)
     }
 
-    private GitTasks createGitTasks() {
-        new GitTasks(gitRunnerFactory, Mock(ILog))
+    private BufferAnalyzer createBufferAnalyzer() {
+        new BufferAnalyzer(gitRunnerFactory, Mock(ILog))
     }
 
     private Path createTempDirectory() {
@@ -135,7 +137,7 @@ class GitTasksIntegrationSpec extends Specification {
         touchFile(filePath, 'new content\n')
 
         when:
-        def patch = gitTasks.createPatchBetweenHeadRevisionAndCurrentState(createBufferForFile(filePath))
+        def patch = bufferAnalyzer.createPatchBetweenHeadRevisionAndCurrentState(createBufferForFile(filePath))
 
         then:
         patch != null
@@ -149,7 +151,7 @@ class GitTasksIntegrationSpec extends Specification {
         // do not commit so it does not exist on HEAD
 
         when:
-        def patch = gitTasks.createPatchBetweenHeadRevisionAndCurrentState(createBufferForFile(filePath))
+        def patch = bufferAnalyzer.createPatchBetweenHeadRevisionAndCurrentState(createBufferForFile(filePath))
 
         then:
         patch == null
@@ -168,7 +170,7 @@ class GitTasksIntegrationSpec extends Specification {
         assert oldCommitRef != newCommitRef
 
         when:
-        def result = gitTasks.hasHeadRevisionChanged(createBufferForFile(filePath), commitRefRef)
+        def result = bufferAnalyzer.hasHeadRevisionChanged(createBufferForFile(filePath), commitRefRef)
 
         then:
         result == true
@@ -184,7 +186,7 @@ class GitTasksIntegrationSpec extends Specification {
         def commitRefRef = new AtomicReference<String>(oldCommitRef)
 
         when:
-        def result = gitTasks.hasHeadRevisionChanged(createBufferForFile(filePath), commitRefRef)
+        def result = bufferAnalyzer.hasHeadRevisionChanged(createBufferForFile(filePath), commitRefRef)
 
         then:
         result == false
@@ -199,7 +201,7 @@ class GitTasksIntegrationSpec extends Specification {
         def commitRefRef = new AtomicReference<String>(null)
 
         when:
-        def result = gitTasks.hasHeadRevisionChanged(createBufferForFile(filePath), commitRefRef)
+        def result = bufferAnalyzer.hasHeadRevisionChanged(createBufferForFile(filePath), commitRefRef)
 
         then:
         result == false

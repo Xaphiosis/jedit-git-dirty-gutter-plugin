@@ -16,11 +16,13 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git;
+package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model;
 
 import difflib.DiffUtils;
 import difflib.Patch;
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.IBuffer;
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git.GitException;
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git.IGitRunner;
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git.IGitRunnerFactory;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.ILog;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.StringUtils;
 import java.io.IOException;
@@ -32,21 +34,21 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
- * A facade for running various custom high-level tasks required by the plugin.
+ * Provides various types of analysis for a buffer.
  */
-public final class GitTasks {
+public final class BufferAnalyzer {
     private final IGitRunnerFactory gitRunnerFactory;
     private final ILog log;
 
     /**
-     * Initializes a new instance of the {@code GitTasks} class.
+     * Initializes a new instance of the {@code BufferAnalyzer} class.
      *
      * @param gitRunnerFactory
      *        The factory used to create Git runners.
      * @param log
      *        The application log.
      */
-    public GitTasks(final IGitRunnerFactory gitRunnerFactory, final ILog log) {
+    public BufferAnalyzer(final IGitRunnerFactory gitRunnerFactory, final ILog log) {
         this.gitRunnerFactory = gitRunnerFactory;
         this.log = log;
     }

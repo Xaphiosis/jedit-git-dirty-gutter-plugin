@@ -193,14 +193,14 @@ public final class GitException extends Exception {
      *         class.
      */
     @SuppressWarnings("synthetic-access")
-    static Builder newBuilder() {
+    public static Builder newBuilder() {
         return new Builder();
     }
 
     /**
      * A builder for creating instances of the {@code GitException} class.
      */
-    static final class Builder {
+    public static final class Builder {
         private @Nullable String error = null;
         private @Nullable Integer exitCode = null;
         private @Nullable String messageSummary = null;
@@ -218,7 +218,7 @@ public final class GitException extends Exception {
          * @return A new exception based on the state of the builder.
          */
         @SuppressWarnings("synthetic-access")
-        GitException build() {
+        public GitException build() {
             return new GitException(messageSummary, workingDirPath, programPath, programArgs, exitCode, output, error);
         }
 
@@ -230,7 +230,7 @@ public final class GitException extends Exception {
          *
          * @return The builder.
          */
-        Builder withError(@SuppressWarnings("hiding") final String error) {
+        public Builder withError(@SuppressWarnings("hiding") final String error) {
             this.error = error;
             return this;
         }
@@ -243,7 +243,7 @@ public final class GitException extends Exception {
          *
          * @return The builder.
          */
-        Builder withExitCode(@SuppressWarnings("hiding") final int exitCode) {
+        public Builder withExitCode(@SuppressWarnings("hiding") final int exitCode) {
             this.exitCode = Integer.valueOf(exitCode);
             return this;
         }
@@ -256,7 +256,7 @@ public final class GitException extends Exception {
          *
          * @return The builder.
          */
-        Builder withMessageSummary(@SuppressWarnings("hiding") final String messageSummary) {
+        public Builder withMessageSummary(@SuppressWarnings("hiding") final String messageSummary) {
             this.messageSummary = messageSummary;
             return this;
         }
@@ -269,7 +269,7 @@ public final class GitException extends Exception {
          *
          * @return The builder.
          */
-        Builder withOutput(@SuppressWarnings("hiding") final String output) {
+        public Builder withOutput(@SuppressWarnings("hiding") final String output) {
             this.output = output;
             return this;
         }
@@ -282,7 +282,7 @@ public final class GitException extends Exception {
          *
          * @return The builder.
          */
-        Builder withProgramArgs(@SuppressWarnings("hiding") final String[] programArgs) {
+        public Builder withProgramArgs(@SuppressWarnings("hiding") final String[] programArgs) {
             this.programArgs = programArgs.clone();
             return this;
         }
@@ -295,7 +295,7 @@ public final class GitException extends Exception {
          *
          * @return The builder.
          */
-        Builder withProgramPath(@SuppressWarnings("hiding") final Path programPath) {
+        public Builder withProgramPath(@SuppressWarnings("hiding") final Path programPath) {
             this.programPath = programPath;
             return this;
         }
@@ -308,7 +308,7 @@ public final class GitException extends Exception {
          *
          * @return The builder.
          */
-        Builder withWorkingDirPath(@SuppressWarnings("hiding") final Path workingDirPath) {
+        public Builder withWorkingDirPath(@SuppressWarnings("hiding") final Path workingDirPath) {
             this.workingDirPath = workingDirPath;
             return this;
         }
