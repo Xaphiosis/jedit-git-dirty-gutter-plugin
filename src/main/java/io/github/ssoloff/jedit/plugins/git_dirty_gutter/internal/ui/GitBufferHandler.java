@@ -186,11 +186,14 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
             while (true) {
                 // NB: create BufferAnalyzer each time through loop to pick up any change in GitPlugin.gitPath()
                 final BufferAnalyzer bufferAnalyzer = createBufferAnalyzer();
-                if (updatePatchEvent.await(Properties.getCommitMonitorPollTime(), TimeUnit.MILLISECONDS)
-                        || bufferAnalyzer.hasHeadRevisionChanged(commitRefRef)) {
+                if (isPatchUpdatePending() || bufferAnalyzer.hasHeadRevisionChanged(commitRefRef)) {
                     publish(bufferAnalyzer.createPatchBetweenHeadRevisionAndCurrentState());
                 }
             }
+        }
+
+        private boolean isPatchUpdatePending() throws InterruptedException {
+            return updatePatchEvent.await(Properties.getCommitMonitorPollTime(), TimeUnit.MILLISECONDS);
         }
 
         @Override
