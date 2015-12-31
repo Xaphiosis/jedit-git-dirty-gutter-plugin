@@ -37,23 +37,27 @@ import org.eclipse.jdt.annotation.Nullable;
  * Provides various types of analysis for a buffer.
  */
 public final class BufferAnalyzer {
+    private final IBuffer buffer;
     private final IGitRunnerFactory gitRunnerFactory;
     private final ILog log;
 
     /**
      * Initializes a new instance of the {@code BufferAnalyzer} class.
      *
+     * @param buffer
+     *        The buffer to analyze.
      * @param gitRunnerFactory
      *        The factory used to create Git runners.
      * @param log
      *        The application log.
      */
-    public BufferAnalyzer(final IGitRunnerFactory gitRunnerFactory, final ILog log) {
+    public BufferAnalyzer(final IBuffer buffer, final IGitRunnerFactory gitRunnerFactory, final ILog log) {
+        this.buffer = buffer;
         this.gitRunnerFactory = gitRunnerFactory;
         this.log = log;
     }
 
-    private GitCommands createGitCommands(final IBuffer buffer) throws IOException {
+    private GitCommands createGitCommands() throws IOException {
         final Path filePath = buffer.getFilePath();
         final Path workingDirPath = filePath.getParent();
         if (workingDirPath == null) {
@@ -65,26 +69,22 @@ public final class BufferAnalyzer {
 
     /**
      * Creates a patch between the HEAD revision of the file associated with the
-     * specified buffer and the current state of the buffer.
-     *
-     * @param buffer
-     *        The buffer for which the patch is to be created.
+     * buffer and the current state of the buffer.
      *
      * @return The patch between the HEAD revision of the file associated with
-     *         the specified buffer and the current state of the buffer or
-     *         {@code null} if the patch cannot be created.
+     *         the buffer and the current state of the buffer or {@code null} if
+     *         the patch cannot be created.
      *
      * @throws InterruptedException
      *         If interrupted while waiting for the task to complete.
      */
-    public @Nullable Patch createPatchBetweenHeadRevisionAndCurrentState(final IBuffer buffer)
-            throws InterruptedException {
-        if (!isFilePresentAtHeadRevision(buffer)) {
+    public @Nullable Patch createPatchBetweenHeadRevisionAndCurrentState() throws InterruptedException {
+        if (!isFilePresentAtHeadRevision()) {
             return null;
         }
 
         try {
-            final List<String> headRevisionLines = getHeadRevisionLines(buffer);
+            final List<String> headRevisionLines = getHeadRevisionLines();
             return DiffUtils.diff(headRevisionLines, buffer.getLines());
         } catch (final GitException | IOException e) {
             log.logError(this,
@@ -95,16 +95,14 @@ public final class BufferAnalyzer {
         }
     }
 
-    private String getCommitRefAtHeadRevision(final IBuffer buffer)
-            throws GitException, IOException, InterruptedException {
-        final GitCommands gitCommands = createGitCommands(buffer);
+    private String getCommitRefAtHeadRevision() throws GitException, IOException, InterruptedException {
+        final GitCommands gitCommands = createGitCommands();
         final Path repoRelativeFilePath = gitCommands.getRepoRelativeFilePathAtHeadRevision(buffer.getFilePath());
         return gitCommands.getCommitRefAtHeadRevision(repoRelativeFilePath);
     }
 
-    private List<String> getHeadRevisionLines(final IBuffer buffer)
-            throws GitException, IOException, InterruptedException {
-        final GitCommands gitCommands = createGitCommands(buffer);
+    private List<String> getHeadRevisionLines() throws GitException, IOException, InterruptedException {
+        final GitCommands gitCommands = createGitCommands();
         final Path repoRelativeFilePath = gitCommands.getRepoRelativeFilePathAtHeadRevision(buffer.getFilePath());
         final StringWriter headRevisionFileWriter = new StringWriter();
         gitCommands.readFileContentAtHeadRevision(repoRelativeFilePath, headRevisionFileWriter);
@@ -113,32 +111,28 @@ public final class BufferAnalyzer {
 
     /**
      * Indicates the HEAD revision commit reference of the file associated with
-     * the specified buffer differs from the specified commit reference.
+     * the buffer differs from the specified commit reference.
      *
-     * @param buffer
-     *        The buffer whose associated file will have its HEAD revision
-     *        commit reference compared to the specified commit reference.
      * @param commitRefRef
      *        On input, specifies the commit reference to which the HEAD
      *        revision commit reference is to be compared. On output, receives
      *        the current HEAD revision commit reference.
      *
      * @return {@code true} if the HEAD revision commit reference of the file
-     *         associated with the specified buffer differs from the specified
-     *         commit reference; otherwise {@code false}.
+     *         associated with the buffer differs from the specified commit
+     *         reference; otherwise {@code false}.
      *
      * @throws InterruptedException
      *         If interrupted while waiting for the task to complete.
      */
-    public boolean hasHeadRevisionChanged(final IBuffer buffer, final AtomicReference<String> commitRefRef)
-            throws InterruptedException {
-        if (!isFilePresentAtHeadRevision(buffer)) {
+    public boolean hasHeadRevisionChanged(final AtomicReference<String> commitRefRef) throws InterruptedException {
+        if (!isFilePresentAtHeadRevision()) {
             return false;
         }
 
         try {
             final String previousCommitRef = commitRefRef.get();
-            final String currentCommitRef = getCommitRefAtHeadRevision(buffer);
+            final String currentCommitRef = getCommitRefAtHeadRevision();
             if (!Objects.equals(previousCommitRef, currentCommitRef)) {
                 commitRefRef.set(currentCommitRef);
                 return true;
@@ -151,9 +145,9 @@ public final class BufferAnalyzer {
         return false;
     }
 
-    private boolean isFilePresentAtHeadRevision(final IBuffer buffer) throws InterruptedException {
+    private boolean isFilePresentAtHeadRevision() throws InterruptedException {
         try {
-            final GitCommands gitCommands = createGitCommands(buffer);
+            final GitCommands gitCommands = createGitCommands();
             if (!gitCommands.isFilePresentAtHeadRevision(buffer.getFilePath())) {
                 log.logDebug(this, String.format("file not present at HEAD revision (%s)", buffer.getFilePath())); //$NON-NLS-1$
                 return false;

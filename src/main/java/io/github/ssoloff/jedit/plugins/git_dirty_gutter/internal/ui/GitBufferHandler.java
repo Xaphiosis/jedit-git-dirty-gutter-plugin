@@ -137,8 +137,8 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
         PatchWorker() {
         }
 
-        private IBuffer createBufferAdapter() {
-            return new IBuffer() {
+        private BufferAnalyzer createBufferAnalyzer() {
+            final IBuffer bufferAdapter = new IBuffer() {
                 @Override
                 public List<String> getLines() {
                     final int lineCount = buffer.getLineCount();
@@ -154,9 +154,6 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
                     return Paths.get(buffer.getPath());
                 }
             };
-        }
-
-        private BufferAnalyzer createBufferAnalyzer() {
             final IGitRunnerFactory gitRunnerFactory = new IGitRunnerFactory() {
                 @Override
                 public IGitRunner createGitRunner(final Path workingDirPath) {
@@ -179,20 +176,19 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
                     Log.log(Log.WARNING, source, message, t);
                 }
             };
-            return new BufferAnalyzer(gitRunnerFactory, log);
+            return new BufferAnalyzer(bufferAdapter, gitRunnerFactory, log);
         }
 
         @Override
         protected @Nullable Void doInBackground() throws Exception {
-            final IBuffer bufferAdapter = createBufferAdapter();
             final AtomicReference<String> commitRefRef = new AtomicReference<>();
 
             while (true) {
                 // NB: create BufferAnalyzer each time through loop to pick up any change in GitPlugin.gitPath()
                 final BufferAnalyzer bufferAnalyzer = createBufferAnalyzer();
                 if (updatePatchEvent.await(Properties.getCommitMonitorPollTime(), TimeUnit.MILLISECONDS)
-                        || bufferAnalyzer.hasHeadRevisionChanged(bufferAdapter, commitRefRef)) {
-                    publish(bufferAnalyzer.createPatchBetweenHeadRevisionAndCurrentState(bufferAdapter));
+                        || bufferAnalyzer.hasHeadRevisionChanged(commitRefRef)) {
+                    publish(bufferAnalyzer.createPatchBetweenHeadRevisionAndCurrentState());
                 }
             }
         }

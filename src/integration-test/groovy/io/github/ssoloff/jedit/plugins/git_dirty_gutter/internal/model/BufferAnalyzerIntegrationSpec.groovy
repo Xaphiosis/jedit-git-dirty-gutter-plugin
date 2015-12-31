@@ -33,18 +33,19 @@ import spock.lang.Specification
 class BufferAnalyzerIntegrationSpec extends Specification {
     private def repoPath = createTempDirectory()
     private def gitRunnerFactory = createGitRunnerFactory()
-    private def bufferAnalyzer = createBufferAnalyzer()
 
     private void addAndCommitFile(Path filePath) {
         runGit('add', filePath)
         runGit('commit', '-m', 'test commit')
     }
 
-    private IBuffer createBufferForFile(Path filePath) {
-        Mock(IBuffer) {
+    private BufferAnalyzer createBufferAnalyzerForFile(Path filePath) {
+        def buffer = Mock(IBuffer) {
             getFilePath() >> filePath
             getLines() >> Files.readAllLines(filePath, Charset.defaultCharset())
         }
+        def log = Stub(ILog)
+        new BufferAnalyzer(buffer, gitRunnerFactory, log)
     }
 
     private IGitRunner createGitRunner() {
@@ -61,10 +62,6 @@ class BufferAnalyzerIntegrationSpec extends Specification {
 
     private IGitRunner createGitRunnerForRepo(Path repoPath) {
         gitRunnerFactory.createGitRunner(repoPath)
-    }
-
-    private BufferAnalyzer createBufferAnalyzer() {
-        new BufferAnalyzer(gitRunnerFactory, Mock(ILog))
     }
 
     private Path createTempDirectory() {
@@ -135,9 +132,10 @@ class BufferAnalyzerIntegrationSpec extends Specification {
         touchFile(filePath)
         addAndCommitFile(filePath)
         touchFile(filePath, 'new content\n')
+        def bufferAnalyzer = createBufferAnalyzerForFile(filePath)
 
         when:
-        def patch = bufferAnalyzer.createPatchBetweenHeadRevisionAndCurrentState(createBufferForFile(filePath))
+        def patch = bufferAnalyzer.createPatchBetweenHeadRevisionAndCurrentState()
 
         then:
         patch != null
@@ -149,9 +147,10 @@ class BufferAnalyzerIntegrationSpec extends Specification {
         def filePath = repoPath.resolve('subdir1').resolve('file')
         touchFile(filePath)
         // do not commit so it does not exist on HEAD
+        def bufferAnalyzer = createBufferAnalyzerForFile(filePath)
 
         when:
-        def patch = bufferAnalyzer.createPatchBetweenHeadRevisionAndCurrentState(createBufferForFile(filePath))
+        def patch = bufferAnalyzer.createPatchBetweenHeadRevisionAndCurrentState()
 
         then:
         patch == null
@@ -168,9 +167,10 @@ class BufferAnalyzerIntegrationSpec extends Specification {
         addAndCommitFile(filePath)
         def newCommitRef = getCommitRefAtHeadRevision(repoPath.relativize(filePath))
         assert oldCommitRef != newCommitRef
+        def bufferAnalyzer = createBufferAnalyzerForFile(filePath)
 
         when:
-        def result = bufferAnalyzer.hasHeadRevisionChanged(createBufferForFile(filePath), commitRefRef)
+        def result = bufferAnalyzer.hasHeadRevisionChanged(commitRefRef)
 
         then:
         result == true
@@ -184,9 +184,10 @@ class BufferAnalyzerIntegrationSpec extends Specification {
         addAndCommitFile(filePath)
         def oldCommitRef = getCommitRefAtHeadRevision(repoPath.relativize(filePath))
         def commitRefRef = new AtomicReference<String>(oldCommitRef)
+        def bufferAnalyzer = createBufferAnalyzerForFile(filePath)
 
         when:
-        def result = bufferAnalyzer.hasHeadRevisionChanged(createBufferForFile(filePath), commitRefRef)
+        def result = bufferAnalyzer.hasHeadRevisionChanged(commitRefRef)
 
         then:
         result == false
@@ -199,9 +200,10 @@ class BufferAnalyzerIntegrationSpec extends Specification {
         touchFile(filePath)
         // do not commit so it does not exist on HEAD
         def commitRefRef = new AtomicReference<String>(null)
+        def bufferAnalyzer = createBufferAnalyzerForFile(filePath)
 
         when:
-        def result = bufferAnalyzer.hasHeadRevisionChanged(createBufferForFile(filePath), commitRefRef)
+        def result = bufferAnalyzer.hasHeadRevisionChanged(commitRefRef)
 
         then:
         result == false
