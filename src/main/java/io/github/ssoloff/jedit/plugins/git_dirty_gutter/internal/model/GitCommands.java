@@ -20,6 +20,7 @@ package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model;
 
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.StringUtils;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.GitException;
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.GitRunnerResult;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.IGitRunner;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -44,15 +45,17 @@ final class GitCommands {
         this.gitRunner = gitRunner;
     }
 
-    private GitException createUnexpectedGitExitCodeException(final String[] args, final int exitCode) {
-        return newGitExceptionBuilder(args) //
+    private static GitException createUnexpectedGitExitCodeException(final GitRunnerResult result,
+            final String[] programArgs) {
+        return newGitExceptionBuilder(result, programArgs) //
                 .withMessageSummary("unexpected Git exit code") //$NON-NLS-1$
-                .withExitCode(exitCode) //
+                .withExitCode(result.getExitCode()) //
                 .build();
     }
 
-    private GitException createUnexpectedGitOutputException(final String[] args, final List<String> lines) {
-        return newGitExceptionBuilder(args) //
+    private static GitException createUnexpectedGitOutputException(final GitRunnerResult result,
+            final String[] programArgs, final List<String> lines) {
+        return newGitExceptionBuilder(result, programArgs) //
                 .withMessageSummary("unexpected Git output") //$NON-NLS-1$
                 .withOutput(StringUtils.joinLinesWithImplicitFinalLine(lines)) //
                 .build();
@@ -79,18 +82,18 @@ final class GitCommands {
     String getCommitRefAtHeadRevision(final Path repoRelativeFilePath)
             throws GitException, IOException, InterruptedException {
         final StringWriter outWriter = new StringWriter();
-        final String[] args = new String[] {
+        final String[] programArgs = new String[] {
             "rev-parse", //$NON-NLS-1$
             String.format("HEAD:%s", repoRelativeFilePath) //$NON-NLS-1$
         };
-        final int exitCode = gitRunner.run(outWriter, args);
-        if (exitCode != 0) {
-            throw createUnexpectedGitExitCodeException(args, exitCode);
+        final GitRunnerResult result = gitRunner.run(outWriter, programArgs);
+        if (result.getExitCode() != 0) {
+            throw createUnexpectedGitExitCodeException(result, programArgs);
         }
 
         final List<String> lines = StringUtils.splitLinesWithImplicitFinalLine(outWriter.getBuffer());
         if (lines.size() != 1) {
-            throw createUnexpectedGitOutputException(args, lines);
+            throw createUnexpectedGitOutputException(result, programArgs, lines);
         }
 
         final String commitRef = lines.get(0);
@@ -118,21 +121,21 @@ final class GitCommands {
     Path getRepoRelativeFilePathAtHeadRevision(final Path filePath)
             throws GitException, IOException, InterruptedException {
         final StringWriter outWriter = new StringWriter();
-        final String[] args = new String[] {
+        final String[] programArgs = new String[] {
             "ls-tree", //$NON-NLS-1$
             "--full-name", //$NON-NLS-1$
             "--name-only", //$NON-NLS-1$
             "HEAD", //$NON-NLS-1$
             filePath.toString() //
         };
-        final int exitCode = gitRunner.run(outWriter, args);
-        if (exitCode != 0) {
-            throw createUnexpectedGitExitCodeException(args, exitCode);
+        final GitRunnerResult result = gitRunner.run(outWriter, programArgs);
+        if (result.getExitCode() != 0) {
+            throw createUnexpectedGitExitCodeException(result, programArgs);
         }
 
         final List<String> lines = StringUtils.splitLinesWithImplicitFinalLine(outWriter.getBuffer());
         if (lines.size() != 1) {
-            throw createUnexpectedGitOutputException(args, lines);
+            throw createUnexpectedGitOutputException(result, programArgs, lines);
         }
 
         return Paths.get(lines.get(0));
@@ -157,7 +160,7 @@ final class GitCommands {
      */
     boolean isFilePresentAtHeadRevision(final Path filePath) throws GitException, IOException, InterruptedException {
         final StringWriter outWriter = new StringWriter();
-        final String[] args = new String[] {
+        final String[] programArgs = new String[] {
             "ls-tree", //$NON-NLS-1$
             "--full-name", //$NON-NLS-1$
             "--name-only", //$NON-NLS-1$
@@ -165,8 +168,8 @@ final class GitCommands {
             filePath.toString() //
         };
         try {
-            final int exitCode = gitRunner.run(outWriter, args);
-            if (exitCode != 0) {
+            final GitRunnerResult result = gitRunner.run(outWriter, programArgs);
+            if (result.getExitCode() != 0) {
                 return false;
             }
         } catch (final GitException e) {
@@ -185,11 +188,12 @@ final class GitCommands {
         return true;
     }
 
-    private GitException.Builder newGitExceptionBuilder(final String[] args) {
+    private static GitException.Builder newGitExceptionBuilder(final GitRunnerResult result,
+            final String[] programArgs) {
         return GitException.newBuilder() //
-                .withWorkingDirPath(gitRunner.getWorkingDirPath()) //
-                .withProgramPath(gitRunner.getProgramPath()) //
-                .withProgramArgs(args);
+                .withWorkingDirPath(result.getWorkingDirPath()) //
+                .withProgramPath(result.getProgramPath()) //
+                .withProgramArgs(programArgs);
     }
 
     /**
@@ -211,13 +215,13 @@ final class GitCommands {
      */
     void readFileContentAtHeadRevision(final Path repoRelativeFilePath, final Writer writer)
             throws GitException, IOException, InterruptedException {
-        final String[] args = new String[] {
+        final String[] programArgs = new String[] {
             "show", //$NON-NLS-1$
             String.format("HEAD:%s", repoRelativeFilePath) //$NON-NLS-1$
         };
-        final int exitCode = gitRunner.run(writer, args);
-        if (exitCode != 0) {
-            throw createUnexpectedGitExitCodeException(args, exitCode);
+        final GitRunnerResult result = gitRunner.run(writer, programArgs);
+        if (result.getExitCode() != 0) {
+            throw createUnexpectedGitExitCodeException(result, programArgs);
         }
     }
 }

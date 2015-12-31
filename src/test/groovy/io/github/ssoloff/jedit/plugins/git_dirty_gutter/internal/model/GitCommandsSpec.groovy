@@ -19,17 +19,22 @@
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model
 
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.GitException
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.GitRunnerResult
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.IGitRunner
 import java.nio.file.Paths
 import spock.lang.Specification
 
 class GitCommandsSpec extends Specification {
+    private static GitRunnerResult createGitRunnerResultWithExitCode(int exitCode) {
+        new GitRunnerResult(Paths.get('workingDir'), Paths.get('git'), exitCode)
+    }
+
     def 'getCommitRefAtHeadRevision - when working directory is inside repo it should return commit ref'() {
         setup:
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> { Writer outWriter, String[] args ->
                 outWriter.write('28573fea3903ca83e973ae9d05d5d32942d1589f\n')
-                0
+                createGitRunnerResultWithExitCode(0)
             }
         }
         def gitCommands = new GitCommands(gitRunner)
@@ -46,7 +51,7 @@ class GitCommandsSpec extends Specification {
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> { Writer outWriter, String[] args ->
                 outWriter.write('28573fea3903ca83e973ae9d05d5d32942d1589f\n')
-                1
+                createGitRunnerResultWithExitCode(1)
             }
         }
         def gitCommands = new GitCommands(gitRunner)
@@ -65,7 +70,7 @@ class GitCommandsSpec extends Specification {
             run(_, _) >> { Writer outWriter, String[] args ->
                 outWriter.write('28573fea3903ca83e973ae9d05d5d32942d1589f\n')
                 outWriter.write('a29cfccdb5beec24c9eca88cd0adecd0f165d7aa\n')
-                0
+                createGitRunnerResultWithExitCode(0)
             }
         }
         def gitCommands = new GitCommands(gitRunner)
@@ -83,7 +88,7 @@ class GitCommandsSpec extends Specification {
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> { Writer outWriter, String[] args ->
                 outWriter.write('subdir1/subdir2/file\n')
-                0
+                createGitRunnerResultWithExitCode(0)
             }
         }
         def gitCommands = new GitCommands(gitRunner)
@@ -100,7 +105,7 @@ class GitCommandsSpec extends Specification {
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> {
                 // empty stdout
-                0
+                createGitRunnerResultWithExitCode(0)
             }
         }
         def gitCommands = new GitCommands(gitRunner)
@@ -117,7 +122,7 @@ class GitCommandsSpec extends Specification {
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> { Writer outWriter, String[] args ->
                 outWriter.write('subdir1/subdir2/file\n')
-                1
+                createGitRunnerResultWithExitCode(1)
             }
         }
         def gitCommands = new GitCommands(gitRunner)
@@ -136,7 +141,7 @@ class GitCommandsSpec extends Specification {
             run(_, _) >> { Writer outWriter, String[] args ->
                 outWriter.write('subdir1/subdir2/file\n')
                 outWriter.write('subdir1/subdir2/another-file\n')
-                0
+                createGitRunnerResultWithExitCode(0)
             }
         }
         def gitCommands = new GitCommands(gitRunner)
@@ -154,7 +159,7 @@ class GitCommandsSpec extends Specification {
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> { Writer outWriter, String[] args ->
                 outWriter.write('subdir1/subdir2/file\n')
-                0
+                createGitRunnerResultWithExitCode(0)
             }
         }
         def gitCommands = new GitCommands(gitRunner)
@@ -171,7 +176,7 @@ class GitCommandsSpec extends Specification {
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> {
                 // empty stdout
-                0
+                createGitRunnerResultWithExitCode(0)
             }
         }
         def gitCommands = new GitCommands(gitRunner)
@@ -188,7 +193,7 @@ class GitCommandsSpec extends Specification {
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> { Writer outWriter, String[] args ->
                 outWriter.write('subdir1/subdir2/file\n')
-                1
+                createGitRunnerResultWithExitCode(1)
             }
         }
         def gitCommands = new GitCommands(gitRunner)
@@ -206,7 +211,7 @@ class GitCommandsSpec extends Specification {
             run(_, _) >> { Writer outWriter, String[] args ->
                 outWriter.write('subdir1/subdir2/file\n')
                 outWriter.write('subdir1/subdir2/another-file\n')
-                0
+                createGitRunnerResultWithExitCode(0)
             }
         }
         def gitCommands = new GitCommands(gitRunner)
@@ -256,7 +261,7 @@ class GitCommandsSpec extends Specification {
             run(_, _) >> { Writer outWriter, String[] args ->
                 outWriter.write('line1\n')
                 outWriter.write('line2\n')
-                0
+                createGitRunnerResultWithExitCode(0)
             }
         }
         def gitCommands = new GitCommands(gitRunner)
@@ -275,7 +280,7 @@ class GitCommandsSpec extends Specification {
             run(_, _) >> { Writer outWriter, String[] args ->
                 outWriter.write('line1\n')
                 outWriter.write('line2\n')
-                1
+                createGitRunnerResultWithExitCode(1)
             }
         }
         def gitCommands = new GitCommands(gitRunner)

@@ -20,36 +20,21 @@ package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.g
 
 import java.io.IOException;
 import java.io.Writer;
-import java.nio.file.Path;
 
 /**
  * A Git process runner.
  */
 public interface IGitRunner {
     /**
-     * Gets the program path of the Git process to run.
-     *
-     * @return The program path of the Git process to run.
-     */
-    public Path getProgramPath();
-
-    /**
-     * Gets the working directory path of the Git process to run.
-     *
-     * @return The working directory path of the Git process to run.
-     */
-    public Path getWorkingDirPath();
-
-    /**
      * Runs a new Git process.
      *
      * @param outWriter
      *        The writer that will receive the content of the standard output
-     *        stream of the process.
-     * @param args
-     *        The Git command arguments.
+     *        stream of the Git process.
+     * @param programArgs
+     *        The arguments to pass to the Git process.
      *
-     * @return The exit code of the Git process.
+     * @return The result of running the Git process.
      *
      * @throws GitException
      *         If the Git process exits with an error.
@@ -58,5 +43,5 @@ public interface IGitRunner {
      * @throws InterruptedException
      *         If interrupted while waiting for the Git process to exit.
      */
-    public int run(Writer outWriter, String... args) throws GitException, IOException, InterruptedException;
+    public GitRunnerResult run(Writer outWriter, String... programArgs) throws GitException, IOException, InterruptedException;
 }

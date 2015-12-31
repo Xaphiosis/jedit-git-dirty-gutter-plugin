@@ -87,7 +87,8 @@ class BufferAnalyzerIntegrationSpec extends Specification {
     private String getCommitRefAtHeadRevision(Path repoRelativeFilePath) {
         def gitRunner = createGitRunner()
         def outWriter = new StringWriter()
-        assert 0 == gitRunner.run(outWriter, 'ls-tree', 'HEAD', repoRelativeFilePath.toString())
+        def result = gitRunner.run(outWriter, 'ls-tree', 'HEAD', repoRelativeFilePath.toString())
+        assert result.exitCode == 0
         outWriter.toString().split(/\s+/)[2]
     }
 

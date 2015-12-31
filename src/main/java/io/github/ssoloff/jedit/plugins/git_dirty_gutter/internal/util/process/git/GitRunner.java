@@ -91,17 +91,7 @@ public final class GitRunner implements IGitRunner {
     }
 
     @Override
-    public Path getProgramPath() {
-        return programPathSupplier.get();
-    }
-
-    @Override
-    public Path getWorkingDirPath() {
-        return workingDirPath;
-    }
-
-    @Override
-    public int run(final Writer outWriter, final String... programArgs)
+    public GitRunnerResult run(final Writer outWriter, final String... programArgs)
             throws GitException, IOException, InterruptedException {
         final StringWriter errWriter = new StringWriter();
         final Path programPath = programPathSupplier.get();
@@ -111,6 +101,6 @@ public final class GitRunner implements IGitRunner {
         if (!error.isEmpty()) {
             throw createGitExitedWithErrorException(programPath, programArgs, exitCode, error);
         }
-        return exitCode;
+        return new GitRunnerResult(workingDirPath, programPath, exitCode);
     }
 }

@@ -67,10 +67,12 @@ class GitRunnerSpec extends Specification {
         def outWriter = new StringWriter()
 
         when:
-        def exitCode = gitRunner.run(outWriter)
+        def result = gitRunner.run(outWriter)
 
         then:
-        exitCode == 0
+        result.exitCode == 0
+        result.programPath == programPath
+        result.workingDirPath == workingDirPath
         outWriter.toString() == 'stdout-line-1\nstdout-line-2\n'
     }
 
@@ -86,10 +88,12 @@ class GitRunnerSpec extends Specification {
         def outWriter = new StringWriter()
 
         when:
-        def exitCode = gitRunner.run(outWriter)
+        def result = gitRunner.run(outWriter)
 
         then:
-        exitCode == 1
+        result.exitCode == 1
+        result.programPath == programPath
+        result.workingDirPath == workingDirPath
         outWriter.toString() == 'stdout-line-1\nstdout-line-2\n'
     }
 
