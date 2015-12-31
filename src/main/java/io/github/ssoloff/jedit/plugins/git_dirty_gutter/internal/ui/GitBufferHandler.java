@@ -20,9 +20,6 @@ package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.ui;
 
 import difflib.Patch;
 import git.GitPlugin;
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git.GitRunner;
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git.IGitRunner;
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git.IGitRunnerFactory;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.BufferAnalyzer;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.DirtyMarkType;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.IBuffer;
@@ -31,6 +28,9 @@ import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.AutoResetE
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.ILog;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.Properties;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.ProcessRunner;
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.GitRunner;
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.IGitRunner;
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.IGitRunnerFactory;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;

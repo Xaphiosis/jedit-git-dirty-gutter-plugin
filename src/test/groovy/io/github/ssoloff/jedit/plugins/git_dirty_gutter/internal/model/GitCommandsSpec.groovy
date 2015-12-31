@@ -18,8 +18,8 @@
 
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model
 
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git.GitException
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git.IGitRunner
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.GitException
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.IGitRunner
 import java.nio.file.Paths
 import spock.lang.Specification
 

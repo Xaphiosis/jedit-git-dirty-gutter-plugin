@@ -20,11 +20,11 @@ package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model;
 
 import difflib.DiffUtils;
 import difflib.Patch;
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git.GitException;
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git.IGitRunner;
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git.IGitRunnerFactory;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.ILog;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.StringUtils;
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.GitException;
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.IGitRunner;
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.IGitRunnerFactory;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.nio.file.Path;

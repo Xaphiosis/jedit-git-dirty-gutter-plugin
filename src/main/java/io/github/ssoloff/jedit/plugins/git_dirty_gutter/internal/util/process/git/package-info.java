@@ -17,7 +17,7 @@
  */
 
 /**
- * Provides support for running an external Git process.
+ * Provides utilities for running an external Git process.
  *
  * <p>
  * This package is not intended for use outside this module.
@@ -25,4 +25,4 @@
  */
 
 @org.eclipse.jdt.annotation.NonNullByDefault
-package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git;
+package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git;
