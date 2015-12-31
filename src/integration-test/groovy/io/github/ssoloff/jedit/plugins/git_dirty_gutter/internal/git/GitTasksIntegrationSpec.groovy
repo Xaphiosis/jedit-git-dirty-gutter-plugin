@@ -52,7 +52,7 @@ class GitTasksIntegrationSpec extends Specification {
     private static IGitRunnerFactory createGitRunnerFactory() {
         new IGitRunnerFactory() {
             IGitRunner createGitRunner(Path workingDirPath) {
-                new GitRunner(new ProcessRunner(), Paths.get('git'), workingDirPath)
+                new GitRunner(new ProcessRunner(), workingDirPath, Paths.get('git'))
             }
         }
     }

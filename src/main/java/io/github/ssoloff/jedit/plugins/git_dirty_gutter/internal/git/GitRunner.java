@@ -28,8 +28,8 @@ import java.nio.file.Path;
  * Implementation of {@link IGitRunner}.
  */
 public final class GitRunner implements IGitRunner {
-    private final Path gitPath;
     private final IProcessRunner processRunner;
+    private final Path programPath;
     private final Path workingDirPath;
 
     /**
@@ -37,21 +37,22 @@ public final class GitRunner implements IGitRunner {
      *
      * @param processRunner
      *        The process runner used to run Git.
-     * @param gitPath
-     *        The path to the Git executable.
+     * @param programPath
+     *        The program path of the Git process to run.
      * @param workingDirPath
-     *        The path to the process working directory, typically a directory
-     *        within the Git repository that is the target of the command.
+     *        The working directory path of the Git process to run, typically a
+     *        directory within the Git repository that is the target of the
+     *        command.
      */
-    public GitRunner(final IProcessRunner processRunner, final Path gitPath, final Path workingDirPath) {
-        this.gitPath = gitPath;
+    public GitRunner(final IProcessRunner processRunner, final Path workingDirPath, final Path programPath) {
         this.processRunner = processRunner;
+        this.programPath = programPath;
         this.workingDirPath = workingDirPath;
     }
 
     private String[] createCommand(final String[] args) {
         final String[] command = new String[args.length + 1];
-        command[0] = gitPath.toString();
+        command[0] = programPath.toString();
         System.arraycopy(args, 0, command, 1, args.length);
         return command;
     }
@@ -61,11 +62,21 @@ public final class GitRunner implements IGitRunner {
         return GitException.newBuilder() //
                 .withMessageSummary("the Git process exited with an error") //$NON-NLS-1$
                 .withWorkingDirPath(workingDirPath) //
-                .withProgramPath(gitPath) //
+                .withProgramPath(programPath) //
                 .withProgramArgs(args) //
                 .withExitCode(exitCode) //
                 .withError(error) //
                 .build();
+    }
+
+    @Override
+    public Path getProgramPath() {
+        return programPath;
+    }
+
+    @Override
+    public Path getWorkingDirPath() {
+        return workingDirPath;
     }
 
     @Override

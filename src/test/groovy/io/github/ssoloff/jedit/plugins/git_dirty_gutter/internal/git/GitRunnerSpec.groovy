@@ -24,11 +24,11 @@ import java.nio.file.Paths
 import spock.lang.Specification
 
 class GitRunnerSpec extends Specification {
-    private def gitPath = Paths.get('git')
+    private def programPath = Paths.get('git')
     private def workingDirPath = Paths.get('workingDir')
 
     private GitRunner createGitRunnerUnderTest(IProcessRunner processRunner) {
-        new GitRunner(processRunner, gitPath, workingDirPath)
+        new GitRunner(processRunner, workingDirPath, programPath)
     }
 
     def 'it should pass configured working directory to process runner'() {
@@ -52,7 +52,7 @@ class GitRunnerSpec extends Specification {
         gitRunner.run(new StringWriter(), 'arg1', 'arg2')
 
         then:
-        1 * processRunner.run(_, _, _, [gitPath.toString(), 'arg1', 'arg2'])
+        1 * processRunner.run(_, _, _, [programPath.toString(), 'arg1', 'arg2'])
     }
 
     def 'when the process exits without error and when the exit code is zero it should capture stdout'() {
@@ -111,6 +111,7 @@ class GitRunnerSpec extends Specification {
         e.error == 'stderr-line-1\nstderr-line-2\n'
         e.exitCode == 1
         e.programArgs == ['arg1', 'arg2'] as String[]
-        e.programPath == gitPath
+        e.programPath == programPath
+        e.workingDirPath == workingDirPath
     }
 }

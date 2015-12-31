@@ -42,18 +42,16 @@ final class GitCommands {
         this.gitRunner = gitRunner;
     }
 
-    private static GitException createUnexpectedGitExitCodeException(final String[] args, final int exitCode) {
-        return GitException.newBuilder() //
+    private GitException createUnexpectedGitExitCodeException(final String[] args, final int exitCode) {
+        return newGitExceptionBuilder(args) //
                 .withMessageSummary("unexpected Git exit code") //$NON-NLS-1$
-                .withProgramArgs(args) //
                 .withExitCode(exitCode) //
                 .build();
     }
 
-    private static GitException createUnexpectedGitOutputException(final String[] args, final List<String> lines) {
-        return GitException.newBuilder() //
+    private GitException createUnexpectedGitOutputException(final String[] args, final List<String> lines) {
+        return newGitExceptionBuilder(args) //
                 .withMessageSummary("unexpected Git output") //$NON-NLS-1$
-                .withProgramArgs(args) //
                 .withOutput(StringUtils.joinLinesWithImplicitFinalLine(lines)) //
                 .build();
     }
@@ -183,6 +181,13 @@ final class GitCommands {
         }
 
         return true;
+    }
+
+    private GitException.Builder newGitExceptionBuilder(final String[] args) {
+        return GitException.newBuilder() //
+                .withWorkingDirPath(gitRunner.getWorkingDirPath()) //
+                .withProgramPath(gitRunner.getProgramPath()) //
+                .withProgramArgs(args);
     }
 
     /**

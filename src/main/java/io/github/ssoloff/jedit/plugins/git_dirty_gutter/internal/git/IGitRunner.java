@@ -20,11 +20,26 @@ package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git;
 
 import java.io.IOException;
 import java.io.Writer;
+import java.nio.file.Path;
 
 /**
  * A Git process runner.
  */
 public interface IGitRunner {
+    /**
+     * Gets the program path of the Git process to run.
+     *
+     * @return The program path of the Git process to run.
+     */
+    public Path getProgramPath();
+
+    /**
+     * Gets the working directory path of the Git process to run.
+     *
+     * @return The working directory path of the Git process to run.
+     */
+    public Path getWorkingDirPath();
+
     /**
      * Runs a new Git process.
      *

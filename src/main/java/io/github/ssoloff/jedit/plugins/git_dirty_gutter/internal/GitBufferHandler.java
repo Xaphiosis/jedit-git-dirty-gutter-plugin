@@ -161,7 +161,7 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
             final IGitRunnerFactory gitRunnerFactory = new IGitRunnerFactory() {
                 @Override
                 public IGitRunner createGitRunner(final Path workingDirPath) {
-                    return new GitRunner(new ProcessRunner(), Paths.get(GitPlugin.gitPath()), workingDirPath);
+                    return new GitRunner(new ProcessRunner(), workingDirPath, Paths.get(GitPlugin.gitPath()));
                 }
             };
             final ILog log = new ILog() {

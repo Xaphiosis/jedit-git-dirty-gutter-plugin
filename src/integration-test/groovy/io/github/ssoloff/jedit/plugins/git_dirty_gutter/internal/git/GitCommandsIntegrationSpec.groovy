@@ -38,7 +38,7 @@ class GitCommandsIntegrationSpec extends Specification {
     }
 
     private static IGitRunner createGitRunnerForRepo(Path repoPath) {
-        new GitRunner(new ProcessRunner(), Paths.get('git'), repoPath)
+        new GitRunner(new ProcessRunner(), repoPath, Paths.get('git'))
     }
 
     private static void createNewFile(Path filePath, String fileContent='') {
