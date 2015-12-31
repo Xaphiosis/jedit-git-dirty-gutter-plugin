@@ -26,7 +26,7 @@ import spock.lang.Specification
 
 class GitCommandsSpec extends Specification {
     private static GitRunnerResult createGitRunnerResultWithExitCode(int exitCode) {
-        new GitRunnerResult(Paths.get('workingDir'), Paths.get('git'), exitCode)
+        new GitRunnerResult(Paths.get('workingDir'), ['git'] as String[], exitCode)
     }
 
     def 'getCommitRefAtHeadRevision - when working directory is inside repo it should return commit ref'() {

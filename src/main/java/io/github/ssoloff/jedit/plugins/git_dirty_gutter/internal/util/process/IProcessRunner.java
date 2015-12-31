@@ -38,8 +38,8 @@ public interface IProcessRunner {
      * @param workingDirPath
      *        The path to the process working directory.
      * @param command
-     *        The command to run. The first element is the process executable.
-     *        The remaining elements are the process arguments.
+     *        The command to run. The first element is the path to the process
+     *        executable. The remaining elements are the process arguments.
      *
      * @return The exit code of the process.
      *

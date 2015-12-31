@@ -24,48 +24,53 @@ import java.nio.file.Path;
  * The result of running a Git process using the {@link IGitRunner#run} method.
  */
 public final class GitRunnerResult {
+    private final String[] command;
     private final int exitCode;
-    private final Path programPath;
     private final Path workingDirPath;
 
     /**
      * Initializes a new instance of the {@code GitRunnerResult} class.
      *
      * @param workingDirPath
-     *        The working directory path of the Git process that was executed.
-     * @param programPath
-     *        The program path of the Git process that was executed.
+     *        The working directory path of the Git process that was run.
+     * @param command
+     *        The command line of the Git process that was run.
      * @param exitCode
-     *        The exit code of the Git process that was executed.
+     *        The exit code of the Git process that was run.
      */
-    public GitRunnerResult(final Path workingDirPath, final Path programPath, final int exitCode) {
+    public GitRunnerResult(final Path workingDirPath, final String[] command, final int exitCode) {
+        this.command = cloneArray(command);
         this.exitCode = exitCode;
-        this.programPath = programPath;
         this.workingDirPath = workingDirPath;
     }
 
+    @SuppressWarnings("null")
+    private static <T> T[] cloneArray(final T[] array) {
+        return array.clone();
+    }
+
     /**
-     * Gets the exit code of the Git process that was executed.
+     * Gets the command line of the Git process that was run.
      *
-     * @return The exit code of the Git process that was executed.
+     * @return The command line of the Git process that was run.
+     */
+    public String[] getCommand() {
+        return cloneArray(command);
+    }
+
+    /**
+     * Gets the exit code of the Git process that was run.
+     *
+     * @return The exit code of the Git process that was run.
      */
     public int getExitCode() {
         return exitCode;
     }
 
     /**
-     * Gets the program path of the Git process that was executed.
+     * Gets the working directory path of the Git process that was run.
      *
-     * @return The program path of the Git process that was executed.
-     */
-    public Path getProgramPath() {
-        return programPath;
-    }
-
-    /**
-     * Gets the working directory path of the Git process that was executed.
-     *
-     * @return The working directory path of the Git process that was executed.
+     * @return The working directory path of the Git process that was run.
      */
     public Path getWorkingDirPath() {
         return workingDirPath;

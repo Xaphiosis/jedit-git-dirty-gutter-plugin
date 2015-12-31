@@ -29,12 +29,11 @@ import org.eclipse.jdt.annotation.Nullable;
 public final class GitException extends Exception {
     private static final long serialVersionUID = -4617699499893940183L;
 
+    private final @Nullable String[] command;
     private final @Nullable String error;
     private final @Nullable Integer exitCode;
     private final @Nullable String messageSummary;
     private final @Nullable String output;
-    private final @Nullable String[] programArgs;
-    private final @Nullable Path programPath;
     private final @Nullable Path workingDirPath;
 
     /**
@@ -45,11 +44,8 @@ public final class GitException extends Exception {
      * @param workingDirPath
      *        The working directory path of the Git process or {@code null} if
      *        not specified.
-     * @param programPath
-     *        The program path of the Git process or {@code null} if not
-     *        specified.
-     * @param programArgs
-     *        The program arguments to the Git process or {@code null} if not
+     * @param command
+     *        The command line of the Git process or {@code null} if not
      *        specified.
      * @param exitCode
      *        The exit code of the Git process or {@code null} if not specified.
@@ -61,15 +57,24 @@ public final class GitException extends Exception {
      *        {@code null} if not specified.
      */
     private GitException(final @Nullable String messageSummary, final @Nullable Path workingDirPath,
-            final @Nullable Path programPath, final @Nullable String[] programArgs, final @Nullable Integer exitCode,
-            final @Nullable String output, final @Nullable String error) {
+            final @Nullable String[] command, final @Nullable Integer exitCode, final @Nullable String output,
+            final @Nullable String error) {
+        this.command = command; // defensive copy already performed by builder
         this.error = error;
         this.exitCode = exitCode;
         this.messageSummary = messageSummary;
         this.output = output;
-        this.programArgs = programArgs; // defensive copy already performed by builder
-        this.programPath = programPath;
         this.workingDirPath = workingDirPath;
+    }
+
+    /**
+     * Gets the command line of the Git process.
+     *
+     * @return The command line of the Git process or {@code null} if not
+     *         specified.
+     */
+    public @Nullable String[] getCommand() {
+        return (command != null) ? command.clone() : null;
     }
 
     /**
@@ -111,27 +116,23 @@ public final class GitException extends Exception {
         }
 
         if (isPopulated(workingDirPath)) {
-            sb.append(String.format("working dir path: %s\n", workingDirPath)); //$NON-NLS-1$
+            sb.append(String.format("working dir: %s\n", workingDirPath)); //$NON-NLS-1$
         }
 
-        if (isPopulated(programPath)) {
-            sb.append(String.format("    program path: %s\n", programPath)); //$NON-NLS-1$
-        }
-
-        if (isPopulated(programArgs)) {
-            sb.append(String.format("    program args: %s\n", Arrays.toString(programArgs))); //$NON-NLS-1$
+        if (isPopulated(command)) {
+            sb.append(String.format("    command: %s\n", Arrays.toString(command))); //$NON-NLS-1$
         }
 
         if (isPopulated(exitCode)) {
-            sb.append(String.format("       exit code: %d\n", exitCode)); //$NON-NLS-1$
+            sb.append(String.format("  exit code: %d\n", exitCode)); //$NON-NLS-1$
         }
 
         if (isPopulated(output)) {
-            sb.append(String.format("          output: %s\n", output)); //$NON-NLS-1$
+            sb.append(String.format("     output: %s\n", output)); //$NON-NLS-1$
         }
 
         if (isPopulated(error)) {
-            sb.append(String.format("           error: %s", error)); //$NON-NLS-1$
+            sb.append(String.format("      error: %s", error)); //$NON-NLS-1$
         }
 
         return sb.toString();
@@ -145,26 +146,6 @@ public final class GitException extends Exception {
      */
     public @Nullable String getOutput() {
         return output;
-    }
-
-    /**
-     * Gets the program arguments to the Git process.
-     *
-     * @return The program arguments to the Git process or {@code null} if not
-     *         specified.
-     */
-    public @Nullable String[] getProgramArgs() {
-        return (programArgs != null) ? programArgs.clone() : null;
-    }
-
-    /**
-     * Gets the program path of the Git process.
-     *
-     * @return The program path of the Git process or {@code null} if not
-     *         specified.
-     */
-    public @Nullable Path getProgramPath() {
-        return programPath;
     }
 
     /**
@@ -201,12 +182,11 @@ public final class GitException extends Exception {
      * A builder for creating instances of the {@code GitException} class.
      */
     public static final class Builder {
+        private @Nullable String[] command = null;
         private @Nullable String error = null;
         private @Nullable Integer exitCode = null;
         private @Nullable String messageSummary = null;
         private @Nullable String output = null;
-        private @Nullable String[] programArgs = null;
-        private @Nullable Path programPath = null;
         private @Nullable Path workingDirPath = null;
 
         private Builder() {
@@ -219,7 +199,20 @@ public final class GitException extends Exception {
          */
         @SuppressWarnings("synthetic-access")
         public GitException build() {
-            return new GitException(messageSummary, workingDirPath, programPath, programArgs, exitCode, output, error);
+            return new GitException(messageSummary, workingDirPath, command, exitCode, output, error);
+        }
+
+        /**
+         * Sets the command line of the Git process.
+         *
+         * @param command
+         *        The command line of the Git process.
+         *
+         * @return The builder.
+         */
+        public Builder withCommand(@SuppressWarnings("hiding") final String[] command) {
+            this.command = command.clone();
+            return this;
         }
 
         /**
@@ -271,32 +264,6 @@ public final class GitException extends Exception {
          */
         public Builder withOutput(@SuppressWarnings("hiding") final String output) {
             this.output = output;
-            return this;
-        }
-
-        /**
-         * Sets the program arguments to the Git process.
-         *
-         * @param programArgs
-         *        The program arguments to the Git process.
-         *
-         * @return The builder.
-         */
-        public Builder withProgramArgs(@SuppressWarnings("hiding") final String[] programArgs) {
-            this.programArgs = programArgs.clone();
-            return this;
-        }
-
-        /**
-         * Sets the program path of the Git process.
-         *
-         * @param programPath
-         *        The program path of the Git process.
-         *
-         * @return The builder.
-         */
-        public Builder withProgramPath(@SuppressWarnings("hiding") final Path programPath) {
-            this.programPath = programPath;
             return this;
         }
 

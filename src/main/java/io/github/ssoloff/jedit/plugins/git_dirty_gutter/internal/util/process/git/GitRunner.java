@@ -78,14 +78,12 @@ public final class GitRunner implements IGitRunner {
         return command;
     }
 
-    private GitException createGitExitedWithErrorException(final Path programPath, final String[] programArgs,
-            final int exitCode, final String error) {
+    private static GitException createGitExitedWithErrorException(final GitRunnerResult result, final String error) {
         return GitException.newBuilder() //
                 .withMessageSummary("the Git process exited with an error") //$NON-NLS-1$
-                .withWorkingDirPath(workingDirPath) //
-                .withProgramPath(programPath) //
-                .withProgramArgs(programArgs) //
-                .withExitCode(exitCode) //
+                .withWorkingDirPath(result.getWorkingDirPath()) //
+                .withCommand(result.getCommand()) //
+                .withExitCode(result.getExitCode()) //
                 .withError(error) //
                 .build();
     }
@@ -94,13 +92,15 @@ public final class GitRunner implements IGitRunner {
     public GitRunnerResult run(final Writer outWriter, final String... programArgs)
             throws GitException, IOException, InterruptedException {
         final StringWriter errWriter = new StringWriter();
-        final Path programPath = programPathSupplier.get();
-        final int exitCode = processRunner.run(outWriter, errWriter, workingDirPath,
-                createCommand(programPath, programArgs));
+        final String[] command = createCommand(programPathSupplier.get(), programArgs);
+        final int exitCode = processRunner.run(outWriter, errWriter, workingDirPath, command);
+        final GitRunnerResult result = new GitRunnerResult(workingDirPath, command, exitCode);
+
         final String error = errWriter.toString();
         if (!error.isEmpty()) {
-            throw createGitExitedWithErrorException(programPath, programArgs, exitCode, error);
+            throw createGitExitedWithErrorException(result, error);
         }
-        return new GitRunnerResult(workingDirPath, programPath, exitCode);
+
+        return result;
     }
 }

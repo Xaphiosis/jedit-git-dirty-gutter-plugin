@@ -70,8 +70,8 @@ class GitRunnerSpec extends Specification {
         def result = gitRunner.run(outWriter)
 
         then:
+        result.command == [programPath] as String[]
         result.exitCode == 0
-        result.programPath == programPath
         result.workingDirPath == workingDirPath
         outWriter.toString() == 'stdout-line-1\nstdout-line-2\n'
     }
@@ -91,8 +91,8 @@ class GitRunnerSpec extends Specification {
         def result = gitRunner.run(outWriter)
 
         then:
+        result.command == [programPath] as String[]
         result.exitCode == 1
-        result.programPath == programPath
         result.workingDirPath == workingDirPath
         outWriter.toString() == 'stdout-line-1\nstdout-line-2\n'
     }
@@ -112,10 +112,9 @@ class GitRunnerSpec extends Specification {
 
         then:
         def e = thrown(GitException)
+        e.command == [programPath, 'arg1', 'arg2'] as String[]
         e.error == 'stderr-line-1\nstderr-line-2\n'
         e.exitCode == 1
-        e.programArgs == ['arg1', 'arg2'] as String[]
-        e.programPath == programPath
         e.workingDirPath == workingDirPath
     }
 }

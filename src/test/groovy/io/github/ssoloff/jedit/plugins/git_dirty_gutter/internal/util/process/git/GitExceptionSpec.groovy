@@ -52,7 +52,7 @@ class GitExceptionSpec extends Specification {
         def e = GitException.newBuilder().withWorkingDirPath(Paths.get('/path/to/working-dir')).build()
 
         expect:
-        e.message =~ /(?m)^\s*working dir path:/
+        e.message =~ /(?m)^\s*working dir:/
     }
 
     def 'getMessage - when the working directory path is not specified it should not include the working directory path'() {
@@ -60,42 +60,26 @@ class GitExceptionSpec extends Specification {
         def e = GitException.newBuilder().build()
 
         expect:
-        e.message !=~ /(?m)^\s*working dir path:/
+        e.message !=~ /(?m)^\s*working dir:/
     }
 
-    def 'getMessage - when the program path is specified it should include the program path'() {
+    def 'getMessage - when the command is specified it should include the command'() {
         setup:
-        def e = GitException.newBuilder().withProgramPath(Paths.get('/path/to/program')).build()
+        def e = GitException.newBuilder().withCommand(command as String[]).build()
 
         expect:
-        e.message =~ /(?m)^\s*program path:/
-    }
-
-    def 'getMessage - when the program path is not specified it should not include the program path'() {
-        setup:
-        def e = GitException.newBuilder().build()
-
-        expect:
-        e.message !=~ /(?m)^\s*program path:/
-    }
-
-    def 'getMessage - when the program arguments are specified it should include the program arguments'() {
-        setup:
-        def e = GitException.newBuilder().withProgramArgs(programArgs as String[]).build()
-
-        expect:
-        e.message =~ /(?m)^\s*program args:/
+        e.message =~ /(?m)^\s*command:/
 
         where:
-        programArgs << [[], ['arg1'], ['arg1', 'arg2']]
+        command << [[], ['git'], ['git', 'arg1'], ['git', 'arg1', 'arg2']]
     }
 
-    def 'getMessage - when the program arguments are not specified it should not include the program arguments'() {
+    def 'getMessage - when the command is not specified it should not include the command'() {
         setup:
         def e = GitException.newBuilder().build()
 
         expect:
-        e.message !=~ /(?m)^\s*program args:/
+        e.message !=~ /(?m)^\s*command:/
     }
 
     def 'getMessage - when the exit code is specified it should include the exit code'() {
