@@ -23,7 +23,6 @@ import difflib.Patch;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.ILog;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.StringUtils;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.GitException;
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.IGitRunner;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.IGitRunnerFactory;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -63,8 +62,7 @@ public final class BufferAnalyzer {
         if (workingDirPath == null) {
             throw new IOException(String.format("unable to get directory for '%s'", filePath)); //$NON-NLS-1$
         }
-        final IGitRunner gitRunner = gitRunnerFactory.createGitRunner(workingDirPath);
-        return new GitCommands(gitRunner);
+        return new GitCommands(gitRunnerFactory.createGitRunner(workingDirPath));
     }
 
     /**
@@ -84,8 +82,7 @@ public final class BufferAnalyzer {
         }
 
         try {
-            final List<String> headRevisionLines = getHeadRevisionLines();
-            return DiffUtils.diff(headRevisionLines, buffer.getLines());
+            return DiffUtils.diff(getHeadRevisionLines(), getCurrentLines());
         } catch (final GitException | IOException e) {
             log.logError(this,
                     String.format("failed to create patch between HEAD revision of file and current state (%s)", //$NON-NLS-1$
@@ -99,6 +96,10 @@ public final class BufferAnalyzer {
         final GitCommands gitCommands = createGitCommands();
         final Path repoRelativeFilePath = gitCommands.getRepoRelativeFilePathAtHeadRevision(buffer.getFilePath());
         return gitCommands.getCommitRefAtHeadRevision(repoRelativeFilePath);
+    }
+
+    private List<String> getCurrentLines() {
+        return buffer.getLines();
     }
 
     private List<String> getHeadRevisionLines() throws GitException, IOException, InterruptedException {
