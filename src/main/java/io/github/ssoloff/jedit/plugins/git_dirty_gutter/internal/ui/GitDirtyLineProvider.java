@@ -16,9 +16,8 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
+package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.ui;
 
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.ui.GitDirtyLineProviderOptions;
 import lcm.BufferHandler;
 import lcm.DirtyLineProvider;
 import lcm.DirtyLineProviderOptions;

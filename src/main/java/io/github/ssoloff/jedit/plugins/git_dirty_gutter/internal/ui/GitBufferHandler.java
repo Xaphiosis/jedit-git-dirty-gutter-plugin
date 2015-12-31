@@ -16,7 +16,7 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal;
+package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.ui;
 
 import difflib.Patch;
 import git.GitPlugin;
@@ -27,7 +27,6 @@ import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.git.IGitRunnerF
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.DirtyMarkType;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.IBuffer;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.PatchAnalyzer;
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.ui.DirtyMarkPainterFactory;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.AutoResetEvent;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.ILog;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.Properties;

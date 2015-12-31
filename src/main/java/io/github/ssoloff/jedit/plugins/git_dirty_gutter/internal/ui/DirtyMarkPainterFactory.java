@@ -30,7 +30,7 @@ import org.gjt.sp.jedit.textarea.Gutter;
 /**
  * A factory for creating dirty mark painters for various types of dirty marks.
  */
-public final class DirtyMarkPainterFactory {
+final class DirtyMarkPainterFactory {
     private static final DirtyMarkPainter NULL_DIRTY_MARK_PAINTER = new DirtyMarkPainter() {
         @Override
         public void paint(final Graphics2D g, final Gutter gutter, final int y, final int height, final Buffer buffer,
@@ -50,7 +50,7 @@ public final class DirtyMarkPainterFactory {
      *
      * @return A new dirty mark painter.
      */
-    public static DirtyMarkPainter createDirtyMarkPainter(final DirtyMarkType dirtyMarkType) {
+    static DirtyMarkPainter createDirtyMarkPainter(final DirtyMarkType dirtyMarkType) {
         if (dirtyMarkType == DirtyMarkType.UNCHANGED) {
             return NULL_DIRTY_MARK_PAINTER;
         }
