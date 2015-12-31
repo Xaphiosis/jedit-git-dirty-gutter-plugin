@@ -18,7 +18,6 @@
 
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model
 
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.ILog
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.ProcessRunner
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.GitRunner
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.IGitRunner
