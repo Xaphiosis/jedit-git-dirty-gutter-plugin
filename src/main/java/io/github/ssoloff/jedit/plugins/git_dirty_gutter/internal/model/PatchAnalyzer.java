@@ -81,13 +81,17 @@ public final class PatchAnalyzer {
      * Gets the type of dirty mark associated with the specified line.
      *
      * @param lineIndex
-     *        The zero-based index of the line whose dirty mark is desired; must
-     *        not be negative.
+     *        The zero-based index of the line whose dirty mark is desired.
      *
      * @return The type of dirty mark associated with the specified line.
+     *
+     * @throws IllegalArgumentException
+     *         If {@code lineIndex} is negative.
      */
     public DirtyMarkType getDirtyMarkForLine(final int lineIndex) {
-        assert lineIndex >= 0;
+        if (lineIndex < 0) {
+            throw new IllegalArgumentException("line index must not be negative"); //$NON-NLS-1$
+        }
 
         boolean isContentRemovedAboveThisLine = false;
         boolean isContentRemovedBelowThisLine = false;

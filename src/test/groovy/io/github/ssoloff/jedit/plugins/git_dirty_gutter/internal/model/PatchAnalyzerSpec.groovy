@@ -46,6 +46,17 @@ class PatchAnalyzerSpec extends Specification {
         thrown(IllegalArgumentException)
     }
 
+    def 'getDirtyMarkForLine - when line index is negative it should throw an exception'() {
+        setup:
+        def patchAnalyzer = new PatchAnalyzer(createPatch([], []))
+
+        when:
+        patchAnalyzer.getDirtyMarkForLine(-1)
+
+        then:
+        thrown(IllegalArgumentException)
+    }
+
     def 'getDirtyMarkForLine - it should handle addition of the first line'() {
         setup:
         def oldLines = [     '2', '3', '']
