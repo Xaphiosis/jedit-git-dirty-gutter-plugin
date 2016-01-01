@@ -25,18 +25,18 @@ import org.gjt.sp.jedit.Buffer;
 
 /**
  * Implementation of {@link DirtyLineProvider} that calculates the difference
- * between the current buffer content and the content of the most recent commit
- * to the Git repository.
+ * between the current buffer content and the content of the HEAD commit in the
+ * Git repository.
  */
 public final class GitDirtyLineProvider implements DirtyLineProvider {
     @Override
     public BufferHandler attach(final Buffer buffer) {
-        return new GitBufferHandler(buffer);
+        return new GitBufferHandlerAdapter(buffer);
     }
 
     @Override
     public void detach(final Buffer buffer, final BufferHandler bufferHandler) {
-        ((GitBufferHandler) bufferHandler).stop();
+        ((GitBufferHandlerAdapter) bufferHandler).stop();
     }
 
     @Override

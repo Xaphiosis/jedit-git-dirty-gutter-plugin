@@ -19,98 +19,36 @@
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.ui;
 
 import difflib.Patch;
-import git.GitPlugin;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.BufferAnalyzer;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.DirtyMarkType;
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.IBuffer;
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.ILog;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.PatchAnalyzer;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.AutoResetEvent;
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.ISupplier;
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.Properties;
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.ProcessRunner;
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.GitRunner;
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.IGitRunner;
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.IGitRunnerFactory;
-import java.awt.Color;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 import javax.swing.SwingWorker;
-import lcm.BufferHandler;
-import lcm.LCMPlugin;
-import lcm.painters.DirtyMarkPainter;
 import org.eclipse.jdt.annotation.Nullable;
-import org.gjt.sp.jedit.Buffer;
-import org.gjt.sp.jedit.buffer.BufferAdapter;
-import org.gjt.sp.jedit.buffer.JEditBuffer;
-import org.gjt.sp.util.Log;
 
 /**
- * Implementation of {@link BufferHandler} for the Git dirty line provider.
+ * Provides the underlying implementation of {@code BufferHandler} for the Git
+ * dirty line provider.
  */
-final class GitBufferHandler extends BufferAdapter implements BufferHandler {
-    private final Buffer buffer;
-    private final DirtyMarkPainterSpecificationFactory dirtyMarkPainterSpecificationFactory = createDirtyMarkPainterSpecificationFactory();
+final class GitBufferHandler {
+    private final DirtyMarkPainterSpecificationFactory dirtyMarkPainterSpecificationFactory;
+    private final IGitBufferHandlerContext context;
     private @Nullable Patch patch = null;
     private final PatchWorker patchWorker = new PatchWorker();
 
     /**
      * Initializes a new instance of the {@code GitBufferHandler} class.
      *
-     * @param buffer
-     *        The associated buffer.
+     * @param context
+     *        The execution context for the handler.
      */
-    GitBufferHandler(final Buffer buffer) {
-        this.buffer = buffer;
-    }
-
-    @Override
-    public void bufferSaved(final Buffer unusedBuffer) {
-        // do nothing
-    }
-
-    @Override
-    public void contentInserted(final JEditBuffer unusedBuffer, final int startLine, final int offset,
-            final int numLines, final int length) {
-        updatePatch();
-    }
-
-    @Override
-    public void contentRemoved(final JEditBuffer unusedBuffer, final int startLine, final int offset,
-            final int numLines, final int length) {
-        updatePatch();
-    }
-
-    private static DirtyMarkPainterSpecificationFactory createDirtyMarkPainterSpecificationFactory() {
-        final IDirtyMarkPainterSpecificationFactoryContext context = new IDirtyMarkPainterSpecificationFactoryContext() {
-            @Override
-            public Color getAddedDirtyMarkColor() {
-                return Properties.getAddedDirtyMarkColor();
-            }
-
-            @Override
-            public Color getChangedDirtyMarkColor() {
-                return Properties.getChangedDirtyMarkColor();
-            }
-
-            @Override
-            public Color getRemovedDirtyMarkColor() {
-                return Properties.getRemovedDirtyMarkColor();
-            }
-        };
-        return new DirtyMarkPainterSpecificationFactory(context);
-    }
-
-    @Override
-    public @Nullable DirtyMarkPainter getDirtyMarkPainter(final Buffer unusedBuffer, final int lineIndex) {
-        final DirtyMarkType dirtyMarkType = getDirtyMarkForLine(lineIndex);
-        final DirtyMarkPainterSpecification dirtyMarkPainterSpecification = dirtyMarkPainterSpecificationFactory
-                .createDirtyMarkPainterSpecification(dirtyMarkType);
-        return DirtyMarkPainterFactory.createDirtyMarkPainter(dirtyMarkPainterSpecification);
+    GitBufferHandler(final IGitBufferHandlerContext context) {
+        this.context = context;
+        this.dirtyMarkPainterSpecificationFactory = new DirtyMarkPainterSpecificationFactory(
+                context.getDirtyMarkPainterSpecificationFactoryContext());
     }
 
     private DirtyMarkType getDirtyMarkForLine(final int lineIndex) {
@@ -124,13 +62,33 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
         return patchAnalyzer.getDirtyMarkForLine(lineIndex);
     }
 
-    private void setPatch(final @Nullable Patch patch) {
-        this.patch = patch;
-        LCMPlugin.getInstance().repaintAllTextAreas();
+    /**
+     * Gets the dirty mark painter specification for the specified line.
+     *
+     * @param lineIndex
+     *        The zero-based index of the line for which the dirty mark painter
+     *        specification is desired.
+     *
+     * @return The dirty mark painter specification for the specified line.
+     */
+    DirtyMarkPainterSpecification getDirtyMarkPainterSpecificationForLine(final int lineIndex) {
+        final DirtyMarkType dirtyMarkType = getDirtyMarkForLine(lineIndex);
+        return dirtyMarkPainterSpecificationFactory.createDirtyMarkPainterSpecification(dirtyMarkType);
     }
 
-    @Override
-    public void start() {
+    private void setPatch(final @Nullable Patch patch) {
+        this.patch = patch;
+        context.repaintDirtyGutter();
+    }
+
+    /**
+     * Starts the buffer handler.
+     *
+     * <p>
+     * This method should be invoked immediately after attaching the buffer.
+     * </p>
+     */
+    void start() {
         startPatchWorker();
         updatePatch();
     }
@@ -140,7 +98,11 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
     }
 
     /**
-     * Invoked when the handler has been detached from the buffer.
+     * Stops the buffer handler.
+     *
+     * <p>
+     * This method should be invoked immediately after detaching the buffer.
+     * </p>
      */
     void stop() {
         stopPatchWorker();
@@ -150,7 +112,15 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
         patchWorker.cancel(true);
     }
 
-    private void updatePatch() {
+    /**
+     * Requests the buffer patch to be updated.
+     *
+     * <p>
+     * This method returns immediately. When the patch update is complete, the
+     * dirty gutter will be repainted asynchronously.
+     * </p>
+     */
+    void updatePatch() {
         patchWorker.updatePatch();
     }
 
@@ -166,57 +136,10 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
         PatchWorker() {
         }
 
-        private BufferAnalyzer createBufferAnalyzer() {
-            final IBuffer bufferAdapter = new IBuffer() {
-                @Override
-                public List<String> getLines() {
-                    final int lineCount = buffer.getLineCount();
-                    final List<String> lines = new ArrayList<>(lineCount);
-                    for (int lineIndex = 0; lineIndex < lineCount; ++lineIndex) {
-                        lines.add(buffer.getLineText(lineIndex));
-                    }
-                    return lines;
-                }
-
-                @Override
-                public Path getFilePath() {
-                    return Paths.get(buffer.getPath());
-                }
-            };
-            final IGitRunnerFactory gitRunnerFactory = new IGitRunnerFactory() {
-                @Override
-                public IGitRunner createGitRunner(final Path workingDirPath) {
-                    final ISupplier<Path> programPathSupplier = new ISupplier<Path>() {
-                        @Override
-                        public Path get() {
-                            return Paths.get(GitPlugin.gitPath());
-                        }
-                    };
-                    return new GitRunner(new ProcessRunner(), workingDirPath, programPathSupplier);
-                }
-            };
-            final ILog logAdapter = new ILog() {
-                @Override
-                public void logDebug(final Object source, final String message) {
-                    Log.log(Log.DEBUG, source, message);
-                }
-
-                @Override
-                public void logError(final Object source, final String message, final Throwable t) {
-                    Log.log(Log.ERROR, source, message, t);
-                }
-
-                @Override
-                public void logWarning(final Object source, final String message, final Throwable t) {
-                    Log.log(Log.WARNING, source, message, t);
-                }
-            };
-            return new BufferAnalyzer(bufferAdapter, gitRunnerFactory, logAdapter);
-        }
-
         @Override
         protected @Nullable Void doInBackground() throws Exception {
-            final BufferAnalyzer bufferAnalyzer = createBufferAnalyzer();
+            final BufferAnalyzer bufferAnalyzer = new BufferAnalyzer(context.getBuffer(), context.getGitRunnerFactory(),
+                    context.getLog());
             final AtomicReference<String> commitRefRef = new AtomicReference<>();
             while (true) {
                 if (isPatchUpdatePending() || bufferAnalyzer.hasHeadRevisionChanged(commitRefRef)) {
@@ -226,7 +149,7 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
         }
 
         private boolean isPatchUpdatePending() throws InterruptedException {
-            return updatePatchEvent.await(Properties.getCommitMonitorPollTime(), TimeUnit.MILLISECONDS);
+            return updatePatchEvent.await(context.getCommitMonitorPollTimeInMilliseconds(), TimeUnit.MILLISECONDS);
         }
 
         @Override
