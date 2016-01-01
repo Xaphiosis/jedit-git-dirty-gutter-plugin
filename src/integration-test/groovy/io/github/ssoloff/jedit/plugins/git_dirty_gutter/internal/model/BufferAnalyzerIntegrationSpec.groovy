@@ -39,7 +39,7 @@ class BufferAnalyzerIntegrationSpec extends Specification {
     }
 
     private BufferAnalyzer createBufferAnalyzerForFile(Path filePath) {
-        def buffer = Mock(IBuffer) {
+        def buffer = Stub(IBuffer) {
             getFilePath() >> filePath
             getLines() >> Files.readAllLines(filePath, Charset.defaultCharset())
         }
