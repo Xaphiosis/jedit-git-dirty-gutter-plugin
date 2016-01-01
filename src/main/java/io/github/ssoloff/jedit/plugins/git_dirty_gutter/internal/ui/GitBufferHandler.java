@@ -32,6 +32,7 @@ import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.Pr
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.GitRunner;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.IGitRunner;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.IGitRunnerFactory;
+import java.awt.Color;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -53,6 +54,7 @@ import org.gjt.sp.util.Log;
  */
 final class GitBufferHandler extends BufferAdapter implements BufferHandler {
     private final Buffer buffer;
+    private final DirtyMarkPainterSpecificationFactory dirtyMarkPainterSpecificationFactory = createDirtyMarkPainterSpecificationFactory();
     private @Nullable Patch patch = null;
     private final PatchWorker patchWorker = new PatchWorker();
 
@@ -83,17 +85,43 @@ final class GitBufferHandler extends BufferAdapter implements BufferHandler {
         updatePatch();
     }
 
+    private static DirtyMarkPainterSpecificationFactory createDirtyMarkPainterSpecificationFactory() {
+        final IDirtyMarkPainterSpecificationFactoryContext context = new IDirtyMarkPainterSpecificationFactoryContext() {
+            @Override
+            public Color getAddedDirtyMarkColor() {
+                return Properties.getAddedDirtyMarkColor();
+            }
+
+            @Override
+            public Color getChangedDirtyMarkColor() {
+                return Properties.getChangedDirtyMarkColor();
+            }
+
+            @Override
+            public Color getRemovedDirtyMarkColor() {
+                return Properties.getRemovedDirtyMarkColor();
+            }
+        };
+        return new DirtyMarkPainterSpecificationFactory(context);
+    }
+
     @Override
     public @Nullable DirtyMarkPainter getDirtyMarkPainter(final Buffer unusedBuffer, final int lineIndex) {
+        final DirtyMarkType dirtyMarkType = getDirtyMarkForLine(lineIndex);
+        final DirtyMarkPainterSpecification dirtyMarkPainterSpecification = dirtyMarkPainterSpecificationFactory
+                .createDirtyMarkPainterSpecification(dirtyMarkType);
+        return DirtyMarkPainterFactory.createDirtyMarkPainter(dirtyMarkPainterSpecification);
+    }
+
+    private DirtyMarkType getDirtyMarkForLine(final int lineIndex) {
         @SuppressWarnings("hiding")
         final Patch patch = this.patch;
         if (patch == null) {
-            return null;
+            return DirtyMarkType.UNCHANGED;
         }
 
         final PatchAnalyzer patchAnalyzer = new PatchAnalyzer(patch);
-        final DirtyMarkType dirtyMarkType = patchAnalyzer.getDirtyMarkForLine(lineIndex);
-        return DirtyMarkPainterFactory.createDirtyMarkPainter(dirtyMarkType);
+        return patchAnalyzer.getDirtyMarkForLine(lineIndex);
     }
 
     private void setPatch(final @Nullable Patch patch) {
