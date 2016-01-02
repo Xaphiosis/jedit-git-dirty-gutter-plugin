@@ -20,6 +20,7 @@ package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.ui
 
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.IBuffer
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.ILog
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.AutoResetEvent
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.StringUtils
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.ProcessRunner
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.GitRunner
@@ -29,7 +30,6 @@ import java.awt.Color
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
-import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import javax.swing.SwingUtilities
 import spock.lang.Specification
@@ -42,7 +42,7 @@ class GitBufferHandlerIntegrationSpec extends Specification {
     private def repoPath = createTempDirectory()
     private def gitRunnerFactory = createGitRunnerFactory()
     private def bufferHandler = null
-    private def bufferHandlerListenerLatch = new CountDownLatch(1)
+    private def bufferHandlerListenerEvent = new AutoResetEvent()
 
     private void addAndCommitFile(Path filePath) {
         runGit('add', filePath)
@@ -52,15 +52,19 @@ class GitBufferHandlerIntegrationSpec extends Specification {
     private void createAndStartBufferHandler(Path filePath) {
         SwingUtilities.invokeAndWait({
             bufferHandler = createBufferHandlerForFile(filePath)
-            bufferHandler.setListener({ bufferHandlerListenerLatch.countDown() })
+            bufferHandler.setListener({ bufferHandlerListenerEvent.signal() })
             bufferHandler.start()
         })
     }
 
     private GitBufferHandler createBufferHandlerForFile(Path filePath) {
-        def buffer = Stub(IBuffer) {
-            getFilePath() >> filePath
-            getLines() >> StringUtils.splitLinesWithExplicitFinalLine(new String(Files.readAllBytes(filePath)))
+        def buffer = new IBuffer() {
+            Path getFilePath() {
+                filePath
+            }
+            List<String> getLines() {
+                StringUtils.splitLinesWithExplicitFinalLine(new String(Files.readAllBytes(filePath)))
+            }
         }
         def dirtyMarkPainterSpecificationFactoryContext = Stub(IDirtyMarkPainterSpecificationFactoryContext) {
             getAddedDirtyMarkColor() >> ADDED_DIRTY_MARK_COLOR
@@ -70,7 +74,7 @@ class GitBufferHandlerIntegrationSpec extends Specification {
         def log = Stub(ILog)
         def context = Stub(IGitBufferHandlerContext) {
             getBuffer() >> buffer
-            getCommitMonitorPollTimeInMilliseconds() >> 1000
+            getCommitMonitorPollTimeInMilliseconds() >> 500
             getDirtyMarkPainterSpecificationFactoryContext() >> dirtyMarkPainterSpecificationFactoryContext
             getGitRunnerFactory() >> gitRunnerFactory
             getLog() >> log
@@ -143,6 +147,12 @@ class GitBufferHandlerIntegrationSpec extends Specification {
         assert dirtyMarkPainterSpecification == DirtyMarkPainterSpecification.NULL
     }
 
+    private void requestPatchUpdate() {
+        SwingUtilities.invokeAndWait({
+            bufferHandler.updatePatch()
+        })
+    }
+
     private void runGit(Object... args) {
         def gitRunner = createGitRunner()
         gitRunner.run(new StringWriter(), args.each { it.toString() } as String[] )
@@ -164,7 +174,7 @@ class GitBufferHandlerIntegrationSpec extends Specification {
     }
 
     private void waitForPatchUpdateNotification() {
-        bufferHandlerListenerLatch.await(30, TimeUnit.SECONDS)
+        bufferHandlerListenerEvent.await(30, TimeUnit.SECONDS)
     }
 
     def setup() {
@@ -207,6 +217,48 @@ class GitBufferHandlerIntegrationSpec extends Specification {
 
         then:
         matchesChangedDirtyMarkPainterSpecification(dirtyMarkPainterSpecification)
+
+        cleanup:
+        stopBufferHandler()
+    }
+
+    def 'when buffer differs from HEAD revision after explicit update request it should report dirty lines'() {
+        setup:
+        def filePath = repoPath.resolve('file')
+        touchFile(filePath, 'line 1\n')
+        addAndCommitFile(filePath)
+
+        when:
+        createAndStartBufferHandler(filePath)
+        waitForPatchUpdateNotification()
+        touchFile(filePath, 'new line 1\n')
+        requestPatchUpdate()
+        waitForPatchUpdateNotification()
+        def dirtyMarkPainterSpecification = getDirtyMarkPainterSpecificationForLine(0)
+
+        then:
+        matchesChangedDirtyMarkPainterSpecification(dirtyMarkPainterSpecification)
+
+        cleanup:
+        stopBufferHandler()
+    }
+
+    def 'when buffer does not differ from HEAD revision after commit it should not report dirty lines'() {
+        setup:
+        def filePath = repoPath.resolve('file')
+        touchFile(filePath, 'line 1\n')
+        addAndCommitFile(filePath)
+        touchFile(filePath, 'new line 1\n')
+
+        when:
+        createAndStartBufferHandler(filePath)
+        waitForPatchUpdateNotification()
+        addAndCommitFile(filePath)
+        waitForPatchUpdateNotification()
+        def dirtyMarkPainterSpecification = getDirtyMarkPainterSpecificationForLine(0)
+
+        then:
+        matchesUnchangedDirtyMarkPainterSpecification(dirtyMarkPainterSpecification)
 
         cleanup:
         stopBufferHandler()
