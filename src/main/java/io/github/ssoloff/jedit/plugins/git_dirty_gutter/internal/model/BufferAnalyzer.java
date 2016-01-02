@@ -29,7 +29,6 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
-import org.eclipse.jdt.annotation.Nullable;
 
 /**
  * Provides various types of analysis for a buffer.
@@ -69,26 +68,24 @@ public final class BufferAnalyzer {
      * buffer and the current state of the buffer.
      *
      * @return The patch between the HEAD revision of the file associated with
-     *         the buffer and the current state of the buffer or {@code null} if
-     *         the patch cannot be created.
+     *         the buffer and the current state of the buffer.
      *
      * @throws InterruptedException
      *         If interrupted while waiting for the task to complete.
      */
-    public @Nullable Patch createPatchBetweenHeadRevisionAndCurrentState() throws InterruptedException {
-        if (!isFilePresentAtHeadRevision()) {
-            return null;
+    public Patch createPatchBetweenHeadRevisionAndCurrentState() throws InterruptedException {
+        if (isFilePresentAtHeadRevision()) {
+            try {
+                return DiffUtils.diff(getHeadRevisionLines(), getCurrentLines());
+            } catch (final GitException | IOException e) {
+                log.logError(this,
+                        String.format("failed to create patch between HEAD revision of file and current state (%s)", //$NON-NLS-1$
+                                buffer.getFilePath()),
+                        e);
+            }
         }
 
-        try {
-            return DiffUtils.diff(getHeadRevisionLines(), getCurrentLines());
-        } catch (final GitException | IOException e) {
-            log.logError(this,
-                    String.format("failed to create patch between HEAD revision of file and current state (%s)", //$NON-NLS-1$
-                            buffer.getFilePath()),
-                    e);
-            return null;
-        }
+        return new Patch();
     }
 
     private String getCommitRefAtHeadRevision() throws GitException, IOException, InterruptedException {
@@ -126,20 +123,18 @@ public final class BufferAnalyzer {
      *         If interrupted while waiting for the task to complete.
      */
     public boolean hasHeadRevisionChanged(final AtomicReference<String> commitRefRef) throws InterruptedException {
-        if (!isFilePresentAtHeadRevision()) {
-            return false;
-        }
-
-        try {
-            final String previousCommitRef = commitRefRef.get();
-            final String currentCommitRef = getCommitRefAtHeadRevision();
-            if (!Objects.equals(previousCommitRef, currentCommitRef)) {
-                commitRefRef.set(currentCommitRef);
-                return true;
+        if (isFilePresentAtHeadRevision()) {
+            try {
+                final String previousCommitRef = commitRefRef.get();
+                final String currentCommitRef = getCommitRefAtHeadRevision();
+                if (!Objects.equals(previousCommitRef, currentCommitRef)) {
+                    commitRefRef.set(currentCommitRef);
+                    return true;
+                }
+            } catch (final GitException | IOException e) {
+                log.logError(this, String.format("failed to determine if HEAD revision of file has changed (%s)", //$NON-NLS-1$
+                        buffer.getFilePath()), e);
             }
-        } catch (final GitException | IOException e) {
-            log.logError(this, String.format("failed to determine if HEAD revision of file has changed (%s)", //$NON-NLS-1$
-                    buffer.getFilePath()), e);
         }
 
         return false;

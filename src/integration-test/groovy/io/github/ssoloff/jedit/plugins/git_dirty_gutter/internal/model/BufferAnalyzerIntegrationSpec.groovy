@@ -138,11 +138,10 @@ class BufferAnalyzerIntegrationSpec extends Specification {
         def patch = bufferAnalyzer.createPatchBetweenHeadRevisionAndCurrentState()
 
         then:
-        patch != null
         patch.deltas.size() == 1
     }
 
-    def 'createPatchBetweenHeadRevisionAndCurrentState - when file does not exist on HEAD it should return null'() {
+    def 'createPatchBetweenHeadRevisionAndCurrentState - when file does not exist on HEAD it should return an empty patch'() {
         setup:
         def filePath = repoPath.resolve('subdir1').resolve('file')
         touchFile(filePath)
@@ -153,7 +152,7 @@ class BufferAnalyzerIntegrationSpec extends Specification {
         def patch = bufferAnalyzer.createPatchBetweenHeadRevisionAndCurrentState()
 
         then:
-        patch == null
+        patch.deltas.size() == 0
     }
 
     def 'hasHeadRevisionChanged - when HEAD revision has changed it should return true and update commit ref'() {

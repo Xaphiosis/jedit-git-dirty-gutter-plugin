@@ -57,6 +57,18 @@ class PatchAnalyzerSpec extends Specification {
         thrown(IllegalArgumentException)
     }
 
+    def 'getDirtyMarkForLine - it should handle an empty patch'() {
+        setup:
+        def patchAnalyzer = new PatchAnalyzer(new Patch())
+
+        expect:
+        patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
+
+        where:
+        lineIndex << [0, 1, 2]
+        dirtyMarkType << [UNCHANGED, UNCHANGED, UNCHANGED]
+    }
+
     def 'getDirtyMarkForLine - it should handle addition of the first line'() {
         setup:
         def oldLines = [     '2', '3', '']

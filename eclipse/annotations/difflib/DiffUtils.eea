@@ -1,0 +1,4 @@
+class difflib/DiffUtils
+diff
+ (Ljava/util/List<*>;Ljava/util/List<*>;)Ldifflib/Patch;
+ (L1java/util/List<*>;L1java/util/List<*>;)L1difflib/Patch;

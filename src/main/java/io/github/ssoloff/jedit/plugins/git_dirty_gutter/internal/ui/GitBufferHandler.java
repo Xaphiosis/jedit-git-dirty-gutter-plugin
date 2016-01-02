@@ -39,7 +39,7 @@ final class GitBufferHandler {
     private final DirtyMarkPainterSpecificationFactory dirtyMarkPainterSpecificationFactory;
     private final IGitBufferHandlerContext context;
     private final List<IGitBufferHandlerListener> listeners = new ArrayList<>();
-    private @Nullable Patch patch = null;
+    private Patch patch = new Patch();
     private final PatchWorker patchWorker = new PatchWorker();
 
     /**
@@ -69,12 +69,6 @@ final class GitBufferHandler {
     }
 
     private DirtyMarkType getDirtyMarkForLine(final int lineIndex) {
-        @SuppressWarnings("hiding")
-        final Patch patch = this.patch;
-        if (patch == null) {
-            return DirtyMarkType.UNCHANGED;
-        }
-
         final PatchAnalyzer patchAnalyzer = new PatchAnalyzer(patch);
         return patchAnalyzer.getDirtyMarkForLine(lineIndex);
     }
@@ -113,7 +107,7 @@ final class GitBufferHandler {
         listeners.remove(listener);
     }
 
-    private void setPatch(final @Nullable Patch patch) {
+    private void setPatch(final Patch patch) {
         this.patch = patch;
         raisePatchUpdatedEvent();
     }
@@ -200,7 +194,9 @@ final class GitBufferHandler {
             final int patchCount = patches.size();
             if (patchCount > 0) {
                 // discard all but the latest patch if multiple patches pending
-                setPatch(patches.get(patchCount - 1));
+                final Patch latestPatch = patches.get(patchCount - 1);
+                assert latestPatch != null;
+                setPatch(latestPatch);
             }
         }
 
