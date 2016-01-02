@@ -22,10 +22,6 @@ import git.GitPlugin;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.IBuffer;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.ILog;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.ISupplier;
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.ProcessRunner;
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.GitRunner;
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.IGitRunner;
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.IGitRunnerFactory;
 import java.awt.Color;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -103,7 +99,7 @@ final class GitBufferHandlerAdapter extends BufferAdapter implements BufferHandl
 
     private static final class GitBufferHandlerContext implements IGitBufferHandlerContext {
         private static final IDirtyMarkPainterSpecificationFactoryContext dirtyMarkPainterSpecificationFactoryContext = createDirtyMarkPainterSpecificationFactoryContext();
-        private static final IGitRunnerFactory gitRunnerFactory = createGitRunnerFactory();
+        private static final ISupplier<Path> gitProgramPathSupplier = createGitProgramPathSupplier();
         private static final ILog log = createLog();
 
         private final IBuffer bufferAdapter;
@@ -150,17 +146,11 @@ final class GitBufferHandlerAdapter extends BufferAdapter implements BufferHandl
             };
         }
 
-        private static IGitRunnerFactory createGitRunnerFactory() {
-            return new IGitRunnerFactory() {
+        private static ISupplier<Path> createGitProgramPathSupplier() {
+            return new ISupplier<Path>() {
                 @Override
-                public IGitRunner createGitRunner(final Path workingDirPath) {
-                    final ISupplier<Path> programPathSupplier = new ISupplier<Path>() {
-                        @Override
-                        public Path get() {
-                            return Paths.get(GitPlugin.gitPath());
-                        }
-                    };
-                    return new GitRunner(new ProcessRunner(), workingDirPath, programPathSupplier);
+                public Path get() {
+                    return Paths.get(GitPlugin.gitPath());
                 }
             };
         }
@@ -195,8 +185,8 @@ final class GitBufferHandlerAdapter extends BufferAdapter implements BufferHandl
         }
 
         @Override
-        public IGitRunnerFactory getGitRunnerFactory() {
-            return gitRunnerFactory;
+        public ISupplier<Path> getGitProgramPathSupplier() {
+            return gitProgramPathSupplier;
         }
 
         @Override

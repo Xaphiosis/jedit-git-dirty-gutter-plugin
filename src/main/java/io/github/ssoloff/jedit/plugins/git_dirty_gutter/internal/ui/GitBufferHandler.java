@@ -23,6 +23,11 @@ import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.BufferAna
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.DirtyMarkType;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.PatchAnalyzer;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.AutoResetEvent;
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.ProcessRunner;
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.GitRunner;
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.IGitRunner;
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.IGitRunnerFactory;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -173,10 +178,19 @@ final class GitBufferHandler {
         PatchWorker() {
         }
 
+        private BufferAnalyzer createBufferAnalyzer() {
+            final IGitRunnerFactory gitRunnerFactory = new IGitRunnerFactory() {
+                @Override
+                public IGitRunner createGitRunner(final Path workingDirPath) {
+                    return new GitRunner(new ProcessRunner(), workingDirPath, context.getGitProgramPathSupplier());
+                }
+            };
+            return new BufferAnalyzer(context.getBuffer(), gitRunnerFactory, context.getLog());
+        }
+
         @Override
         protected @Nullable Void doInBackground() throws Exception {
-            final BufferAnalyzer bufferAnalyzer = new BufferAnalyzer(context.getBuffer(), context.getGitRunnerFactory(),
-                    context.getLog());
+            final BufferAnalyzer bufferAnalyzer = createBufferAnalyzer();
             final AtomicReference<String> commitRefRef = new AtomicReference<>();
             while (true) {
                 if (isPatchUpdatePending() || bufferAnalyzer.hasHeadRevisionChanged(commitRefRef)) {

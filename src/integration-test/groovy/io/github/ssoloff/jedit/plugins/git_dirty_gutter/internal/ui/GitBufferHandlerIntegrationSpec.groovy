@@ -21,11 +21,11 @@ package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.ui
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.IBuffer
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.ILog
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.AutoResetEvent
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.ISupplier
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.StringUtils
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.ProcessRunner
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.GitRunner
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.IGitRunner
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.IGitRunnerFactory
 import java.awt.Color
 import java.nio.file.Files
 import java.nio.file.Path
@@ -40,7 +40,6 @@ class GitBufferHandlerIntegrationSpec extends Specification {
     private static def REMOVED_DIRTY_MARK_COLOR = Color.RED
 
     private def repoPath = createTempDirectory()
-    private def gitRunnerFactory = createGitRunnerFactory()
     private def bufferHandler = null
     private def bufferHandlerListenerEvent = new AutoResetEvent()
     private def bufferHandlerListener = { bufferHandlerListenerEvent.signal() }
@@ -76,7 +75,7 @@ class GitBufferHandlerIntegrationSpec extends Specification {
         def context = Stub(IGitBufferHandlerContext) {
             getBuffer() >> buffer
             getDirtyMarkPainterSpecificationFactoryContext() >> dirtyMarkPainterSpecificationFactoryContext
-            getGitRunnerFactory() >> gitRunnerFactory
+            getGitProgramPathSupplier() >> ({ Paths.get('git') } as ISupplier<Path>)
             getLog() >> log
             getRepositoryPollTimeInMilliseconds() >> 500
         }
@@ -87,16 +86,8 @@ class GitBufferHandlerIntegrationSpec extends Specification {
         createGitRunnerForRepo(repoPath)
     }
 
-    private static IGitRunnerFactory createGitRunnerFactory() {
-        new IGitRunnerFactory() {
-            IGitRunner createGitRunner(Path workingDirPath) {
-                new GitRunner(new ProcessRunner(), workingDirPath, Paths.get('git'))
-            }
-        }
-    }
-
     private IGitRunner createGitRunnerForRepo(Path repoPath) {
-        gitRunnerFactory.createGitRunner(repoPath)
+        new GitRunner(new ProcessRunner(), repoPath, Paths.get('git'))
     }
 
     private Path createTempDirectory() {

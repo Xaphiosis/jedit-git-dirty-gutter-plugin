@@ -20,7 +20,8 @@ package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.ui;
 
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.IBuffer;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.ILog;
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.IGitRunnerFactory;
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.ISupplier;
+import java.nio.file.Path;
 
 /**
  * The execution context for an instance of {@code GitBufferHandler}.
@@ -48,11 +49,11 @@ interface IGitBufferHandlerContext {
     IDirtyMarkPainterSpecificationFactoryContext getDirtyMarkPainterSpecificationFactoryContext();
 
     /**
-     * Gets the Git runner factory.
+     * Gets the supplier of the Git program path.
      *
-     * @return The Git runner factory.
+     * @return The supplier of the Git program path.
      */
-    IGitRunnerFactory getGitRunnerFactory();
+    ISupplier<Path> getGitProgramPathSupplier();
 
     /**
      * Gets the log.
