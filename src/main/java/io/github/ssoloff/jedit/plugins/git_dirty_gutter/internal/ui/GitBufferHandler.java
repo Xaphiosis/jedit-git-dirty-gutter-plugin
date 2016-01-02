@@ -26,6 +26,7 @@ import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.AutoResetE
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import org.eclipse.jdt.annotation.Nullable;
 
@@ -36,6 +37,7 @@ import org.eclipse.jdt.annotation.Nullable;
 final class GitBufferHandler {
     private final DirtyMarkPainterSpecificationFactory dirtyMarkPainterSpecificationFactory;
     private final IGitBufferHandlerContext context;
+    private @Nullable IGitBufferHandlerListener listener = null;
     private @Nullable Patch patch = null;
     private final PatchWorker patchWorker = new PatchWorker();
 
@@ -46,6 +48,8 @@ final class GitBufferHandler {
      *        The execution context for the handler.
      */
     GitBufferHandler(final IGitBufferHandlerContext context) {
+        assert SwingUtilities.isEventDispatchThread();
+
         this.context = context;
         this.dirtyMarkPainterSpecificationFactory = new DirtyMarkPainterSpecificationFactory(
                 context.getDirtyMarkPainterSpecificationFactoryContext());
@@ -72,13 +76,34 @@ final class GitBufferHandler {
      * @return The dirty mark painter specification for the specified line.
      */
     DirtyMarkPainterSpecification getDirtyMarkPainterSpecificationForLine(final int lineIndex) {
+        assert SwingUtilities.isEventDispatchThread();
+
         final DirtyMarkType dirtyMarkType = getDirtyMarkForLine(lineIndex);
         return dirtyMarkPainterSpecificationFactory.createDirtyMarkPainterSpecification(dirtyMarkType);
+    }
+
+    private void raisePatchUpdatedEvent() {
+        if (listener != null) {
+            listener.patchUpdated();
+        }
+    }
+
+    /**
+     * Sets the specified listener for this buffer handler.
+     *
+     * @param listener
+     *        The listener or {@code null} to remove the active listener.
+     */
+    void setListener(final @Nullable IGitBufferHandlerListener listener) {
+        assert SwingUtilities.isEventDispatchThread();
+
+        this.listener = listener;
     }
 
     private void setPatch(final @Nullable Patch patch) {
         this.patch = patch;
         context.repaintDirtyGutter();
+        raisePatchUpdatedEvent();
     }
 
     /**
@@ -89,6 +114,8 @@ final class GitBufferHandler {
      * </p>
      */
     void start() {
+        assert SwingUtilities.isEventDispatchThread();
+
         startPatchWorker();
         updatePatch();
     }
@@ -105,6 +132,8 @@ final class GitBufferHandler {
      * </p>
      */
     void stop() {
+        assert SwingUtilities.isEventDispatchThread();
+
         stopPatchWorker();
     }
 
@@ -121,6 +150,8 @@ final class GitBufferHandler {
      * </p>
      */
     void updatePatch() {
+        assert SwingUtilities.isEventDispatchThread();
+
         patchWorker.updatePatch();
     }
 
@@ -154,8 +185,11 @@ final class GitBufferHandler {
 
         @Override
         protected void process(final List<Patch> patches) {
-            assert patches.size() == 1;
-            setPatch(patches.get(0));
+            final int patchCount = patches.size();
+            if (patchCount > 0) {
+                // discard all but the latest patch if multiple patches pending
+                setPatch(patches.get(patchCount - 1));
+            }
         }
 
         void updatePatch() {
