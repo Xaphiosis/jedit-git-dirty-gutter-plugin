@@ -186,7 +186,7 @@ final class GitBufferHandler {
         }
 
         private boolean isPatchUpdatePending() throws InterruptedException {
-            return updatePatchEvent.await(context.getCommitMonitorPollTimeInMilliseconds(), TimeUnit.MILLISECONDS);
+            return updatePatchEvent.await(context.getRepositoryPollTimeInMilliseconds(), TimeUnit.MILLISECONDS);
         }
 
         @Override

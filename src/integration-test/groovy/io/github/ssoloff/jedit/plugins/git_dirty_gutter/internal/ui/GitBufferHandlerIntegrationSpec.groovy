@@ -75,10 +75,10 @@ class GitBufferHandlerIntegrationSpec extends Specification {
         def log = Stub(ILog)
         def context = Stub(IGitBufferHandlerContext) {
             getBuffer() >> buffer
-            getCommitMonitorPollTimeInMilliseconds() >> 500
             getDirtyMarkPainterSpecificationFactoryContext() >> dirtyMarkPainterSpecificationFactoryContext
             getGitRunnerFactory() >> gitRunnerFactory
             getLog() >> log
+            getRepositoryPollTimeInMilliseconds() >> 500
         }
         new GitBufferHandler(context)
     }

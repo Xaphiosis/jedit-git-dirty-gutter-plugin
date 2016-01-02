@@ -190,11 +190,6 @@ final class GitBufferHandlerAdapter extends BufferAdapter implements BufferHandl
         }
 
         @Override
-        public int getCommitMonitorPollTimeInMilliseconds() {
-            return Properties.getCommitMonitorPollTime();
-        }
-
-        @Override
         public IDirtyMarkPainterSpecificationFactoryContext getDirtyMarkPainterSpecificationFactoryContext() {
             return dirtyMarkPainterSpecificationFactoryContext;
         }
@@ -207,6 +202,11 @@ final class GitBufferHandlerAdapter extends BufferAdapter implements BufferHandl
         @Override
         public ILog getLog() {
             return log;
+        }
+
+        @Override
+        public int getRepositoryPollTimeInMilliseconds() {
+            return Properties.getRepositoryPollTimeInMilliseconds();
         }
     }
 

@@ -39,13 +39,6 @@ interface IGitBufferHandlerContext {
     IBuffer getBuffer();
 
     /**
-     * Gets the time (in milliseconds) between polling for new commits.
-     *
-     * @return The time (in milliseconds) between polling for new commits.
-     */
-    int getCommitMonitorPollTimeInMilliseconds();
-
-    /**
      * Gets the execution context for the dirty mark painter specification
      * factory.
      *
@@ -67,4 +60,13 @@ interface IGitBufferHandlerContext {
      * @return The log.
      */
     ILog getLog();
+
+    /**
+     * Gets the time (in milliseconds) between polling the Git repository for
+     * new commits.
+     *
+     * @return The time (in milliseconds) between polling the Git repository for
+     *         new commits.
+     */
+    int getRepositoryPollTimeInMilliseconds();
 }

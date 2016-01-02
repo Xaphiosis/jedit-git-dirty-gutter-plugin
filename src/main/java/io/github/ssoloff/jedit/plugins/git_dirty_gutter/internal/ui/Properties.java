@@ -32,8 +32,9 @@ final class Properties {
     private static final String PROP_PREFIX = "io.github.ssoloff.jedit.plugins.git_dirty_gutter.GitDirtyGutterPlugin."; //$NON-NLS-1$
     private static final String PROP_ADDED_DIRTY_MARK_COLOR = PROP_PREFIX + "addedDirtyMarkColor"; //$NON-NLS-1$
     private static final String PROP_CHANGED_DIRTY_MARK_COLOR = PROP_PREFIX + "changedDirtyMarkColor"; //$NON-NLS-1$
-    private static final String PROP_COMMIT_MONITOR_POLL_TIME = PROP_PREFIX + "commitMonitorPollTime"; //$NON-NLS-1$
     private static final String PROP_REMOVED_DIRTY_MARK_COLOR = PROP_PREFIX + "removedDirtyMarkColor"; //$NON-NLS-1$
+    private static final String PROP_REPOSITORY_POLL_TIME_IN_MILLISECONDS = PROP_PREFIX
+            + "repositoryPollTimeInMilliseconds"; //$NON-NLS-1$
 
     private Properties() {
     }
@@ -57,21 +58,23 @@ final class Properties {
     }
 
     /**
-     * Gets the time (in milliseconds) between polling for new commits.
-     *
-     * @return The time (in milliseconds) between polling for new commits.
-     */
-    static int getCommitMonitorPollTime() {
-        return jEdit.getIntegerProperty(PROP_COMMIT_MONITOR_POLL_TIME, 5000);
-    }
-
-    /**
      * Gets the color used for removed dirty marks.
      *
      * @return The color used for removed dirty marks.
      */
     static Color getRemovedDirtyMarkColor() {
         return jEdit.getColorProperty(PROP_REMOVED_DIRTY_MARK_COLOR, Color.RED);
+    }
+
+    /**
+     * Gets the time (in milliseconds) between polling the Git repository for
+     * new commits.
+     *
+     * @return The time (in milliseconds) between polling the Git repository for
+     *         new commits.
+     */
+    static int getRepositoryPollTimeInMilliseconds() {
+        return jEdit.getIntegerProperty(PROP_REPOSITORY_POLL_TIME_IN_MILLISECONDS, 5000);
     }
 
     /**
