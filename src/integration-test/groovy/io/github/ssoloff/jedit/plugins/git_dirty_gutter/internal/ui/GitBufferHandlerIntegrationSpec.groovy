@@ -148,6 +148,12 @@ class GitBufferHandlerIntegrationSpec extends Specification {
         gitRunner.run(new StringWriter(), args.each { it.toString() } as String[] )
     }
 
+    private void stopBufferHandler() {
+        SwingUtilities.invokeAndWait({
+            bufferHandler.stop()
+        })
+    }
+
     private static void touchFile(Path filePath, String fileContent='') {
         def parentPath = filePath.parent
         if (Files.notExists(parentPath)) {
@@ -182,6 +188,9 @@ class GitBufferHandlerIntegrationSpec extends Specification {
 
         then:
         matchesUnchangedDirtyMarkPainterSpecification(dirtyMarkPainterSpecification)
+
+        cleanup:
+        stopBufferHandler()
     }
 
     def 'when buffer differs from HEAD revision at start it should report dirty lines'() {
@@ -198,5 +207,8 @@ class GitBufferHandlerIntegrationSpec extends Specification {
 
         then:
         matchesChangedDirtyMarkPainterSpecification(dirtyMarkPainterSpecification)
+
+        cleanup:
+        stopBufferHandler()
     }
 }
