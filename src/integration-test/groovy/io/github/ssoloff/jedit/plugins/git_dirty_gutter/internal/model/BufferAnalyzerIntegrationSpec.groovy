@@ -18,11 +18,11 @@
 
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model
 
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.StringUtils
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.ProcessRunner
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.GitRunner
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.IGitRunner
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.IGitRunnerFactory
-import java.nio.charset.Charset
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
@@ -39,9 +39,13 @@ class BufferAnalyzerIntegrationSpec extends Specification {
     }
 
     private BufferAnalyzer createBufferAnalyzerForFile(Path filePath) {
-        def buffer = Stub(IBuffer) {
-            getFilePath() >> filePath
-            getLines() >> Files.readAllLines(filePath, Charset.defaultCharset())
+        def buffer = new IBuffer() {
+            Path getFilePath() {
+                filePath
+            }
+            List<String> getLines() {
+                StringUtils.splitLinesWithExplicitFinalLine(new String(Files.readAllBytes(filePath)))
+            }
         }
         def log = Stub(ILog)
         new BufferAnalyzer(buffer, gitRunnerFactory, log)
