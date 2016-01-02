@@ -22,7 +22,6 @@ import git.GitPlugin;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.IBuffer;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.ILog;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.ISupplier;
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.Properties;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.ProcessRunner;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.GitRunner;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.IGitRunner;

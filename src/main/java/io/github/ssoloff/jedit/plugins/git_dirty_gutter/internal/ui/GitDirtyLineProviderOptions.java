@@ -18,7 +18,6 @@
 
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.ui;
 
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.Properties;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import javax.swing.JComponent;
