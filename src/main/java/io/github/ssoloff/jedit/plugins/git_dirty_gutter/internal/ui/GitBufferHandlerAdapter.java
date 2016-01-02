@@ -52,6 +52,7 @@ import org.gjt.sp.util.Log;
  */
 final class GitBufferHandlerAdapter extends BufferAdapter implements BufferHandler {
     private final GitBufferHandler bufferHandler;
+    private final IGitBufferHandlerListener bufferHandlerListener = new GitBufferHandlerListener();
 
     /**
      * Initializes a new instance of the {@code GitBufferHandlerAdapter} class.
@@ -89,6 +90,7 @@ final class GitBufferHandlerAdapter extends BufferAdapter implements BufferHandl
 
     @Override
     public void start() {
+        bufferHandler.addListener(bufferHandlerListener);
         bufferHandler.start();
     }
 
@@ -97,6 +99,7 @@ final class GitBufferHandlerAdapter extends BufferAdapter implements BufferHandl
      */
     void stop() {
         bufferHandler.stop();
+        bufferHandler.removeListener(bufferHandlerListener);
     }
 
     private static final class GitBufferHandlerContext implements IGitBufferHandlerContext {
@@ -206,9 +209,14 @@ final class GitBufferHandlerAdapter extends BufferAdapter implements BufferHandl
         public ILog getLog() {
             return log;
         }
+    }
+
+    private static final class GitBufferHandlerListener implements IGitBufferHandlerListener {
+        GitBufferHandlerListener() {
+        }
 
         @Override
-        public void repaintDirtyGutter() {
+        public void patchUpdated() {
             LCMPlugin.getInstance().repaintAllTextAreas();
         }
     }

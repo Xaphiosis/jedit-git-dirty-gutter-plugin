@@ -23,6 +23,7 @@ import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.BufferAna
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.DirtyMarkType;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.PatchAnalyzer;
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.AutoResetEvent;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
@@ -37,7 +38,7 @@ import org.eclipse.jdt.annotation.Nullable;
 final class GitBufferHandler {
     private final DirtyMarkPainterSpecificationFactory dirtyMarkPainterSpecificationFactory;
     private final IGitBufferHandlerContext context;
-    private @Nullable IGitBufferHandlerListener listener = null;
+    private final List<IGitBufferHandlerListener> listeners = new ArrayList<>();
     private @Nullable Patch patch = null;
     private final PatchWorker patchWorker = new PatchWorker();
 
@@ -53,6 +54,18 @@ final class GitBufferHandler {
         this.context = context;
         this.dirtyMarkPainterSpecificationFactory = new DirtyMarkPainterSpecificationFactory(
                 context.getDirtyMarkPainterSpecificationFactoryContext());
+    }
+
+    /**
+     * Adds the specified listener to the buffer handler.
+     *
+     * @param listener
+     *        The listener to add.
+     */
+    void addListener(final IGitBufferHandlerListener listener) {
+        assert SwingUtilities.isEventDispatchThread();
+
+        listeners.add(listener);
     }
 
     private DirtyMarkType getDirtyMarkForLine(final int lineIndex) {
@@ -83,26 +96,25 @@ final class GitBufferHandler {
     }
 
     private void raisePatchUpdatedEvent() {
-        if (listener != null) {
+        for (final IGitBufferHandlerListener listener : listeners) {
             listener.patchUpdated();
         }
     }
 
     /**
-     * Sets the specified listener for this buffer handler.
+     * Removes the specified listener from the buffer handler.
      *
      * @param listener
-     *        The listener or {@code null} to remove the active listener.
+     *        The listener to remove.
      */
-    void setListener(final @Nullable IGitBufferHandlerListener listener) {
+    void removeListener(final IGitBufferHandlerListener listener) {
         assert SwingUtilities.isEventDispatchThread();
 
-        this.listener = listener;
+        listeners.remove(listener);
     }
 
     private void setPatch(final @Nullable Patch patch) {
         this.patch = patch;
-        context.repaintDirtyGutter();
         raisePatchUpdatedEvent();
     }
 

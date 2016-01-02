@@ -43,6 +43,7 @@ class GitBufferHandlerIntegrationSpec extends Specification {
     private def gitRunnerFactory = createGitRunnerFactory()
     private def bufferHandler = null
     private def bufferHandlerListenerEvent = new AutoResetEvent()
+    private def bufferHandlerListener = { bufferHandlerListenerEvent.signal() }
 
     private void addAndCommitFile(Path filePath) {
         runGit('add', filePath)
@@ -52,7 +53,7 @@ class GitBufferHandlerIntegrationSpec extends Specification {
     private void createAndStartBufferHandler(Path filePath) {
         SwingUtilities.invokeAndWait({
             bufferHandler = createBufferHandlerForFile(filePath)
-            bufferHandler.setListener({ bufferHandlerListenerEvent.signal() })
+            bufferHandler.addListener(bufferHandlerListener)
             bufferHandler.start()
         })
     }
@@ -161,6 +162,7 @@ class GitBufferHandlerIntegrationSpec extends Specification {
     private void stopBufferHandler() {
         SwingUtilities.invokeAndWait({
             bufferHandler.stop()
+            bufferHandler.removeListener(bufferHandlerListener)
         })
     }
 

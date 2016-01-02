@@ -67,9 +67,4 @@ interface IGitBufferHandlerContext {
      * @return The log.
      */
     ILog getLog();
-
-    /**
-     * Causes the dirty gutter for the associated buffer to be repainted.
-     */
-    void repaintDirtyGutter();
 }
