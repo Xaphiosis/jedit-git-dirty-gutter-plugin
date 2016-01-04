@@ -2,6 +2,7 @@ plugins {
     id 'groovy'
     id 'jacoco'
     id 'findbugs'
+    id 'pmd'
     id 'com.github.kt3k.coveralls' version '2.4.0'
     id 'nebula.provided-base' version '3.0.3'
 }
@@ -98,6 +99,12 @@ integrationTest {
     jacocoIntegrationTestReport.reports.xml.destination = file("$project.jacoco.reportsDir/$name/jacocoTestReport.xml")
     jacocoIntegrationTestReport.reports.html.enabled = true
     jacocoIntegrationTestReport.reports.xml.enabled = true
+}
+
+pmd {
+    ignoreFailures = true
+    ruleSetFiles = files("${project.projectDir}/config/pmd/pmd.xml")
+    ruleSets = []
 }
 
 test {
