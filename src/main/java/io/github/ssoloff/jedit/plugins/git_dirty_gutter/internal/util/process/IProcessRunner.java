@@ -48,6 +48,6 @@ public interface IProcessRunner {
      * @throws InterruptedException
      *         If interrupted while waiting for the process to exit.
      */
-    public int run(Writer outWriter, Writer errWriter, Path workingDirPath, String... command)
+    int run(Writer outWriter, Writer errWriter, Path workingDirPath, String... command)
             throws IOException, InterruptedException;
 }

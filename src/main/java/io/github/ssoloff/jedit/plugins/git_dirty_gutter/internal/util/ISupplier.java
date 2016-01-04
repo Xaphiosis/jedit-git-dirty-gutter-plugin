@@ -30,5 +30,5 @@ public interface ISupplier<T> {
      *
      * @return The result.
      */
-    public T get();
+    T get();
 }

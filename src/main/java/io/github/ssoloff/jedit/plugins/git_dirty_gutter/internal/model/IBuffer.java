@@ -30,12 +30,12 @@ public interface IBuffer {
      *
      * @return The path to the file associated with the buffer.
      */
-    public Path getFilePath();
+    Path getFilePath();
 
     /**
      * Gets the lines of text in the buffer.
      *
      * @return The lines of text in the buffer.
      */
-    public List<String> getLines();
+    List<String> getLines();
 }

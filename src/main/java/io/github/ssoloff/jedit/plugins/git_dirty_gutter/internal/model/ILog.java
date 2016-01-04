@@ -30,7 +30,7 @@ public interface ILog {
      * @param message
      *        The message.
      */
-    public void logDebug(Object source, String message);
+    void logDebug(Object source, String message);
 
     /**
      * Logs a message at the error level of urgency.
@@ -42,7 +42,7 @@ public interface ILog {
      * @param t
      *        The cause of the error.
      */
-    public void logError(Object source, String message, Throwable t);
+    void logError(Object source, String message, Throwable t);
 
     /**
      * Logs a message at the warning level of urgency.
@@ -54,5 +54,5 @@ public interface ILog {
      * @param t
      *        The cause of the warning.
      */
-    public void logWarning(Object source, String message, Throwable t);
+    void logWarning(Object source, String message, Throwable t);
 }

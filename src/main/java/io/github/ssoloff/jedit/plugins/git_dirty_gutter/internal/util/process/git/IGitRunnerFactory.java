@@ -34,5 +34,5 @@ public interface IGitRunnerFactory {
      *
      * @return A new Git runner.
      */
-    public IGitRunner createGitRunner(final Path workingDirPath);
+    IGitRunner createGitRunner(Path workingDirPath);
 }
