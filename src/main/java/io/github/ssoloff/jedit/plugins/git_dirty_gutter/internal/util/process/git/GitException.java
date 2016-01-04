@@ -110,25 +110,25 @@ public final class GitException extends Exception {
         final StringBuilder sb = new StringBuilder();
 
         if (isPopulated(messageSummary)) {
-            sb.append(String.format("%s\n", messageSummary)); //$NON-NLS-1$
+            sb.append(String.format("%s%n", messageSummary)); //$NON-NLS-1$
         } else {
-            sb.append(String.format("%s\n", getDefaultMessageSummary())); //$NON-NLS-1$
+            sb.append(String.format("%s%n", getDefaultMessageSummary())); //$NON-NLS-1$
         }
 
         if (isPopulated(workingDirPath)) {
-            sb.append(String.format("working dir: %s\n", workingDirPath)); //$NON-NLS-1$
+            sb.append(String.format("working dir: %s%n", workingDirPath)); //$NON-NLS-1$
         }
 
         if (isPopulated(command)) {
-            sb.append(String.format("    command: %s\n", Arrays.toString(command))); //$NON-NLS-1$
+            sb.append(String.format("    command: %s%n", Arrays.toString(command))); //$NON-NLS-1$
         }
 
         if (isPopulated(exitCode)) {
-            sb.append(String.format("  exit code: %d\n", exitCode)); //$NON-NLS-1$
+            sb.append(String.format("  exit code: %d%n", exitCode)); //$NON-NLS-1$
         }
 
         if (isPopulated(output)) {
-            sb.append(String.format("     output: %s\n", output)); //$NON-NLS-1$
+            sb.append(String.format("     output: %s%n", output)); //$NON-NLS-1$
         }
 
         if (isPopulated(error)) {
