@@ -43,5 +43,6 @@ public interface IGitRunner {
      * @throws InterruptedException
      *         If interrupted while waiting for the Git process to exit.
      */
-    public GitRunnerResult run(Writer outWriter, String... programArgs) throws GitException, IOException, InterruptedException;
+    public GitRunnerResult run(Writer outWriter, String... programArgs)
+            throws GitException, IOException, InterruptedException;
 }
