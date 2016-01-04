@@ -176,6 +176,7 @@ final class GitBufferHandler {
         private final AutoResetEvent updatePatchEvent = new AutoResetEvent();
 
         PatchWorker() {
+            // do nothing
         }
 
         private BufferAnalyzer createBufferAnalyzer() {

@@ -202,6 +202,7 @@ final class GitBufferHandlerAdapter extends BufferAdapter implements BufferHandl
 
     private static final class GitBufferHandlerListener implements IGitBufferHandlerListener {
         GitBufferHandlerListener() {
+            // do nothing
         }
 
         @Override
