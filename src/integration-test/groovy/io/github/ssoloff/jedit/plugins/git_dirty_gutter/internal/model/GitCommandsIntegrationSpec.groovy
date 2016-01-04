@@ -25,11 +25,16 @@ import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.gi
 import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
+import org.junit.Rule
+import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
 class GitCommandsIntegrationSpec extends Specification {
-    private def repoPath = createTempDirectory()
-    private def gitCommands = new GitCommands(createGitRunner())
+    @Rule
+    private TemporaryFolder temporaryFolder = new TemporaryFolder()
+
+    private def repoPath = null
+    private def gitCommands = null
 
     private void addAndCommitFile(Path filePath) {
         runGit('add', filePath)
@@ -53,27 +58,9 @@ class GitCommandsIntegrationSpec extends Specification {
         filePath.setText(fileContent)
     }
 
-    private Path createTempDirectory() {
-        Files.createTempDirectory(this.class.simpleName)
-    }
-
-    private Path createTempFile() {
-        Files.createTempFile(this.class.simpleName, null)
-    }
-
-    private static void deleteDirectory(Path dirPath) {
-        if ((dirPath != null) && !dirPath.deleteDir()) {
-            System.err.println "failed to delete directory $dirPath"
-        }
-    }
-
-    private static void deleteFile(Path filePath) {
-        if ((filePath != null) && !Files.deleteIfExists(filePath)) {
-            System.err.println "failed to delete file $filePath"
-        }
-    }
-
     private void initRepo() {
+        repoPath = temporaryFolder.newFolder().toPath()
+
         runGit('init')
 
         // configure required user properties
@@ -93,10 +80,8 @@ class GitCommandsIntegrationSpec extends Specification {
 
     def setup() {
         initRepo()
-    }
 
-    def cleanup() {
-        deleteDirectory(repoPath)
+        gitCommands = new GitCommands(createGitRunner())
     }
 
     def 'getCommitRefAtHeadRevision - when file exists on HEAD it should return commit ref'() {
@@ -127,7 +112,7 @@ class GitCommandsIntegrationSpec extends Specification {
 
     def 'getCommitRefAtHeadRevision - when file is outside repo it should throw an exception'() {
         setup:
-        def filePath = createTempFile()
+        def filePath = temporaryFolder.newFile().toPath()
         def gitCommands = new GitCommands(createGitRunnerForRepo(filePath.parent))
 
         when:
@@ -135,9 +120,6 @@ class GitCommandsIntegrationSpec extends Specification {
 
         then:
         thrown(GitException)
-
-        cleanup:
-        deleteFile(filePath)
     }
 
     def 'getRepoRelativeFilePathAtHeadRevision - when file exists on HEAD it should return repo-relative path'() {
@@ -168,16 +150,13 @@ class GitCommandsIntegrationSpec extends Specification {
 
     def 'getRepoRelativeFilePathAtHeadRevision - when file is outside repo it should throw an exception'() {
         setup:
-        def filePath = createTempFile()
+        def filePath = temporaryFolder.newFile().toPath()
 
         when:
         gitCommands.getRepoRelativeFilePathAtHeadRevision(filePath)
 
         then:
         thrown(GitException)
-
-        cleanup:
-        deleteFile(filePath)
     }
 
     def 'isFilePresentAtHeadRevision - when file exists on HEAD it should return true'() {
@@ -208,16 +187,13 @@ class GitCommandsIntegrationSpec extends Specification {
 
     def 'isFilePresentAtHeadRevision - when file is outside repo it should return false'() {
         setup:
-        def filePath = createTempFile()
+        def filePath = temporaryFolder.newFile().toPath()
 
         when:
         def result = gitCommands.isFilePresentAtHeadRevision(filePath)
 
         then:
         result == false
-
-        cleanup:
-        deleteFile(filePath)
     }
 
     def 'readFileContentAtHeadRevision - when file exists on HEAD it should read file content'() {

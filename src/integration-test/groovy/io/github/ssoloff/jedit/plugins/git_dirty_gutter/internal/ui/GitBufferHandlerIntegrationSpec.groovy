@@ -32,6 +32,8 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.concurrent.TimeUnit
 import javax.swing.SwingUtilities
+import org.junit.Rule
+import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
 class GitBufferHandlerIntegrationSpec extends Specification {
@@ -39,7 +41,10 @@ class GitBufferHandlerIntegrationSpec extends Specification {
     private static def CHANGED_DIRTY_MARK_COLOR = Color.ORANGE
     private static def REMOVED_DIRTY_MARK_COLOR = Color.RED
 
-    private def repoPath = createTempDirectory()
+    @Rule
+    private TemporaryFolder temporaryFolder = new TemporaryFolder()
+
+    private def repoPath = null
     private def bufferHandler = null
     private def bufferHandlerListenerEvent = new AutoResetEvent()
     private def bufferHandlerListener = { bufferHandlerListenerEvent.signal() }
@@ -90,26 +95,6 @@ class GitBufferHandlerIntegrationSpec extends Specification {
         new GitRunner(new ProcessRunner(), repoPath, Paths.get('git'))
     }
 
-    private Path createTempDirectory() {
-        Files.createTempDirectory(this.class.simpleName)
-    }
-
-    private Path createTempFile() {
-        Files.createTempFile(this.class.simpleName, null)
-    }
-
-    private static void deleteDirectory(Path dirPath) {
-        if ((dirPath != null) && !dirPath.deleteDir()) {
-            System.err.println "failed to delete directory $dirPath"
-        }
-    }
-
-    private static void deleteFile(Path filePath) {
-        if ((filePath != null) && !Files.deleteIfExists(filePath)) {
-            System.err.println "failed to delete file $filePath"
-        }
-    }
-
     private def getDirtyMarkPainterSpecificationForLine(lineIndex) {
         def dirtyMarkPainterSpecification = null
         SwingUtilities.invokeAndWait({
@@ -119,6 +104,8 @@ class GitBufferHandlerIntegrationSpec extends Specification {
     }
 
     private void initRepo() {
+        repoPath = temporaryFolder.newFolder().toPath()
+
         runGit('init')
 
         // configure required user properties
@@ -172,10 +159,6 @@ class GitBufferHandlerIntegrationSpec extends Specification {
 
     def setup() {
         initRepo()
-    }
-
-    def cleanup() {
-        deleteDirectory(repoPath)
     }
 
     def 'when buffer does not differ from HEAD revision at start it should not report dirty lines'() {

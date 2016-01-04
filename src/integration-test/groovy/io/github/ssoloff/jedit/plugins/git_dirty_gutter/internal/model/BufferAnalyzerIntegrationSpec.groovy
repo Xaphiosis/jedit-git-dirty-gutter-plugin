@@ -27,10 +27,15 @@ import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import java.util.concurrent.atomic.AtomicReference
+import org.junit.Rule
+import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
 class BufferAnalyzerIntegrationSpec extends Specification {
-    private def repoPath = createTempDirectory()
+    @Rule
+    private TemporaryFolder temporaryFolder = new TemporaryFolder()
+
+    private def repoPath = null
     private def gitRunnerFactory = createGitRunnerFactory()
 
     private void addAndCommitFile(Path filePath) {
@@ -67,26 +72,6 @@ class BufferAnalyzerIntegrationSpec extends Specification {
         gitRunnerFactory.createGitRunner(repoPath)
     }
 
-    private Path createTempDirectory() {
-        Files.createTempDirectory(this.class.simpleName)
-    }
-
-    private Path createTempFile() {
-        Files.createTempFile(this.class.simpleName, null)
-    }
-
-    private static void deleteDirectory(Path dirPath) {
-        if ((dirPath != null) && !dirPath.deleteDir()) {
-            System.err.println "failed to delete directory $dirPath"
-        }
-    }
-
-    private static void deleteFile(Path filePath) {
-        if ((filePath != null) && !Files.deleteIfExists(filePath)) {
-            System.err.println "failed to delete file $filePath"
-        }
-    }
-
     private String getCommitRefAtHeadRevision(Path repoRelativeFilePath) {
         def gitRunner = createGitRunner()
         def outWriter = new StringWriter()
@@ -96,6 +81,8 @@ class BufferAnalyzerIntegrationSpec extends Specification {
     }
 
     private void initRepo() {
+        repoPath = temporaryFolder.newFolder().toPath()
+
         runGit('init')
 
         // configure required user properties
@@ -124,10 +111,6 @@ class BufferAnalyzerIntegrationSpec extends Specification {
 
     def setup() {
         initRepo()
-    }
-
-    def cleanup() {
-        deleteDirectory(repoPath)
     }
 
     def 'createPatchBetweenHeadRevisionAndCurrentState - when file exists on HEAD it should return patch'() {
