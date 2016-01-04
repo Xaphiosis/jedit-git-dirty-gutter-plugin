@@ -18,43 +18,25 @@
 
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.ui
 
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.IBuffer
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.ILog
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.test.GitIntegrationSpecification
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.AutoResetEvent
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.ISupplier
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.StringUtils
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.ProcessRunner
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.GitRunner
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.IGitRunner
 import java.awt.Color
-import java.nio.file.Files
 import java.nio.file.Path
-import java.nio.file.Paths
 import java.util.concurrent.TimeUnit
 import javax.swing.SwingUtilities
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
-import spock.lang.Specification
 
-class GitBufferHandlerIntegrationSpec extends Specification {
+class GitBufferHandlerIntegrationSpec extends GitIntegrationSpecification {
     private static def ADDED_DIRTY_MARK_COLOR = Color.GREEN
     private static def CHANGED_DIRTY_MARK_COLOR = Color.ORANGE
     private static def REMOVED_DIRTY_MARK_COLOR = Color.RED
 
-    @Rule
-    private TemporaryFolder temporaryFolder = new TemporaryFolder()
-
-    private def repoPath = null
-    private def bufferHandler = null
+    private def bufferHandler
     private def bufferHandlerListenerEvent = new AutoResetEvent()
     private def bufferHandlerListener = { bufferHandlerListenerEvent.signal() }
 
-    private void addAndCommitFile(Path filePath) {
-        runGit('add', filePath)
-        runGit('commit', '-m', 'test commit')
-    }
-
-    private void createAndStartBufferHandler(Path filePath) {
+    private void createAndStartBufferHandler(filePath) {
         SwingUtilities.invokeAndWait({
             bufferHandler = createBufferHandlerForFile(filePath)
             bufferHandler.addListener(bufferHandlerListener)
@@ -62,15 +44,8 @@ class GitBufferHandlerIntegrationSpec extends Specification {
         })
     }
 
-    private GitBufferHandler createBufferHandlerForFile(Path filePath) {
-        def buffer = new IBuffer() {
-            Path getFilePath() {
-                filePath
-            }
-            List<String> getLines() {
-                StringUtils.splitLinesWithExplicitFinalLine(new String(Files.readAllBytes(filePath)))
-            }
-        }
+    private def createBufferHandlerForFile(filePath) {
+        def buffer = createBufferForFile(filePath)
         def dirtyMarkPainterSpecificationFactoryContext = Stub(IDirtyMarkPainterSpecificationFactoryContext) {
             getAddedDirtyMarkColor() >> ADDED_DIRTY_MARK_COLOR
             getChangedDirtyMarkColor() >> CHANGED_DIRTY_MARK_COLOR
@@ -80,19 +55,11 @@ class GitBufferHandlerIntegrationSpec extends Specification {
         def context = Stub(IGitBufferHandlerContext) {
             getBuffer() >> buffer
             getDirtyMarkPainterSpecificationFactoryContext() >> dirtyMarkPainterSpecificationFactoryContext
-            getGitProgramPathSupplier() >> ({ Paths.get('git') } as ISupplier<Path>)
+            getGitProgramPathSupplier() >> ({ getGitProgramPath() } as ISupplier<Path>)
             getLog() >> log
             getRepositoryPollTimeInMilliseconds() >> 500
         }
         new GitBufferHandler(context)
-    }
-
-    private IGitRunner createGitRunner() {
-        createGitRunnerForRepo(repoPath)
-    }
-
-    private IGitRunner createGitRunnerForRepo(Path repoPath) {
-        new GitRunner(new ProcessRunner(), repoPath, Paths.get('git'))
     }
 
     private def getDirtyMarkPainterSpecificationForLine(lineIndex) {
@@ -101,21 +68,6 @@ class GitBufferHandlerIntegrationSpec extends Specification {
             dirtyMarkPainterSpecification = bufferHandler.getDirtyMarkPainterSpecificationForLine(lineIndex)
         })
         dirtyMarkPainterSpecification
-    }
-
-    private void initRepo() {
-        repoPath = temporaryFolder.newFolder().toPath()
-
-        runGit('init')
-
-        // configure required user properties
-        runGit('config', 'user.name', 'TestUser')
-        runGit('config', 'user.email', 'TestEmail')
-
-        // create an initial commit so HEAD is present
-        def filePath = repoPath.resolve('README')
-        touchFile(filePath)
-        addAndCommitFile(filePath)
     }
 
     private void matchesChangedDirtyMarkPainterSpecification(dirtyMarkPainterSpecification) {
@@ -132,11 +84,6 @@ class GitBufferHandlerIntegrationSpec extends Specification {
         })
     }
 
-    private void runGit(Object... args) {
-        def gitRunner = createGitRunner()
-        gitRunner.run(new StringWriter(), args.each { it.toString() } as String[] )
-    }
-
     private void stopBufferHandler() {
         SwingUtilities.invokeAndWait({
             bufferHandler.stop()
@@ -144,21 +91,8 @@ class GitBufferHandlerIntegrationSpec extends Specification {
         })
     }
 
-    private static void touchFile(Path filePath, String fileContent='') {
-        def parentPath = filePath.parent
-        if (Files.notExists(parentPath)) {
-            assert parentPath.toFile().mkdirs()
-        }
-
-        filePath.setText(fileContent)
-    }
-
     private void waitForPatchUpdateNotification() {
         bufferHandlerListenerEvent.await(30, TimeUnit.SECONDS)
-    }
-
-    def setup() {
-        initRepo()
     }
 
     def 'when buffer does not differ from HEAD revision at start it should not report dirty lines'() {

@@ -18,76 +18,20 @@
 
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model
 
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.ProcessRunner
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.test.GitIntegrationSpecification
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.GitException
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.GitRunner
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.IGitRunner
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
-import spock.lang.Specification
 
-class GitCommandsIntegrationSpec extends Specification {
-    @Rule
-    private TemporaryFolder temporaryFolder = new TemporaryFolder()
-
-    private def repoPath = null
-    private def gitCommands = null
-
-    private void addAndCommitFile(Path filePath) {
-        runGit('add', filePath)
-        runGit('commit', '-m', 'test commit')
-    }
-
-    private IGitRunner createGitRunner() {
-        createGitRunnerForRepo(repoPath)
-    }
-
-    private static IGitRunner createGitRunnerForRepo(Path repoPath) {
-        new GitRunner(new ProcessRunner(), repoPath, Paths.get('git'))
-    }
-
-    private static void createNewFile(Path filePath, String fileContent='') {
-        def parentPath = filePath.parent
-        if (Files.notExists(parentPath)) {
-            assert parentPath.toFile().mkdirs()
-        }
-
-        filePath.setText(fileContent)
-    }
-
-    private void initRepo() {
-        repoPath = temporaryFolder.newFolder().toPath()
-
-        runGit('init')
-
-        // configure required user properties
-        runGit('config', 'user.name', 'TestUser')
-        runGit('config', 'user.email', 'TestEmail')
-
-        // create an initial commit so HEAD is present
-        def filePath = repoPath.resolve('README')
-        createNewFile(filePath)
-        addAndCommitFile(filePath)
-    }
-
-    private void runGit(Object... args) {
-        def gitRunner = createGitRunner()
-        gitRunner.run(new StringWriter(), args.each { it.toString() } as String[] )
-    }
+class GitCommandsIntegrationSpec extends GitIntegrationSpecification {
+    private def gitCommands
 
     def setup() {
-        initRepo()
-
         gitCommands = new GitCommands(createGitRunner())
     }
 
     def 'getCommitRefAtHeadRevision - when file exists on HEAD it should return commit ref'() {
         setup:
         def filePath = repoPath.resolve('subdir1').resolve('file')
-        createNewFile(filePath)
+        touchFile(filePath)
         addAndCommitFile(filePath)
 
         when:
@@ -100,7 +44,7 @@ class GitCommandsIntegrationSpec extends Specification {
     def 'getCommitRefAtHeadRevision - when file is inside repo but does not exist on HEAD it should throw an exception'() {
         setup:
         def filePath = repoPath.resolve('subdir1').resolve('file')
-        createNewFile(filePath)
+        touchFile(filePath)
         // do not commit so it does not exist on HEAD
 
         when:
@@ -112,7 +56,7 @@ class GitCommandsIntegrationSpec extends Specification {
 
     def 'getCommitRefAtHeadRevision - when file is outside repo it should throw an exception'() {
         setup:
-        def filePath = temporaryFolder.newFile().toPath()
+        def filePath = newTemporaryFile()
         def gitCommands = new GitCommands(createGitRunnerForRepo(filePath.parent))
 
         when:
@@ -125,7 +69,7 @@ class GitCommandsIntegrationSpec extends Specification {
     def 'getRepoRelativeFilePathAtHeadRevision - when file exists on HEAD it should return repo-relative path'() {
         setup:
         def filePath = repoPath.resolve('subdir1').resolve('file')
-        createNewFile(filePath)
+        touchFile(filePath)
         addAndCommitFile(filePath)
 
         when:
@@ -138,7 +82,7 @@ class GitCommandsIntegrationSpec extends Specification {
     def 'getRepoRelativeFilePathAtHeadRevision - when file is inside repo but does not exist on HEAD it should throw an exception'() {
         setup:
         def filePath = repoPath.resolve('subdir1').resolve('file')
-        createNewFile(filePath)
+        touchFile(filePath)
         // do not commit so it does not exist on HEAD
 
         when:
@@ -150,7 +94,7 @@ class GitCommandsIntegrationSpec extends Specification {
 
     def 'getRepoRelativeFilePathAtHeadRevision - when file is outside repo it should throw an exception'() {
         setup:
-        def filePath = temporaryFolder.newFile().toPath()
+        def filePath = newTemporaryFile()
 
         when:
         gitCommands.getRepoRelativeFilePathAtHeadRevision(filePath)
@@ -162,7 +106,7 @@ class GitCommandsIntegrationSpec extends Specification {
     def 'isFilePresentAtHeadRevision - when file exists on HEAD it should return true'() {
         setup:
         def filePath = repoPath.resolve('subdir1').resolve('file')
-        createNewFile(filePath)
+        touchFile(filePath)
         addAndCommitFile(filePath)
 
         when:
@@ -175,7 +119,7 @@ class GitCommandsIntegrationSpec extends Specification {
     def 'isFilePresentAtHeadRevision - when file is inside repo but does not exist on HEAD it should return false'() {
         setup:
         def filePath = repoPath.resolve('subdir1').resolve('file')
-        createNewFile(filePath)
+        touchFile(filePath)
         // do not commit so it does not exist on HEAD
 
         when:
@@ -187,7 +131,7 @@ class GitCommandsIntegrationSpec extends Specification {
 
     def 'isFilePresentAtHeadRevision - when file is outside repo it should return false'() {
         setup:
-        def filePath = temporaryFolder.newFile().toPath()
+        def filePath = newTemporaryFile()
 
         when:
         def result = gitCommands.isFilePresentAtHeadRevision(filePath)
@@ -200,7 +144,7 @@ class GitCommandsIntegrationSpec extends Specification {
         setup:
         def filePath = repoPath.resolve('file')
         def fileContent = 'line1\nline2\n'
-        createNewFile(filePath, fileContent)
+        touchFile(filePath, fileContent)
         addAndCommitFile(filePath)
         def writer = new StringWriter()
 
@@ -214,7 +158,7 @@ class GitCommandsIntegrationSpec extends Specification {
     def 'readFileContentAtHeadRevision - when file does not exist on HEAD it should throw an exception'() {
         setup:
         def filePath = repoPath.resolve('file')
-        createNewFile(filePath)
+        touchFile(filePath)
         // do not commit so it does not exist on HEAD
 
         when:

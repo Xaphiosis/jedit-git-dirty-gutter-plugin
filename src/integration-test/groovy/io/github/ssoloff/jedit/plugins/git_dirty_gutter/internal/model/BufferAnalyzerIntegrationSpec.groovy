@@ -18,99 +18,22 @@
 
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model
 
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.StringUtils
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.ProcessRunner
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.GitRunner
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.IGitRunner
-import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.IGitRunnerFactory
-import java.nio.file.Files
-import java.nio.file.Path
-import java.nio.file.Paths
+import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.test.GitIntegrationSpecification
 import java.util.concurrent.atomic.AtomicReference
-import org.junit.Rule
-import org.junit.rules.TemporaryFolder
-import spock.lang.Specification
 
-class BufferAnalyzerIntegrationSpec extends Specification {
-    @Rule
-    private TemporaryFolder temporaryFolder = new TemporaryFolder()
-
-    private def repoPath = null
-    private def gitRunnerFactory = createGitRunnerFactory()
-
-    private void addAndCommitFile(Path filePath) {
-        runGit('add', filePath)
-        runGit('commit', '-m', 'test commit')
-    }
-
-    private BufferAnalyzer createBufferAnalyzerForFile(Path filePath) {
-        def buffer = new IBuffer() {
-            Path getFilePath() {
-                filePath
-            }
-            List<String> getLines() {
-                StringUtils.splitLinesWithExplicitFinalLine(new String(Files.readAllBytes(filePath)))
-            }
-        }
+class BufferAnalyzerIntegrationSpec extends GitIntegrationSpecification {
+    private def createBufferAnalyzerForFile(filePath) {
+        def buffer = createBufferForFile(filePath)
         def log = Stub(ILog)
-        new BufferAnalyzer(buffer, gitRunnerFactory, log)
+        new BufferAnalyzer(buffer, createGitRunnerFactory(), log)
     }
 
-    private IGitRunner createGitRunner() {
-        createGitRunnerForRepo(repoPath)
-    }
-
-    private static IGitRunnerFactory createGitRunnerFactory() {
-        new IGitRunnerFactory() {
-            IGitRunner createGitRunner(Path workingDirPath) {
-                new GitRunner(new ProcessRunner(), workingDirPath, Paths.get('git'))
-            }
-        }
-    }
-
-    private IGitRunner createGitRunnerForRepo(Path repoPath) {
-        gitRunnerFactory.createGitRunner(repoPath)
-    }
-
-    private String getCommitRefAtHeadRevision(Path repoRelativeFilePath) {
+    private def getCommitRefAtHeadRevision(repoRelativeFilePath) {
         def gitRunner = createGitRunner()
         def outWriter = new StringWriter()
         def result = gitRunner.run(outWriter, 'ls-tree', 'HEAD', repoRelativeFilePath.toString())
         assert result.exitCode == 0
         outWriter.toString().split(/\s+/)[2]
-    }
-
-    private void initRepo() {
-        repoPath = temporaryFolder.newFolder().toPath()
-
-        runGit('init')
-
-        // configure required user properties
-        runGit('config', 'user.name', 'TestUser')
-        runGit('config', 'user.email', 'TestEmail')
-
-        // create an initial commit so HEAD is present
-        def filePath = repoPath.resolve('README')
-        touchFile(filePath)
-        addAndCommitFile(filePath)
-    }
-
-    private void runGit(Object... args) {
-        def gitRunner = createGitRunner()
-        gitRunner.run(new StringWriter(), args.each { it.toString() } as String[] )
-    }
-
-    private static void touchFile(Path filePath, String fileContent='') {
-        def parentPath = filePath.parent
-        if (Files.notExists(parentPath)) {
-            assert parentPath.toFile().mkdirs()
-        }
-
-        filePath.setText(fileContent)
-    }
-
-    def setup() {
-        initRepo()
     }
 
     def 'createPatchBetweenHeadRevisionAndCurrentState - when file exists on HEAD it should return patch'() {
