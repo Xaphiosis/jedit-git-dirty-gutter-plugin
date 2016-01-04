@@ -70,6 +70,10 @@ public final class ProcessRunner implements IProcessRunner {
         return exitCode;
     }
 
+    /**
+     * A line visitor for capturing the content of a process's standard output
+     * and standard error streams.
+     */
     private static final class LineVisitor implements ProcessExecutor.LineVisitor {
         private final Writer errWriter;
         private final Writer outWriter;

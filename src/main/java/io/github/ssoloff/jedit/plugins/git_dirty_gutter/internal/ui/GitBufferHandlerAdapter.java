@@ -97,6 +97,10 @@ final class GitBufferHandlerAdapter extends BufferAdapter implements BufferHandl
         bufferHandler.removeListener(bufferHandlerListener);
     }
 
+    /**
+     * The execution context for the Git buffer handler that provides the
+     * inbound bridge to the jEdit API.
+     */
     private static final class GitBufferHandlerContext implements IGitBufferHandlerContext {
         private static final IDirtyMarkPainterSpecificationFactoryContext DIRTY_MARK_PAINTER_SPECIFICATION_FACTORY_CONTEXT = createDirtyMarkPainterSpecificationFactoryContext();
         private static final ISupplier<Path> GIT_PROGRAM_PATH_SUPPLIER = createGitProgramPathSupplier();
@@ -200,6 +204,10 @@ final class GitBufferHandlerAdapter extends BufferAdapter implements BufferHandl
         }
     }
 
+    /**
+     * A Git buffer handler listener that provides the outbound bridge to the
+     * jEdit API.
+     */
     private static final class GitBufferHandlerListener implements IGitBufferHandlerListener {
         GitBufferHandlerListener() {
             // do nothing

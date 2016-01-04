@@ -68,6 +68,9 @@ final class GitDirtyLineProviderOptions implements DirtyLineProviderOptions {
         Properties.setRemovedDirtyMarkColor(controls.removedDirtyMarkColorButton.getSelectedColor());
     }
 
+    /**
+     * A container for all the option panel controls.
+     */
     private static final class Controls {
         final ColorWellButton addedDirtyMarkColorButton;
         final ColorWellButton changedDirtyMarkColorButton;
