@@ -98,9 +98,9 @@ final class GitBufferHandlerAdapter extends BufferAdapter implements BufferHandl
     }
 
     private static final class GitBufferHandlerContext implements IGitBufferHandlerContext {
-        private static final IDirtyMarkPainterSpecificationFactoryContext dirtyMarkPainterSpecificationFactoryContext = createDirtyMarkPainterSpecificationFactoryContext();
-        private static final ISupplier<Path> gitProgramPathSupplier = createGitProgramPathSupplier();
-        private static final ILog log = createLog();
+        private static final IDirtyMarkPainterSpecificationFactoryContext DIRTY_MARK_PAINTER_SPECIFICATION_FACTORY_CONTEXT = createDirtyMarkPainterSpecificationFactoryContext();
+        private static final ISupplier<Path> GIT_PROGRAM_PATH_SUPPLIER = createGitProgramPathSupplier();
+        private static final ILog LOG = createLog();
 
         private final IBuffer bufferAdapter;
 
@@ -181,17 +181,17 @@ final class GitBufferHandlerAdapter extends BufferAdapter implements BufferHandl
 
         @Override
         public IDirtyMarkPainterSpecificationFactoryContext getDirtyMarkPainterSpecificationFactoryContext() {
-            return dirtyMarkPainterSpecificationFactoryContext;
+            return DIRTY_MARK_PAINTER_SPECIFICATION_FACTORY_CONTEXT;
         }
 
         @Override
         public ISupplier<Path> getGitProgramPathSupplier() {
-            return gitProgramPathSupplier;
+            return GIT_PROGRAM_PATH_SUPPLIER;
         }
 
         @Override
         public ILog getLog() {
-            return log;
+            return LOG;
         }
 
         @Override
