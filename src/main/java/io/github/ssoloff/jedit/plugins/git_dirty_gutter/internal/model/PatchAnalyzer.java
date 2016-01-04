@@ -33,7 +33,6 @@ import org.eclipse.jdt.annotation.Nullable;
  * </p>
  */
 public final class PatchAnalyzer {
-    /** The patch to analyze. */
     private final Patch patch;
 
     /**
