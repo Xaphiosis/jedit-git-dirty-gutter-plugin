@@ -34,9 +34,9 @@
       <property name="violationSuppressXPath">
         <value>
           <![CDATA[
-          .[local-name() = 'FieldDeclaration' and @Private='true']
+          .[local-name() = 'FieldDeclaration'][@Private='true']
           or
-          .[local-name() = 'MethodDeclaration' and ../Annotation/MarkerAnnotation/Name[@Image='Override']]
+          .[local-name() = 'MethodDeclaration'][../Annotation/MarkerAnnotation/Name[@Image='Override']]
           ]]>
         </value>
       </property>
