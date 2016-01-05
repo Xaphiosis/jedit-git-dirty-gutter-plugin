@@ -25,6 +25,9 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Implementation of {@link IGitRunner}.
@@ -71,10 +74,10 @@ public final class GitRunner implements IGitRunner {
         this.workingDirPath = workingDirPath;
     }
 
-    private static String[] createCommand(final Path programPath, final String[] programArgs) {
-        final String[] command = new String[programArgs.length + 1];
-        command[0] = programPath.toString();
-        System.arraycopy(programArgs, 0, command, 1, programArgs.length);
+    private static List<String> createCommand(final Path programPath, final List<String> programArgs) {
+        final List<String> command = new ArrayList<>(programArgs.size() + 1);
+        command.add(programPath.toString());
+        command.addAll(programArgs);
         return command;
     }
 
@@ -92,8 +95,9 @@ public final class GitRunner implements IGitRunner {
     public GitRunnerResult run(final Writer outWriter, final String... programArgs)
             throws GitException, IOException, InterruptedException {
         final StringWriter errWriter = new StringWriter();
-        final String[] command = createCommand(programPathSupplier.get(), programArgs);
-        final int exitCode = processRunner.run(outWriter, errWriter, workingDirPath, command);
+        final List<String> command = createCommand(programPathSupplier.get(), Arrays.asList(programArgs));
+        final int exitCode = processRunner.run(outWriter, errWriter, workingDirPath,
+                command.toArray(new String[command.size()]));
         final GitRunnerResult result = new GitRunnerResult(workingDirPath, command, exitCode);
 
         final String error = errWriter.toString();

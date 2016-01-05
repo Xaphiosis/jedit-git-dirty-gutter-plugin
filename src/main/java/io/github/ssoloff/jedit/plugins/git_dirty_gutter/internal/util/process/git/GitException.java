@@ -19,7 +19,8 @@
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git;
 
 import java.nio.file.Path;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import org.eclipse.jdt.annotation.Nullable;
 
 /**
@@ -29,7 +30,7 @@ import org.eclipse.jdt.annotation.Nullable;
 public final class GitException extends Exception {
     private static final long serialVersionUID = -4617699499893940183L;
 
-    private final @Nullable String[] command;
+    private final @Nullable List<String> command;
     private final @Nullable String error;
     private final @Nullable Integer exitCode;
     private final @Nullable String messageSummary;
@@ -57,9 +58,9 @@ public final class GitException extends Exception {
      *        {@code null} if not specified.
      */
     private GitException(final @Nullable String messageSummary, final @Nullable Path workingDirPath,
-            final @Nullable String[] command, final @Nullable Integer exitCode, final @Nullable String output,
+            final @Nullable List<String> command, final @Nullable Integer exitCode, final @Nullable String output,
             final @Nullable String error) {
-        this.command = command; // defensive copy already performed by builder
+        this.command = (command != null) ? new ArrayList<>(command) : null;
         this.error = error;
         this.exitCode = exitCode;
         this.messageSummary = messageSummary;
@@ -73,8 +74,8 @@ public final class GitException extends Exception {
      * @return The command line of the Git process or {@code null} if not
      *         specified.
      */
-    public @Nullable String[] getCommand() {
-        return (command != null) ? command.clone() : null;
+    public @Nullable List<String> getCommand() {
+        return (command != null) ? new ArrayList<>(command) : null;
     }
 
     /**
@@ -120,7 +121,7 @@ public final class GitException extends Exception {
         }
 
         if (isPopulated(command)) {
-            sb.append(String.format("    command: %s%n", Arrays.toString(command))); //$NON-NLS-1$
+            sb.append(String.format("    command: %s%n", command)); //$NON-NLS-1$
         }
 
         if (isPopulated(exitCode)) {
@@ -182,7 +183,7 @@ public final class GitException extends Exception {
      * A builder for creating instances of the {@code GitException} class.
      */
     public static final class Builder {
-        private @Nullable String[] command = null;
+        private @Nullable List<String> command = null;
         private @Nullable String error = null;
         private @Nullable Integer exitCode = null;
         private @Nullable String messageSummary = null;
@@ -210,8 +211,8 @@ public final class GitException extends Exception {
          *
          * @return The builder.
          */
-        public Builder withCommand(@SuppressWarnings("hiding") final String[] command) {
-            this.command = command.clone();
+        public Builder withCommand(@SuppressWarnings("hiding") final List<String> command) {
+            this.command = command;
             return this;
         }
 

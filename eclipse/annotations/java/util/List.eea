@@ -2,3 +2,6 @@ class java/util/List
 subList
  (II)Ljava/util/List<TE;>;
  (II)L1java/util/List<TE;>;
+toArray
+ <T:Ljava/lang/Object;>([TT;)[TT;
+ <T:Ljava/lang/Object;>([TT;)[1TT;

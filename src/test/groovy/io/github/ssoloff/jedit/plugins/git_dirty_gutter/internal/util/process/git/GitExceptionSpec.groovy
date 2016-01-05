@@ -65,7 +65,7 @@ class GitExceptionSpec extends Specification {
 
     def 'getMessage - when the command is specified it should include the command'() {
         setup:
-        def e = GitException.newBuilder().withCommand(command as String[]).build()
+        def e = GitException.newBuilder().withCommand(command).build()
 
         expect:
         e.message =~ /(?m)^\s*command:/

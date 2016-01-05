@@ -19,12 +19,14 @@
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git;
 
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The result of running a Git process using the {@link IGitRunner#run} method.
  */
 public final class GitRunnerResult {
-    private final String[] command;
+    private final List<String> command;
     private final int exitCode;
     private final Path workingDirPath;
 
@@ -38,15 +40,10 @@ public final class GitRunnerResult {
      * @param exitCode
      *        The exit code of the Git process that was run.
      */
-    public GitRunnerResult(final Path workingDirPath, final String[] command, final int exitCode) {
-        this.command = cloneArray(command);
+    public GitRunnerResult(final Path workingDirPath, final List<String> command, final int exitCode) {
+        this.command = new ArrayList<>(command);
         this.exitCode = exitCode;
         this.workingDirPath = workingDirPath;
-    }
-
-    @SuppressWarnings("null")
-    private static String[] cloneArray(final String[] array) {
-        return array.clone();
     }
 
     /**
@@ -54,8 +51,8 @@ public final class GitRunnerResult {
      *
      * @return The command line of the Git process that was run.
      */
-    public String[] getCommand() {
-        return cloneArray(command);
+    public List<String> getCommand() {
+        return new ArrayList<>(command);
     }
 
     /**
