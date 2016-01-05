@@ -45,7 +45,7 @@ public final class GitRunnerResult {
     }
 
     @SuppressWarnings("null")
-    private static <T> T[] cloneArray(final T[] array) {
+    private static String[] cloneArray(final String[] array) {
         return array.clone();
     }
 
