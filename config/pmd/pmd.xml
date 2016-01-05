@@ -31,8 +31,15 @@
 
   <rule ref="rulesets/java/comments.xml/CommentRequired">
     <properties>
-      <property name="violationSuppressXPath" value=".[local-name() = 'MethodDeclaration' and ../Annotation/MarkerAnnotation/Name[@Image='Override']]" />
-      <property name="fieldCommentRequirement" value="Ignored" />
+      <property name="violationSuppressXPath">
+        <value>
+          <![CDATA[
+          .[local-name() = 'FieldDeclaration' and @Private='true']
+          or
+          .[local-name() = 'MethodDeclaration' and ../Annotation/MarkerAnnotation/Name[@Image='Override']]
+          ]]>
+        </value>
+      </property>
     </properties>
   </rule>
   <rule ref="rulesets/java/strings.xml/AvoidDuplicateLiterals">
