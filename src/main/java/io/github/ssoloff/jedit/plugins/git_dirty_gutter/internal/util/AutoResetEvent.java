@@ -27,9 +27,9 @@ import java.util.concurrent.locks.ReentrantLock;
  * A simple auto-reset event for synchronizing between two threads.
  */
 public final class AutoResetEvent {
-    private boolean isSignaled = false;
     private final Lock lock = new ReentrantLock();
     private final Condition condition = lock.newCondition();
+    private boolean signaled = false;
 
     /**
      * Causes the current thread to wait until the event is signaled,
@@ -49,10 +49,10 @@ public final class AutoResetEvent {
     public boolean await(final long time, final TimeUnit unit) throws InterruptedException {
         lock.lock();
         try {
-            if (!isSignaled && !condition.await(time, unit)) {
+            if (!signaled && !condition.await(time, unit)) {
                 return false;
             }
-            isSignaled = false;
+            signaled = false;
             return true;
         } finally {
             lock.unlock();
@@ -65,7 +65,7 @@ public final class AutoResetEvent {
     public void signal() {
         lock.lock();
         try {
-            isSignaled = true;
+            signaled = true;
             condition.signal();
         } finally {
             lock.unlock();

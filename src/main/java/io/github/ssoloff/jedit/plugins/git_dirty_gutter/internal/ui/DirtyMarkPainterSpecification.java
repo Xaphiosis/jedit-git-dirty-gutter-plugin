@@ -28,10 +28,10 @@ final class DirtyMarkPainterSpecification {
     static final DirtyMarkPainterSpecification NULL = new DirtyMarkPainterSpecification(Color.BLACK, false, false,
             false);
 
+    private final boolean bodyPainted;
+    private final boolean bottomStripPainted;
     private final Color color;
-    private final boolean isBodyPainted;
-    private final boolean isBottomStripPainted;
-    private final boolean isTopStripPainted;
+    private final boolean topStripPainted;
 
     /**
      * Initializes a new instance of the {@code DirtyMarkPainterSpecification}
@@ -39,22 +39,22 @@ final class DirtyMarkPainterSpecification {
      *
      * @param color
      *        The color to paint the dirty mark.
-     * @param isTopStripPainted
+     * @param topStripPainted
      *        {@code true} if the top strip of the dirty mark is to be painted;
      *        otherwise {@code false}.
-     * @param isBodyPainted
+     * @param bodyPainted
      *        {@code true} if the body of the dirty mark is to be painted;
      *        otherwise {@code false}.
-     * @param isBottomStripPainted
+     * @param bottomStripPainted
      *        {@code true} if the bottom strip of the dirty mark is to be
      *        painted; otherwise {@code false}.
      */
-    DirtyMarkPainterSpecification(final Color color, final boolean isTopStripPainted, final boolean isBodyPainted,
-            final boolean isBottomStripPainted) {
+    DirtyMarkPainterSpecification(final Color color, final boolean topStripPainted, final boolean bodyPainted,
+            final boolean bottomStripPainted) {
+        this.bodyPainted = bodyPainted;
+        this.bottomStripPainted = bottomStripPainted;
         this.color = color;
-        this.isBodyPainted = isBodyPainted;
-        this.isBottomStripPainted = isBottomStripPainted;
-        this.isTopStripPainted = isTopStripPainted;
+        this.topStripPainted = topStripPainted;
     }
 
     /**
@@ -73,7 +73,7 @@ final class DirtyMarkPainterSpecification {
      *         otherwise {@code false}.
      */
     boolean isBodyPainted() {
-        return isBodyPainted;
+        return bodyPainted;
     }
 
     /**
@@ -83,7 +83,7 @@ final class DirtyMarkPainterSpecification {
      *         painted; otherwise {@code false}.
      */
     boolean isBottomStripPainted() {
-        return isBottomStripPainted;
+        return bottomStripPainted;
     }
 
     /**
@@ -93,6 +93,6 @@ final class DirtyMarkPainterSpecification {
      *         otherwise {@code false}.
      */
     boolean isTopStripPainted() {
-        return isTopStripPainted;
+        return topStripPainted;
     }
 }

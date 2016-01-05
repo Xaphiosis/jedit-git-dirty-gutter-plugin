@@ -92,8 +92,8 @@ public final class PatchAnalyzer {
             throw new IllegalArgumentException("line index must not be negative"); //$NON-NLS-1$
         }
 
-        boolean isContentRemovedAboveThisLine = false;
-        boolean isContentRemovedBelowThisLine = false;
+        boolean contentRemovedAboveThisLine = false;
+        boolean contentRemovedBelowThisLine = false;
 
         final Delta deltaForThisLine = getDeltaForLine(lineIndex);
         if (deltaForThisLine != null) {
@@ -102,21 +102,21 @@ public final class PatchAnalyzer {
             } else if (DiffLibUtils.Delta.isContentChanged(deltaForThisLine)) {
                 return DirtyMarkType.CHANGED;
             } else {
-                isContentRemovedAboveThisLine = DiffLibUtils.Delta.isContentRemoved(deltaForThisLine);
+                contentRemovedAboveThisLine = DiffLibUtils.Delta.isContentRemoved(deltaForThisLine);
             }
         }
 
         final Delta deltaForNextLine = getDeltaForLine(lineIndex + 1);
         if (deltaForNextLine != null) {
-            final boolean isContentRemovedAboveNextLine = DiffLibUtils.Delta.isContentRemoved(deltaForNextLine);
-            isContentRemovedBelowThisLine = isContentRemovedAboveNextLine;
+            final boolean contentRemovedAboveNextLine = DiffLibUtils.Delta.isContentRemoved(deltaForNextLine);
+            contentRemovedBelowThisLine = contentRemovedAboveNextLine;
         }
 
-        if (isContentRemovedAboveThisLine && !isContentRemovedBelowThisLine) {
+        if (contentRemovedAboveThisLine && !contentRemovedBelowThisLine) {
             return DirtyMarkType.REMOVED_ABOVE;
-        } else if (!isContentRemovedAboveThisLine && isContentRemovedBelowThisLine) {
+        } else if (!contentRemovedAboveThisLine && contentRemovedBelowThisLine) {
             return DirtyMarkType.REMOVED_BELOW;
-        } else if (isContentRemovedAboveThisLine && isContentRemovedBelowThisLine) {
+        } else if (contentRemovedAboveThisLine && contentRemovedBelowThisLine) {
             return DirtyMarkType.REMOVED_ABOVE_AND_BELOW;
         }
 
