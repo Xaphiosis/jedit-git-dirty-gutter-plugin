@@ -33,15 +33,15 @@ final class Messages {
         return (message != null) ? message : name;
     }
 
-    static String option_addedDirtyMarkColorLabel_text() { //NOPMD
+    static String option_addedDirtyMarkColorLabel_text() { //NOPMD - MethodNamingConventions
         return getMessage("messages.GitDirtyGutterPlugin.option_addedDirtyMarkColorLabel_text"); //$NON-NLS-1$
     }
 
-    static String option_changedDirtyMarkColorLabel_text() { //NOPMD
+    static String option_changedDirtyMarkColorLabel_text() { //NOPMD - MethodNamingConventions
         return getMessage("messages.GitDirtyGutterPlugin.option_changedDirtyMarkColorLabel_text"); //$NON-NLS-1$
     }
 
-    static String option_removedDirtyMarkColorLabel_text() { //NOPMD
+    static String option_removedDirtyMarkColorLabel_text() { //NOPMD - MethodNamingConventions
         return getMessage("messages.GitDirtyGutterPlugin.option_removedDirtyMarkColorLabel_text"); //$NON-NLS-1$
     }
 }
