@@ -31,7 +31,7 @@
 
   <rule ref="rulesets/java/comments.xml/CommentRequired">
     <properties>
-      <property name="violationSuppressXPath" value="//MethodDeclaration[../Annotation/MarkerAnnotation/Name[@Image='Override']]" />
+      <property name="violationSuppressXPath" value=".[local-name() = 'MethodDeclaration' and ../Annotation/MarkerAnnotation/Name[@Image='Override']]" />
       <property name="fieldCommentRequirement" value="Ignored" />
     </properties>
   </rule>
