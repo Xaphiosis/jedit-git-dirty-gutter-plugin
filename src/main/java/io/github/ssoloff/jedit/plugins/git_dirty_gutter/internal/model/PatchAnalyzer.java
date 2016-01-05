@@ -76,6 +76,21 @@ public final class PatchAnalyzer {
         return null;
     }
 
+    private @Nullable DirtyMarkType getAddedOrChangedDirtyMarkForLine(final int lineIndex) {
+        assert lineIndex >= 0;
+
+        final Delta deltaForThisLine = getDeltaForLine(lineIndex);
+        if (deltaForThisLine != null) {
+            if (DiffLibUtils.Delta.isContentAdded(deltaForThisLine)) {
+                return DirtyMarkType.ADDED;
+            } else if (DiffLibUtils.Delta.isContentChanged(deltaForThisLine)) {
+                return DirtyMarkType.CHANGED;
+            }
+        }
+
+        return null;
+    }
+
     /**
      * Gets the type of dirty mark associated with the specified line.
      *
@@ -92,20 +107,29 @@ public final class PatchAnalyzer {
             throw new IllegalArgumentException("line index must not be negative"); //$NON-NLS-1$
         }
 
-        boolean contentRemovedAboveThisLine = false;
-        boolean contentRemovedBelowThisLine = false;
-
-        final Delta deltaForThisLine = getDeltaForLine(lineIndex);
-        if (deltaForThisLine != null) {
-            if (DiffLibUtils.Delta.isContentAdded(deltaForThisLine)) {
-                return DirtyMarkType.ADDED;
-            } else if (DiffLibUtils.Delta.isContentChanged(deltaForThisLine)) {
-                return DirtyMarkType.CHANGED;
-            } else {
-                contentRemovedAboveThisLine = DiffLibUtils.Delta.isContentRemoved(deltaForThisLine);
-            }
+        final DirtyMarkType addedOrChangedDirtyMarkType = getAddedOrChangedDirtyMarkForLine(lineIndex);
+        if (addedOrChangedDirtyMarkType != null) {
+            return addedOrChangedDirtyMarkType;
         }
 
+        final DirtyMarkType removedDirtyMarkType = getRemovedDirtyMarkForLine(lineIndex);
+        if (removedDirtyMarkType != null) {
+            return removedDirtyMarkType;
+        }
+
+        return DirtyMarkType.UNCHANGED;
+    }
+
+    private @Nullable DirtyMarkType getRemovedDirtyMarkForLine(final int lineIndex) {
+        assert lineIndex >= 0;
+
+        boolean contentRemovedAboveThisLine = false;
+        final Delta deltaForThisLine = getDeltaForLine(lineIndex);
+        if (deltaForThisLine != null) {
+            contentRemovedAboveThisLine = DiffLibUtils.Delta.isContentRemoved(deltaForThisLine);
+        }
+
+        boolean contentRemovedBelowThisLine = false;
         final Delta deltaForNextLine = getDeltaForLine(lineIndex + 1);
         if (deltaForNextLine != null) {
             final boolean contentRemovedAboveNextLine = DiffLibUtils.Delta.isContentRemoved(deltaForNextLine);
@@ -120,6 +144,6 @@ public final class PatchAnalyzer {
             return DirtyMarkType.REMOVED_ABOVE_AND_BELOW;
         }
 
-        return DirtyMarkType.UNCHANGED;
+        return null;
     }
 }
