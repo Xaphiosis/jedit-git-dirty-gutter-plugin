@@ -40,7 +40,7 @@ import org.eclipse.jdt.annotation.Nullable;
  * Provides the underlying implementation of {@code BufferHandler} for the Git
  * dirty line provider.
  */
-final class GitBufferHandler {
+final class GitBufferHandler { //NOPMD - TooManyMethods - PatchWorker is integral to this class and shouldn't be extracted
     private final DirtyMarkPainterSpecificationFactory dirtyMarkPainterSpecificationFactory;
     private final IGitBufferHandlerContext context;
     private final List<IGitBufferHandlerListener> listeners = new ArrayList<>();
