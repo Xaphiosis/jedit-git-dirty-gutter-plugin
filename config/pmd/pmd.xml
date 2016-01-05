@@ -42,6 +42,17 @@
       </property>
     </properties>
   </rule>
+  <rule ref="rulesets/java/design.xml/ConfusingTernary">
+    <properties>
+      <property name="violationSuppressXPath">
+        <value>
+          <![CDATA[
+            .[local-name() = 'ConditionalExpression'][@Ternary = 'true'][//EqualityExpression[@Image = '!='][PrimaryExpression/PrimaryPrefix/Literal/NullLiteral]]
+          ]]>
+        </value>
+      </property>
+    </properties>
+  </rule>
   <rule ref="rulesets/java/strings.xml/AvoidDuplicateLiterals">
     <properties>
       <property name="skipAnnotations" value="true" />
