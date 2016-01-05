@@ -190,7 +190,7 @@ final class GitBufferHandler {
         }
 
         @Override
-        protected @Nullable Void doInBackground() throws Exception {
+        protected @Nullable Void doInBackground() throws InterruptedException {
             final BufferAnalyzer bufferAnalyzer = createBufferAnalyzer();
             final AtomicReference<String> commitRefRef = new AtomicReference<>();
             while (true) {
