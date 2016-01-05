@@ -57,7 +57,7 @@ public final class GitException extends Exception {
      *        The content of the standard error stream of the Git process or
      *        {@code null} if not specified.
      */
-    private GitException(final @Nullable String messageSummary, final @Nullable Path workingDirPath,
+    GitException(final @Nullable String messageSummary, final @Nullable Path workingDirPath,
             final @Nullable List<String> command, final @Nullable Integer exitCode, final @Nullable String output,
             final @Nullable String error) {
         this.command = (command != null) ? new ArrayList<>(command) : null;
@@ -174,7 +174,6 @@ public final class GitException extends Exception {
      * @return A new builder for creating instances of the {@code GitException}
      *         class.
      */
-    @SuppressWarnings("synthetic-access")
     public static Builder newBuilder() {
         return new Builder();
     }
@@ -190,7 +189,11 @@ public final class GitException extends Exception {
         private @Nullable String output = null;
         private @Nullable Path workingDirPath = null;
 
-        private Builder() {
+        /**
+         * Initializes a new instance of the {@code Builder} class.
+         */
+        Builder() {
+            // do nothing
         }
 
         /**
@@ -198,7 +201,6 @@ public final class GitException extends Exception {
          *
          * @return A new exception based on the state of the builder.
          */
-        @SuppressWarnings("synthetic-access")
         public GitException build() {
             return new GitException(messageSummary, workingDirPath, command, exitCode, output, error);
         }
