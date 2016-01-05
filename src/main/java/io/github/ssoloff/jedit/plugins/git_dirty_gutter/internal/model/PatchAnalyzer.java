@@ -62,7 +62,8 @@ public final class PatchAnalyzer {
      * @return The delta associated with the specified line or {@code null} if
      *         none.
      */
-    private @Nullable Delta getDeltaForLine(final int lineIndex) {
+    @Nullable
+    private Delta getDeltaForLine(final int lineIndex) {
         assert lineIndex >= 0;
 
         for (final Delta delta : patch.getDeltas()) {
@@ -76,7 +77,8 @@ public final class PatchAnalyzer {
         return null;
     }
 
-    private @Nullable DirtyMarkType getAddedOrChangedDirtyMarkForLine(final int lineIndex) {
+    @Nullable
+    private DirtyMarkType getAddedOrChangedDirtyMarkForLine(final int lineIndex) {
         assert lineIndex >= 0;
 
         final Delta deltaForThisLine = getDeltaForLine(lineIndex);
@@ -120,7 +122,8 @@ public final class PatchAnalyzer {
         return DirtyMarkType.UNCHANGED;
     }
 
-    private @Nullable DirtyMarkType getRemovedDirtyMarkForLine(final int lineIndex) {
+    @Nullable
+    private DirtyMarkType getRemovedDirtyMarkForLine(final int lineIndex) {
         assert lineIndex >= 0;
 
         boolean contentRemovedAboveThisLine = false;

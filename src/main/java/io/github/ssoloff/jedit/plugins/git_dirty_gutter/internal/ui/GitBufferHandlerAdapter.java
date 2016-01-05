@@ -65,8 +65,9 @@ final class GitBufferHandlerAdapter extends BufferAdapter implements BufferHandl
         bufferHandler.updatePatch();
     }
 
+    @Nullable
     @Override
-    public @Nullable DirtyMarkPainter getDirtyMarkPainter(final Buffer buffer, final int lineIndex) {
+    public DirtyMarkPainter getDirtyMarkPainter(final Buffer buffer, final int lineIndex) {
         final DirtyMarkPainterSpecification dirtyMarkPainterSpecification = bufferHandler
                 .getDirtyMarkPainterSpecificationForLine(lineIndex);
         return DirtyMarkPainterFactory.createDirtyMarkPainter(dirtyMarkPainterSpecification);

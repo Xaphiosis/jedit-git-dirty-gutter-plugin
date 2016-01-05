@@ -189,8 +189,9 @@ final class GitBufferHandler { //NOPMD - TooManyMethods - PatchWorker is integra
             return new BufferAnalyzer(context.getBuffer(), gitRunnerFactory, context.getLog());
         }
 
+        @Nullable
         @Override
-        protected @Nullable Void doInBackground() throws InterruptedException {
+        protected Void doInBackground() throws InterruptedException {
             final BufferAnalyzer bufferAnalyzer = createBufferAnalyzer();
             final AtomicReference<String> commitRefRef = new AtomicReference<>();
             while (true) {

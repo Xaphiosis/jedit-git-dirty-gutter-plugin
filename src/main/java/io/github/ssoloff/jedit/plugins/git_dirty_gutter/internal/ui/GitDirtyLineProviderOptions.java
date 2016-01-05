@@ -32,7 +32,8 @@ import org.gjt.sp.jedit.gui.ColorWellButton;
  * provider.
  */
 final class GitDirtyLineProviderOptions implements DirtyLineProviderOptions {
-    private @Nullable Controls controls = null;
+    @Nullable
+    private Controls controls = null;
 
     private static void addComponent(final JPanel parent, final String labelText, final JComponent component) {
         final JPanel container = new JPanel(new BorderLayout(10, 0));

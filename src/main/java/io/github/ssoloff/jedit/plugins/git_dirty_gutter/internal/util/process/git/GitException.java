@@ -30,12 +30,23 @@ import org.eclipse.jdt.annotation.Nullable;
 public final class GitException extends Exception {
     private static final long serialVersionUID = -4617699499893940183L;
 
-    private final @Nullable List<String> command;
-    private final @Nullable String error;
-    private final @Nullable Integer exitCode;
-    private final @Nullable String messageSummary;
-    private final @Nullable String output;
-    private final @Nullable Path workingDirPath;
+    @Nullable
+    private final List<String> command;
+
+    @Nullable
+    private final String error;
+
+    @Nullable
+    private final Integer exitCode;
+
+    @Nullable
+    private final String messageSummary;
+
+    @Nullable
+    private final String output;
+
+    @Nullable
+    private final Path workingDirPath;
 
     /**
      * Initializes a new instance of the {@code GitException} class.
@@ -57,9 +68,9 @@ public final class GitException extends Exception {
      *        The content of the standard error stream of the Git process or
      *        {@code null} if not specified.
      */
-    GitException(final @Nullable String messageSummary, final @Nullable Path workingDirPath,
-            final @Nullable List<String> command, final @Nullable Integer exitCode, final @Nullable String output,
-            final @Nullable String error) {
+    GitException(@Nullable final String messageSummary, @Nullable final Path workingDirPath,
+            @Nullable final List<String> command, @Nullable final Integer exitCode, @Nullable final String output,
+            @Nullable final String error) {
         this.command = (command != null) ? new ArrayList<>(command) : null;
         this.error = error;
         this.exitCode = exitCode;
@@ -74,7 +85,8 @@ public final class GitException extends Exception {
      * @return The command line of the Git process or {@code null} if not
      *         specified.
      */
-    public @Nullable List<String> getCommand() {
+    @Nullable
+    public List<String> getCommand() {
         return (command != null) ? new ArrayList<>(command) : null;
     }
 
@@ -93,7 +105,8 @@ public final class GitException extends Exception {
      * @return The content of the standard error stream of the Git process or
      *         {@code null} if not specified.
      */
-    public @Nullable String getError() {
+    @Nullable
+    public String getError() {
         return error;
     }
 
@@ -102,7 +115,8 @@ public final class GitException extends Exception {
      *
      * @return The exit code of the Git process.
      */
-    public @Nullable Integer getExitCode() {
+    @Nullable
+    public Integer getExitCode() {
         return exitCode;
     }
 
@@ -145,7 +159,8 @@ public final class GitException extends Exception {
      * @return The content of the standard output stream of the Git process or
      *         {@code null} if not specified.
      */
-    public @Nullable String getOutput() {
+    @Nullable
+    public String getOutput() {
         return output;
     }
 
@@ -155,15 +170,16 @@ public final class GitException extends Exception {
      * @return The working directory path of the Git process or {@code null} if
      *         not specified.
      */
-    public @Nullable Path getWorkingDirPath() {
+    @Nullable
+    public Path getWorkingDirPath() {
         return workingDirPath;
     }
 
-    private static boolean isPopulated(final @Nullable Object obj) {
+    private static boolean isPopulated(@Nullable final Object obj) {
         return obj != null;
     }
 
-    private static boolean isPopulated(final @Nullable String str) {
+    private static boolean isPopulated(@Nullable final String str) {
         return (str != null) && !str.isEmpty();
     }
 
@@ -182,12 +198,23 @@ public final class GitException extends Exception {
      * A builder for creating instances of the {@code GitException} class.
      */
     public static final class Builder {
-        private @Nullable List<String> command = null;
-        private @Nullable String error = null;
-        private @Nullable Integer exitCode = null;
-        private @Nullable String messageSummary = null;
-        private @Nullable String output = null;
-        private @Nullable Path workingDirPath = null;
+        @Nullable
+        private List<String> command = null;
+
+        @Nullable
+        private String error = null;
+
+        @Nullable
+        private Integer exitCode = null;
+
+        @Nullable
+        private String messageSummary = null;
+
+        @Nullable
+        private String output = null;
+
+        @Nullable
+        private Path workingDirPath = null;
 
         /**
          * Initializes a new instance of the {@code Builder} class.
