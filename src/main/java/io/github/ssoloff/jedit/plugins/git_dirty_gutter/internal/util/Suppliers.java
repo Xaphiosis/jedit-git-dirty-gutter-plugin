@@ -28,6 +28,9 @@ public final class Suppliers {
     /**
      * Creates a new supplier for the specified object.
      *
+     * @param <T>
+     *        The type of the object to be supplied.
+     *
      * @param obj
      *        The object to be supplied.
      *
