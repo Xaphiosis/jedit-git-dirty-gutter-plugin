@@ -74,7 +74,9 @@ final class Properties {
      *         new commits.
      */
     static int getRepositoryPollTimeInMilliseconds() {
-        return jEdit.getIntegerProperty(PROP_REPOSITORY_POLL_TIME_IN_MILLISECONDS, 5000);
+        final int defaultRepositoryPollTimeInMilliseconds = 5000;
+        return jEdit.getIntegerProperty(PROP_REPOSITORY_POLL_TIME_IN_MILLISECONDS,
+                defaultRepositoryPollTimeInMilliseconds);
     }
 
     /**

@@ -172,8 +172,9 @@ final class GitCommands {
                 return false;
             }
         } catch (final GitException e) {
+            final Integer gitFatalExitCode = Integer.valueOf(128);
             final Integer exitCode = e.getExitCode();
-            if ((exitCode != null) && (exitCode.intValue() == 128)) {
+            if ((exitCode != null) && (exitCode == gitFatalExitCode)) {
                 return false;
             }
             throw e;
