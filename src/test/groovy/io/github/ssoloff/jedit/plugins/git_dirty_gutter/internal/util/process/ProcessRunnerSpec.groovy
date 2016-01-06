@@ -33,12 +33,15 @@ class ProcessRunnerSpec extends Specification {
 
     private static createFailingWriter() {
         new Writer() {
+            @Override
             void close() {
             }
 
+            @Override
             void flush() {
             }
 
+            @Override
             void write(char[] cbuf, int off, int len) {
                 throw new IOException()
             }
