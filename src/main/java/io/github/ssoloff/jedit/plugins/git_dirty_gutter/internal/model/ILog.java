@@ -21,7 +21,8 @@ package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model;
 /**
  * The jEdit log.
  */
-public interface ILog { //NOPMD - ShortClassName
+@SuppressWarnings("PMD.ShortClassName")
+public interface ILog {
     /**
      * Logs a message at the debug level of urgency.
      *

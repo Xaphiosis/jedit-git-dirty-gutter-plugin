@@ -62,10 +62,8 @@ final class GitDirtyLineProviderOptions implements DirtyLineProviderOptions {
 
     @Override
     public void saveOptions() {
-        @SuppressWarnings("hiding")
-        // CHECKSTYLE.OFF:HiddenField
+        @SuppressWarnings({ "checkstyle:hiddenfield", "hiding" })
         final Controls controls = getControls();
-        // CHECKSTYLE.ON:HiddenField
         Properties.setAddedDirtyMarkColor(controls.addedDirtyMarkColorButton.getSelectedColor());
         Properties.setChangedDirtyMarkColor(controls.changedDirtyMarkColorButton.getSelectedColor());
         Properties.setRemovedDirtyMarkColor(controls.removedDirtyMarkColorButton.getSelectedColor());

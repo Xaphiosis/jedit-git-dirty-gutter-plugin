@@ -23,8 +23,8 @@ import org.gjt.sp.jedit.jEdit;
 /**
  * Provides localized messages for the plugin.
  */
-@SuppressWarnings("javadoc")
-final class Messages { //CHECKSTYLE.OFF:JavadocMethod|MethodName
+@SuppressWarnings({ "checkstyle:javadocmethod", "checkstyle:methodname", "javadoc", "PMD.MethodNamingConventions" })
+final class Messages {
     private Messages() {
     }
 
@@ -33,15 +33,15 @@ final class Messages { //CHECKSTYLE.OFF:JavadocMethod|MethodName
         return (message != null) ? message : name;
     }
 
-    static String option_addedDirtyMarkColorLabel_text() { //NOPMD - MethodNamingConventions
+    static String option_addedDirtyMarkColorLabel_text() {
         return getMessage("messages.GitDirtyGutterPlugin.option_addedDirtyMarkColorLabel_text"); //$NON-NLS-1$
     }
 
-    static String option_changedDirtyMarkColorLabel_text() { //NOPMD - MethodNamingConventions
+    static String option_changedDirtyMarkColorLabel_text() {
         return getMessage("messages.GitDirtyGutterPlugin.option_changedDirtyMarkColorLabel_text"); //$NON-NLS-1$
     }
 
-    static String option_removedDirtyMarkColorLabel_text() { //NOPMD - MethodNamingConventions
+    static String option_removedDirtyMarkColorLabel_text() {
         return getMessage("messages.GitDirtyGutterPlugin.option_removedDirtyMarkColorLabel_text"); //$NON-NLS-1$
     }
 }
