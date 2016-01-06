@@ -81,7 +81,7 @@ final class GitCommands {
     String getCommitRefAtHeadRevision(final Path repoRelativeFilePath)
             throws GitException, IOException, InterruptedException {
         final StringWriter outWriter = new StringWriter();
-        final String[] programArgs = new String[] {
+        final String[] programArgs = { //
             "rev-parse", //$NON-NLS-1$
             String.format("HEAD:%s", repoRelativeFilePath) //$NON-NLS-1$
         };
@@ -120,7 +120,7 @@ final class GitCommands {
     Path getRepoRelativeFilePathAtHeadRevision(final Path filePath)
             throws GitException, IOException, InterruptedException {
         final StringWriter outWriter = new StringWriter();
-        final String[] programArgs = new String[] {
+        final String[] programArgs = { //
             "ls-tree", //$NON-NLS-1$
             "--full-name", //$NON-NLS-1$
             "--name-only", //$NON-NLS-1$
@@ -159,7 +159,7 @@ final class GitCommands {
      */
     boolean isFilePresentAtHeadRevision(final Path filePath) throws GitException, IOException, InterruptedException {
         final StringWriter outWriter = new StringWriter();
-        final String[] programArgs = new String[] {
+        final String[] programArgs = { //
             "ls-tree", //$NON-NLS-1$
             "--full-name", //$NON-NLS-1$
             "--name-only", //$NON-NLS-1$
@@ -213,7 +213,7 @@ final class GitCommands {
      */
     void readFileContentAtHeadRevision(final Path repoRelativeFilePath, final Writer writer)
             throws GitException, IOException, InterruptedException {
-        final String[] programArgs = new String[] {
+        final String[] programArgs = { //
             "show", //$NON-NLS-1$
             String.format("HEAD:%s", repoRelativeFilePath) //$NON-NLS-1$
         };
