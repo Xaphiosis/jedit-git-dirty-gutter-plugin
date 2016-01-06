@@ -35,7 +35,9 @@ import org.gjt.sp.util.Log;
  * bridge to the jEdit API.
  */
 final class GitBufferHandlerContext implements IGitBufferHandlerContext {
+    //CHECKSTYLEOFF:LineLength
     private static final IDirtyMarkPainterSpecificationFactoryContext DIRTY_MARK_PAINTER_SPECIFICATION_FACTORY_CONTEXT = createDirtyMarkPainterSpecificationFactoryContext();
+    //CHECKSTYLEON:LineLength
     private static final ISupplier<Path> GIT_PROGRAM_PATH_SUPPLIER = createGitProgramPathSupplier();
     private static final ILog LOG = createLog();
 
