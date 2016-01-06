@@ -17,7 +17,12 @@
  */
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model
 
-import static io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.DirtyMarkType.*
+import static io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.DirtyMarkType.ADDED
+import static io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.DirtyMarkType.CHANGED
+import static io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.DirtyMarkType.REMOVED_ABOVE
+import static io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.DirtyMarkType.REMOVED_ABOVE_AND_BELOW
+import static io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.DirtyMarkType.REMOVED_BELOW
+import static io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.DirtyMarkType.UNCHANGED
 
 import difflib.ChangeDelta
 import difflib.Chunk
