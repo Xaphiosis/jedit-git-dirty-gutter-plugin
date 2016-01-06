@@ -92,10 +92,6 @@ check {
     dependsOn integrationTest
 }
 
-checkstyle {
-    ignoreFailures = true
-}
-
 integrationTest {
     reports.html.destination = file("$reports.html.destination/$name")
     reports.junitXml.destination = file("$reports.junitXml.destination/$name")
