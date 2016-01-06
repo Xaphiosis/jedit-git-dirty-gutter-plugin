@@ -181,8 +181,8 @@
   </module>
 
   <module name="SuppressionCommentFilter">
-    <property name="offCommentFormat" value="CHECKSTYLEOFF\:([\w\|]+)" />
-    <property name="onCommentFormat" value="CHECKSTYLEON\:([\w\|]+)" />
+    <property name="offCommentFormat" value="CHECKSTYLE.OFF\:([\w\|]+)" />
+    <property name="onCommentFormat" value="CHECKSTYLE.ON\:([\w\|]+)" />
     <property name="checkFormat" value="$1" />
   </module>
 
