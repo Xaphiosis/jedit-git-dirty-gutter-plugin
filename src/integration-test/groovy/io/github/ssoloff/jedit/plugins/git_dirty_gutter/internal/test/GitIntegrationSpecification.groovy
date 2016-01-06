@@ -82,7 +82,7 @@ class GitIntegrationSpecification extends Specification {
 
     protected static IGitRunnerFactory newGitRunnerFactory() {
         { workingDirPath ->
-            new GitRunner(new ProcessRunner(), workingDirPath, getGitProgramPath())
+            new GitRunner(new ProcessRunner(), workingDirPath, gitProgramPath)
         } as IGitRunnerFactory
     }
 
