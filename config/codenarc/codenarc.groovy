@@ -3,7 +3,7 @@ ruleset {
     description '''
         A Sample Groovy RuleSet containing all CodeNarc Rules, grouped by category.
         You can use this as a template for your own custom RuleSet.
-        Just delete the rules that you don't want to include.
+        Just delete the rules that you don\'t want to include.
         '''
 
     // rulesets/basic.xml
@@ -302,7 +302,9 @@ ruleset {
     FieldName
     InterfaceName
     InterfaceNameSameAsSuperInterface
-    MethodName
+    MethodName {
+        doNotApplyToClassNames = '*Spec'
+    }
     ObjectOverrideMisspelledMethodName
     PackageName {
         regex = /[a-z]+[a-z0-9_]*(\.[a-z0-9_]+)*/
