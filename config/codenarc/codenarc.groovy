@@ -92,6 +92,9 @@ ruleset {
     IfStatementCouldBeTernary
     InvertedIfElse
     LongLiteralWithLowerCaseL
+    NoDef {
+        doNotApplyToFileNames = '*Spec.groovy,*Specification.groovy'
+    }
     ParameterReassignment
     TernaryCouldBeElvis
     VectorIsObsolete
