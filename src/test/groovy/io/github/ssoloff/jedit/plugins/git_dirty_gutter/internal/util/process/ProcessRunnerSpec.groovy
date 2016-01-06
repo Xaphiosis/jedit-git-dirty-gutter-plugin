@@ -33,6 +33,7 @@ class ProcessRunnerSpec extends Specification {
     private static newFailingWriter() {
         new Writer() {
             @Override
+            @SuppressWarnings('CloseWithoutCloseable')
             void close() {
             }
 
