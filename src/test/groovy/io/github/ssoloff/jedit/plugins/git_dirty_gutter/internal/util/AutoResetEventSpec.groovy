@@ -27,7 +27,7 @@ class AutoResetEventSpec extends Specification {
     private final event = new AutoResetEvent()
 
     def 'await - when signaled within the waiting period it should return true'() {
-        setup:
+        given:
         def barrier = new CyclicBarrier(2)
         def executorService = Executors.newCachedThreadPool()
         def task = executorService.submit({

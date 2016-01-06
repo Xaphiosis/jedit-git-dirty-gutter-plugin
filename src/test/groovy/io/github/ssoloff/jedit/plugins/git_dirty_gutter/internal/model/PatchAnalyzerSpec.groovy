@@ -31,7 +31,7 @@ class PatchAnalyzerSpec extends Specification {
     }
 
     def 'ctor - when patch contains context lines it should throw an exception'() {
-        setup:
+        given:
         def patch = new Patch()
         patch.addDelta(new ChangeDelta(
             new Chunk(8, ['9', '10/old', '11']),
@@ -46,7 +46,7 @@ class PatchAnalyzerSpec extends Specification {
     }
 
     def 'getDirtyMarkForLine - when line index is negative it should throw an exception'() {
-        setup:
+        given:
         def patchAnalyzer = new PatchAnalyzer(newPatch([], []))
 
         when:
@@ -57,7 +57,7 @@ class PatchAnalyzerSpec extends Specification {
     }
 
     def 'getDirtyMarkForLine - it should handle an empty patch'() {
-        setup:
+        given:
         def patchAnalyzer = new PatchAnalyzer(new Patch())
 
         expect:
@@ -69,7 +69,7 @@ class PatchAnalyzerSpec extends Specification {
     }
 
     def 'getDirtyMarkForLine - it should handle addition of the first line'() {
-        setup:
+        given:
         def oldLines = [     '2', '3', '']
         def newLines = ['1', '2', '3', '']
         def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
@@ -83,7 +83,7 @@ class PatchAnalyzerSpec extends Specification {
     }
 
     def 'getDirtyMarkForLine - it should handle addition of an intermediate line'() {
-        setup:
+        given:
         def oldLines = ['1',      '3', '']
         def newLines = ['1', '2', '3', '']
         def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
@@ -97,7 +97,7 @@ class PatchAnalyzerSpec extends Specification {
     }
 
     def 'getDirtyMarkForLine - it should handle addition of the last line'() {
-        setup:
+        given:
         def oldLines = ['1', '2',      '']
         def newLines = ['1', '2', '3', '']
         def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
@@ -111,7 +111,7 @@ class PatchAnalyzerSpec extends Specification {
     }
 
     def 'getDirtyMarkForLine - it should handle addition of the final newline'() {
-        setup:
+        given:
         def oldLines = ['1', '2', '3'    ]
         def newLines = ['1', '2', '3', '']
         def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
@@ -125,7 +125,7 @@ class PatchAnalyzerSpec extends Specification {
     }
 
     def 'getDirtyMarkForLine - it should handle modification of the first line'() {
-        setup:
+        given:
         def oldLines = ['1/old', '2', '3', '']
         def newLines = ['1/new', '2', '3', '']
         def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
@@ -139,7 +139,7 @@ class PatchAnalyzerSpec extends Specification {
     }
 
     def 'getDirtyMarkForLine - it should handle modification of an intermediate line'() {
-        setup:
+        given:
         def oldLines = ['1', '2/old', '3', '']
         def newLines = ['1', '2/new', '3', '']
         def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
@@ -153,7 +153,7 @@ class PatchAnalyzerSpec extends Specification {
     }
 
     def 'getDirtyMarkForLine - it should handle modification of the last line'() {
-        setup:
+        given:
         def oldLines = ['1', '2', '3/old', '']
         def newLines = ['1', '2', '3/new', '']
         def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
@@ -167,7 +167,7 @@ class PatchAnalyzerSpec extends Specification {
     }
 
     def 'getDirtyMarkForLine - it should handle removal of the first line'() {
-        setup:
+        given:
         def oldLines = ['1', '2', '3', '']
         def newLines = [     '2', '3', '']
         def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
@@ -181,7 +181,7 @@ class PatchAnalyzerSpec extends Specification {
     }
 
     def 'getDirtyMarkForLine - it should handle removal of an intermediate line'() {
-        setup:
+        given:
         def oldLines = ['1', '2', '3', '4', '5', '']
         def newLines = ['1', '2',      '4', '5', '']
         def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
@@ -195,7 +195,7 @@ class PatchAnalyzerSpec extends Specification {
     }
 
     def 'getDirtyMarkForLine - it should handle removal of the last line'() {
-        setup:
+        given:
         def oldLines = ['1', '2', '3', '']
         def newLines = ['1', '2',      '']
         def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
@@ -209,7 +209,7 @@ class PatchAnalyzerSpec extends Specification {
     }
 
     def 'getDirtyMarkForLine - it should handle removal of lines above and below a single line'() {
-        setup:
+        given:
         def oldLines = ['1', '2', '3', '4', '5', '']
         def newLines = ['1',      '3',      '5', '']
         def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
@@ -223,7 +223,7 @@ class PatchAnalyzerSpec extends Specification {
     }
 
     def 'getDirtyMarkForLine - it should handle removal of the final newline'() {
-        setup:
+        given:
         def oldLines = ['1', '2', '3', '']
         def newLines = ['1', '2', '3'    ]
         def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
@@ -237,7 +237,7 @@ class PatchAnalyzerSpec extends Specification {
     }
 
     def 'getDirtyMarkForLine - it should handle a mixed collection of added, changed, and removed lines'() {
-        setup:
+        given:
         def oldLines = [
             'This part of the',
             'document has stayed the',

@@ -31,7 +31,7 @@ class GitRunnerSpec extends Specification {
     }
 
     def 'it should pass configured working directory to process runner'() {
-        setup:
+        given:
         def processRunner = Mock(IProcessRunner)
         def gitRunner = newGitRunner(processRunner)
 
@@ -43,7 +43,7 @@ class GitRunnerSpec extends Specification {
     }
 
     def 'it should pass configured git command line to process runner'() {
-        setup:
+        given:
         def processRunner = Mock(IProcessRunner)
         def gitRunner = newGitRunner(processRunner)
 
@@ -55,7 +55,7 @@ class GitRunnerSpec extends Specification {
     }
 
     def 'when the process exits without error and when the exit code is zero it should capture stdout'() {
-        setup:
+        given:
         def processRunner = Stub(IProcessRunner)
         processRunner.run(_, _, _, _) >> { Writer outWriter, Writer errWriter, Path workingDirPath, String[] command ->
             outWriter.write('stdout-line-1\n')
@@ -76,7 +76,7 @@ class GitRunnerSpec extends Specification {
     }
 
     def 'when the process exits without error and when the exit code is nonzero it should capture stdout'() {
-        setup:
+        given:
         def processRunner = Stub(IProcessRunner)
         processRunner.run(_, _, _, _) >> { Writer outWriter, Writer errWriter, Path workingDirPath, String[] command ->
             outWriter.write('stdout-line-1\n')
@@ -97,7 +97,7 @@ class GitRunnerSpec extends Specification {
     }
 
     def 'when the process exits with error it should throw an exception'() {
-        setup:
+        given:
         def processRunner = Stub(IProcessRunner)
         processRunner.run(_, _, _, _) >> { Writer outWriter, Writer errWriter, Path workingDirPath, String[] command ->
             errWriter.write('stderr-line-1\n')

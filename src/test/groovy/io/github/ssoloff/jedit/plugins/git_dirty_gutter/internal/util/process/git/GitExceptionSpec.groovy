@@ -22,7 +22,7 @@ import spock.lang.Specification
 
 class GitExceptionSpec extends Specification {
     def 'getMessage - when the message summary is not empty it should include the message summary'() {
-        setup:
+        given:
         def messageSummary = '123custom message321'
         def e = GitException.newBuilder().withMessageSummary(messageSummary).build()
 
@@ -31,7 +31,7 @@ class GitExceptionSpec extends Specification {
     }
 
     def 'getMessage - when the message summary is empty it should include the default message summary'() {
-        setup:
+        given:
         def e = GitException.newBuilder().withMessageSummary('').build()
 
         expect:
@@ -39,7 +39,7 @@ class GitExceptionSpec extends Specification {
     }
 
     def 'getMessage - when the message summary is not specified it should include the default message summary'() {
-        setup:
+        given:
         def e = GitException.newBuilder().build()
 
         expect:
@@ -47,7 +47,7 @@ class GitExceptionSpec extends Specification {
     }
 
     def 'getMessage - when the working directory path is specified it should include the working directory path'() {
-        setup:
+        given:
         def e = GitException.newBuilder().withWorkingDirPath(Paths.get('/path/to/working-dir')).build()
 
         expect:
@@ -55,7 +55,7 @@ class GitExceptionSpec extends Specification {
     }
 
     def 'getMessage - when the working directory path is not specified it should not include the working directory path'() {
-        setup:
+        given:
         def e = GitException.newBuilder().build()
 
         expect:
@@ -63,7 +63,7 @@ class GitExceptionSpec extends Specification {
     }
 
     def 'getMessage - when the command is specified it should include the command'() {
-        setup:
+        given:
         def e = GitException.newBuilder().withCommand(command).build()
 
         expect:
@@ -74,7 +74,7 @@ class GitExceptionSpec extends Specification {
     }
 
     def 'getMessage - when the command is not specified it should not include the command'() {
-        setup:
+        given:
         def e = GitException.newBuilder().build()
 
         expect:
@@ -82,7 +82,7 @@ class GitExceptionSpec extends Specification {
     }
 
     def 'getMessage - when the exit code is specified it should include the exit code'() {
-        setup:
+        given:
         def e = GitException.newBuilder().withExitCode(0).build()
 
         expect:
@@ -90,7 +90,7 @@ class GitExceptionSpec extends Specification {
     }
 
     def 'getMessage - when the exit code is not specified it should not include the exit code'() {
-        setup:
+        given:
         def e = GitException.newBuilder().build()
 
         expect:
@@ -98,7 +98,7 @@ class GitExceptionSpec extends Specification {
     }
 
     def 'getMessage - when the standard output content is not empty it should include the standard output content'() {
-        setup:
+        given:
         def e = GitException.newBuilder().withOutput('foo').build()
 
         expect:
@@ -106,7 +106,7 @@ class GitExceptionSpec extends Specification {
     }
 
     def 'getMessage - when the standard output content is empty it should not include the standard output content'() {
-        setup:
+        given:
         def e = GitException.newBuilder().withOutput('').build()
 
         expect:
@@ -114,7 +114,7 @@ class GitExceptionSpec extends Specification {
     }
 
     def 'getMessage - when the standard output content is not specified it should not include the standard output content'() {
-        setup:
+        given:
         def e = GitException.newBuilder().build()
 
         expect:
@@ -122,7 +122,7 @@ class GitExceptionSpec extends Specification {
     }
 
     def 'getMessage - when the standard error content is not empty it should include the standard error content'() {
-        setup:
+        given:
         def e = GitException.newBuilder().withError('foo').build()
 
         expect:
@@ -130,7 +130,7 @@ class GitExceptionSpec extends Specification {
     }
 
     def 'getMessage - when the standard error content is empty it should not include the standard error content'() {
-        setup:
+        given:
         def e = GitException.newBuilder().withError('').build()
 
         expect:
@@ -138,7 +138,7 @@ class GitExceptionSpec extends Specification {
     }
 
     def 'getMessage - when the standard error content is not specified it should not include the standard error content'() {
-        setup:
+        given:
         def e = GitException.newBuilder().build()
 
         expect:

@@ -95,7 +95,7 @@ class GitBufferHandlerIntegrationSpec extends GitIntegrationSpecification {
     }
 
     def 'when buffer does not differ from HEAD revision at start it should not report dirty lines'() {
-        setup:
+        given:
         def filePath = repoPath.resolve('file')
         touchFile(filePath, 'line 1\n')
         addAndCommitFile(filePath)
@@ -113,7 +113,7 @@ class GitBufferHandlerIntegrationSpec extends GitIntegrationSpecification {
     }
 
     def 'when buffer differs from HEAD revision at start it should report dirty lines'() {
-        setup:
+        given:
         def filePath = repoPath.resolve('file')
         touchFile(filePath, 'line 1\n')
         addAndCommitFile(filePath)
@@ -132,7 +132,7 @@ class GitBufferHandlerIntegrationSpec extends GitIntegrationSpecification {
     }
 
     def 'when buffer differs from HEAD revision after explicit update request it should report dirty lines'() {
-        setup:
+        given:
         def filePath = repoPath.resolve('file')
         touchFile(filePath, 'line 1\n')
         addAndCommitFile(filePath)
@@ -153,7 +153,7 @@ class GitBufferHandlerIntegrationSpec extends GitIntegrationSpecification {
     }
 
     def 'when buffer does not differ from HEAD revision after commit it should not report dirty lines'() {
-        setup:
+        given:
         def filePath = repoPath.resolve('file')
         touchFile(filePath, 'line 1\n')
         addAndCommitFile(filePath)

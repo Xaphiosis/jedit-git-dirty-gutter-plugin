@@ -69,7 +69,7 @@ class ProcessRunnerSpec extends Specification {
     }
 
     def 'when exception occurs while writing standard output content it should throw an exception'() {
-        setup:
+        given:
         def outWriter = newFailingWriter()
         def errWriter = newDefaultWriter()
 
@@ -81,7 +81,7 @@ class ProcessRunnerSpec extends Specification {
     }
 
     def 'when exception occurs while writing standard error content it should throw an exception'() {
-        setup:
+        given:
         def outWriter = newDefaultWriter()
         def errWriter = newFailingWriter()
 

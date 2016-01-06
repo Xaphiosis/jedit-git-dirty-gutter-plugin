@@ -29,7 +29,7 @@ class GitCommandsSpec extends Specification {
     }
 
     def 'getCommitRefAtHeadRevision - when working directory is inside repo it should return commit ref'() {
-        setup:
+        given:
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> { Writer outWriter, String[] args ->
                 outWriter.write('28573fea3903ca83e973ae9d05d5d32942d1589f\n')
@@ -46,7 +46,7 @@ class GitCommandsSpec extends Specification {
     }
 
     def 'getCommitRefAtHeadRevision - when Git returns an unexpected exit code it should throw an exception'() {
-        setup:
+        given:
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> { Writer outWriter, String[] args ->
                 outWriter.write('28573fea3903ca83e973ae9d05d5d32942d1589f\n')
@@ -64,7 +64,7 @@ class GitCommandsSpec extends Specification {
     }
 
     def 'getCommitRefAtHeadRevision - when Git produces an unexpected output it should throw an exception'() {
-        setup:
+        given:
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> { Writer outWriter, String[] args ->
                 outWriter.write('28573fea3903ca83e973ae9d05d5d32942d1589f\n')
@@ -83,7 +83,7 @@ class GitCommandsSpec extends Specification {
     }
 
     def 'getRepoRelativeFilePathAtHeadRevision - when file exists on HEAD it should return repo-relative path'() {
-        setup:
+        given:
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> { Writer outWriter, String[] args ->
                 outWriter.write('subdir1/subdir2/file\n')
@@ -100,7 +100,7 @@ class GitCommandsSpec extends Specification {
     }
 
     def 'getRepoRelativeFilePathAtHeadRevision - when file is inside repo but does not exist on HEAD it should throw an exception'() {
-        setup:
+        given:
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> {
                 // empty stdout
@@ -117,7 +117,7 @@ class GitCommandsSpec extends Specification {
     }
 
     def 'getRepoRelativeFilePathAtHeadRevision - when Git returns an unexpected exit code it should throw an exception'() {
-        setup:
+        given:
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> { Writer outWriter, String[] args ->
                 outWriter.write('subdir1/subdir2/file\n')
@@ -135,7 +135,7 @@ class GitCommandsSpec extends Specification {
     }
 
     def 'getRepoRelativeFilePathAtHeadRevision - when Git produces an unexpected output it should throw an exception'() {
-        setup:
+        given:
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> { Writer outWriter, String[] args ->
                 outWriter.write('subdir1/subdir2/file\n')
@@ -154,7 +154,7 @@ class GitCommandsSpec extends Specification {
     }
 
     def 'isFilePresentAtHeadRevision - when file exists on HEAD it should return true'() {
-        setup:
+        given:
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> { Writer outWriter, String[] args ->
                 outWriter.write('subdir1/subdir2/file\n')
@@ -171,7 +171,7 @@ class GitCommandsSpec extends Specification {
     }
 
     def 'isFilePresentAtHeadRevision - when file is inside repo but does not exist on HEAD it should return false'() {
-        setup:
+        given:
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> {
                 // empty stdout
@@ -188,7 +188,7 @@ class GitCommandsSpec extends Specification {
     }
 
     def 'isFilePresentAtHeadRevision - when Git returns a nonzero exit code it should return false'() {
-        setup:
+        given:
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> { Writer outWriter, String[] args ->
                 outWriter.write('subdir1/subdir2/file\n')
@@ -205,7 +205,7 @@ class GitCommandsSpec extends Specification {
     }
 
     def 'isFilePresentAtHeadRevision - when Git produces an unexpected output it should return false'() {
-        setup:
+        given:
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> { Writer outWriter, String[] args ->
                 outWriter.write('subdir1/subdir2/file\n')
@@ -223,7 +223,7 @@ class GitCommandsSpec extends Specification {
     }
 
     def 'isFilePresentAtHeadRevision - when Git produces an expected error it should return false'() {
-        setup:
+        given:
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> {
                 throw GitException.newBuilder().withExitCode(128).build()
@@ -239,7 +239,7 @@ class GitCommandsSpec extends Specification {
     }
 
     def 'isFilePresentAtHeadRevision - when Git produces an unexpected error it should return false'() {
-        setup:
+        given:
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> {
                 throw GitException.newBuilder().withExitCode(129).build()
@@ -255,7 +255,7 @@ class GitCommandsSpec extends Specification {
     }
 
     def 'readFileContentAtHeadRevision - when file exists on HEAD it should read file content'() {
-        setup:
+        given:
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> { Writer outWriter, String[] args ->
                 outWriter.write('line1\n')
@@ -274,7 +274,7 @@ class GitCommandsSpec extends Specification {
     }
 
     def 'readFileContentAtHeadRevision - when Git returns an unexpected exit code it should throw an exception'() {
-        setup:
+        given:
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> { Writer outWriter, String[] args ->
                 outWriter.write('line1\n')

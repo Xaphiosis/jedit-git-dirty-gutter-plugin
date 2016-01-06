@@ -36,7 +36,7 @@ class BufferAnalyzerIntegrationSpec extends GitIntegrationSpecification {
     }
 
     def 'createPatchBetweenHeadRevisionAndCurrentState - when file exists on HEAD it should return patch'() {
-        setup:
+        given:
         def filePath = repoPath.resolve('subdir1').resolve('file')
         touchFile(filePath)
         addAndCommitFile(filePath)
@@ -51,7 +51,7 @@ class BufferAnalyzerIntegrationSpec extends GitIntegrationSpecification {
     }
 
     def 'createPatchBetweenHeadRevisionAndCurrentState - when file does not exist on HEAD it should return an empty patch'() {
-        setup:
+        given:
         def filePath = repoPath.resolve('subdir1').resolve('file')
         touchFile(filePath)
         // do not commit so it does not exist on HEAD
@@ -65,7 +65,7 @@ class BufferAnalyzerIntegrationSpec extends GitIntegrationSpecification {
     }
 
     def 'hasHeadRevisionChanged - when HEAD revision has changed it should return true and update commit ref'() {
-        setup:
+        given:
         def filePath = repoPath.resolve('subdir1').resolve('file')
         touchFile(filePath)
         addAndCommitFile(filePath)
@@ -86,7 +86,7 @@ class BufferAnalyzerIntegrationSpec extends GitIntegrationSpecification {
     }
 
     def 'hasHeadRevisionChanged - when HEAD revision has not changed it should return false and not update commit ref'() {
-        setup:
+        given:
         def filePath = repoPath.resolve('subdir1').resolve('file')
         touchFile(filePath)
         addAndCommitFile(filePath)
@@ -103,7 +103,7 @@ class BufferAnalyzerIntegrationSpec extends GitIntegrationSpecification {
     }
 
     def 'hasHeadRevisionChanged - when file does not exist on HEAD it should return false and not update commit ref'() {
-        setup:
+        given:
         def filePath = repoPath.resolve('subdir1').resolve('file')
         touchFile(filePath)
         // do not commit so it does not exist on HEAD

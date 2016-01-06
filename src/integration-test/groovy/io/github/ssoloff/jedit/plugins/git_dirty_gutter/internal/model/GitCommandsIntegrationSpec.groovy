@@ -28,7 +28,7 @@ class GitCommandsIntegrationSpec extends GitIntegrationSpecification {
     }
 
     def 'getCommitRefAtHeadRevision - when file exists on HEAD it should return commit ref'() {
-        setup:
+        given:
         def filePath = repoPath.resolve('subdir1').resolve('file')
         touchFile(filePath)
         addAndCommitFile(filePath)
@@ -41,7 +41,7 @@ class GitCommandsIntegrationSpec extends GitIntegrationSpecification {
     }
 
     def 'getCommitRefAtHeadRevision - when file is inside repo but does not exist on HEAD it should throw an exception'() {
-        setup:
+        given:
         def filePath = repoPath.resolve('subdir1').resolve('file')
         touchFile(filePath)
         // do not commit so it does not exist on HEAD
@@ -54,7 +54,7 @@ class GitCommandsIntegrationSpec extends GitIntegrationSpecification {
     }
 
     def 'getCommitRefAtHeadRevision - when file is outside repo it should throw an exception'() {
-        setup:
+        given:
         def filePath = newTemporaryFile()
         def gitCommands = new GitCommands(newGitRunnerForRepo(filePath.parent))
 
@@ -66,7 +66,7 @@ class GitCommandsIntegrationSpec extends GitIntegrationSpecification {
     }
 
     def 'getRepoRelativeFilePathAtHeadRevision - when file exists on HEAD it should return repo-relative path'() {
-        setup:
+        given:
         def filePath = repoPath.resolve('subdir1').resolve('file')
         touchFile(filePath)
         addAndCommitFile(filePath)
@@ -79,7 +79,7 @@ class GitCommandsIntegrationSpec extends GitIntegrationSpecification {
     }
 
     def 'getRepoRelativeFilePathAtHeadRevision - when file is inside repo but does not exist on HEAD it should throw an exception'() {
-        setup:
+        given:
         def filePath = repoPath.resolve('subdir1').resolve('file')
         touchFile(filePath)
         // do not commit so it does not exist on HEAD
@@ -92,7 +92,7 @@ class GitCommandsIntegrationSpec extends GitIntegrationSpecification {
     }
 
     def 'getRepoRelativeFilePathAtHeadRevision - when file is outside repo it should throw an exception'() {
-        setup:
+        given:
         def filePath = newTemporaryFile()
 
         when:
@@ -103,7 +103,7 @@ class GitCommandsIntegrationSpec extends GitIntegrationSpecification {
     }
 
     def 'isFilePresentAtHeadRevision - when file exists on HEAD it should return true'() {
-        setup:
+        given:
         def filePath = repoPath.resolve('subdir1').resolve('file')
         touchFile(filePath)
         addAndCommitFile(filePath)
@@ -116,7 +116,7 @@ class GitCommandsIntegrationSpec extends GitIntegrationSpecification {
     }
 
     def 'isFilePresentAtHeadRevision - when file is inside repo but does not exist on HEAD it should return false'() {
-        setup:
+        given:
         def filePath = repoPath.resolve('subdir1').resolve('file')
         touchFile(filePath)
         // do not commit so it does not exist on HEAD
@@ -129,7 +129,7 @@ class GitCommandsIntegrationSpec extends GitIntegrationSpecification {
     }
 
     def 'isFilePresentAtHeadRevision - when file is outside repo it should return false'() {
-        setup:
+        given:
         def filePath = newTemporaryFile()
 
         when:
@@ -140,7 +140,7 @@ class GitCommandsIntegrationSpec extends GitIntegrationSpecification {
     }
 
     def 'readFileContentAtHeadRevision - when file exists on HEAD it should read file content'() {
-        setup:
+        given:
         def filePath = repoPath.resolve('file')
         def fileContent = 'line1\nline2\n'
         touchFile(filePath, fileContent)
@@ -155,7 +155,7 @@ class GitCommandsIntegrationSpec extends GitIntegrationSpecification {
     }
 
     def 'readFileContentAtHeadRevision - when file does not exist on HEAD it should throw an exception'() {
-        setup:
+        given:
         def filePath = repoPath.resolve('file')
         touchFile(filePath)
         // do not commit so it does not exist on HEAD

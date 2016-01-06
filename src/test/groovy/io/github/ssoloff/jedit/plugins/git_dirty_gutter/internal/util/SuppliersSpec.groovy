@@ -21,7 +21,7 @@ import spock.lang.Specification
 
 class SuppliersSpec extends Specification {
     def 'forObject - it should return a supplier that returns the specified object'() {
-        setup:
+        given:
         def object = new Object()
 
         when:
