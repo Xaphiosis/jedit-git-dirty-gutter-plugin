@@ -32,12 +32,17 @@ class DirtyMarkPainterSpecificationFactorySpec extends Specification {
     private static final CHANGED_DIRTY_MARK_COLOR = Color.BLUE
     private static final REMOVED_DIRTY_MARK_COLOR = Color.MAGENTA
 
-    private final context = Stub(IDirtyMarkPainterSpecificationFactoryContext) {
-        getAddedDirtyMarkColor() >> ADDED_DIRTY_MARK_COLOR
-        getChangedDirtyMarkColor() >> CHANGED_DIRTY_MARK_COLOR
-        getRemovedDirtyMarkColor() >> REMOVED_DIRTY_MARK_COLOR
+    private final factory = newDirtyMarkPainterSpecificationFactory()
+
+    @SuppressWarnings('UnnecessaryGetter')
+    private newDirtyMarkPainterSpecificationFactory() {
+        def context = Stub(IDirtyMarkPainterSpecificationFactoryContext) {
+            getAddedDirtyMarkColor() >> ADDED_DIRTY_MARK_COLOR
+            getChangedDirtyMarkColor() >> CHANGED_DIRTY_MARK_COLOR
+            getRemovedDirtyMarkColor() >> REMOVED_DIRTY_MARK_COLOR
+        }
+        new DirtyMarkPainterSpecificationFactory(context)
     }
-    private final factory = new DirtyMarkPainterSpecificationFactory(context)
 
     def 'createDirtyMarkPainterSpecification - when dirty mark type is ADDED it should return an added dirty mark painter specification'() {
         when:

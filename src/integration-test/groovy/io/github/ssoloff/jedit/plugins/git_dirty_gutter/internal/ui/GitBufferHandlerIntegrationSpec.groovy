@@ -51,6 +51,7 @@ class GitBufferHandlerIntegrationSpec extends GitIntegrationSpecification {
         assert dirtyMarkPainterSpecification == DirtyMarkPainterSpecification.NULL
     }
 
+    @SuppressWarnings('UnnecessaryGetter')
     private newBufferHandlerForFile(filePath) {
         def buffer = newBufferForFile(filePath)
         def dirtyMarkPainterSpecificationFactoryContext = Stub(IDirtyMarkPainterSpecificationFactoryContext) {
