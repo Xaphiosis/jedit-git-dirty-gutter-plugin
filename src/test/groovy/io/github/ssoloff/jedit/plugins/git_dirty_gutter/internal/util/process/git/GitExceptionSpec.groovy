@@ -59,7 +59,7 @@ class GitExceptionSpec extends Specification {
         def e = GitException.newBuilder().build()
 
         expect:
-        e.message !=~ /(?m)^\s*working dir:/
+        !(e.message =~ /(?m)^\s*working dir:/)
     }
 
     def 'getMessage - when the command is specified it should include the command'() {
@@ -78,7 +78,7 @@ class GitExceptionSpec extends Specification {
         def e = GitException.newBuilder().build()
 
         expect:
-        e.message !=~ /(?m)^\s*command:/
+        !(e.message =~ /(?m)^\s*command:/)
     }
 
     def 'getMessage - when the exit code is specified it should include the exit code'() {
@@ -94,7 +94,7 @@ class GitExceptionSpec extends Specification {
         def e = GitException.newBuilder().build()
 
         expect:
-        e.message !=~ /(?m)^\s*exit code:/
+        !(e.message =~ /(?m)^\s*exit code:/)
     }
 
     def 'getMessage - when the standard output content is not empty it should include the standard output content'() {
@@ -110,7 +110,7 @@ class GitExceptionSpec extends Specification {
         def e = GitException.newBuilder().withOutput('').build()
 
         expect:
-        e.message !=~ /(?m)^\s*output:/
+        !(e.message =~ /(?m)^\s*output:/)
     }
 
     def 'getMessage - when the standard output content is not specified it should not include the standard output content'() {
@@ -118,7 +118,7 @@ class GitExceptionSpec extends Specification {
         def e = GitException.newBuilder().build()
 
         expect:
-        e.message !=~ /(?m)^\s*output:/
+        !(e.message =~ /(?m)^\s*output:/)
     }
 
     def 'getMessage - when the standard error content is not empty it should include the standard error content'() {
@@ -134,7 +134,7 @@ class GitExceptionSpec extends Specification {
         def e = GitException.newBuilder().withError('').build()
 
         expect:
-        e.message !=~ /(?m)^\s*error:/
+        !(e.message =~ /(?m)^\s*error:/)
     }
 
     def 'getMessage - when the standard error content is not specified it should not include the standard error content'() {
@@ -142,6 +142,6 @@ class GitExceptionSpec extends Specification {
         def e = GitException.newBuilder().build()
 
         expect:
-        e.message !=~ /(?m)^\s*error:/
+        !(e.message =~ /(?m)^\s*error:/)
     }
 }
