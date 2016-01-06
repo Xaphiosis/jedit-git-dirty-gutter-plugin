@@ -2,6 +2,7 @@ plugins {
     id 'groovy'
     id 'jacoco'
     id 'checkstyle'
+    id 'codenarc'
     id 'findbugs'
     id 'pmd'
     id 'com.github.kt3k.coveralls' version '2.4.0'
@@ -90,6 +91,11 @@ task wrapper(type: Wrapper) {
 
 check {
     dependsOn integrationTest
+}
+
+codenarc {
+    configFile = file("${project.projectDir}/config/codenarc/codenarc.groovy")
+    ignoreFailures = true
 }
 
 integrationTest {
