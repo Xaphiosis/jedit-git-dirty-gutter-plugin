@@ -35,6 +35,7 @@ class PatchAnalyzerSpec extends Specification {
         DiffUtils.diff(oldLines, newLines)
     }
 
+    @SuppressWarnings('UnusedObject')
     def 'ctor - when patch contains context lines it should throw an exception'() {
         given:
         def patch = new Patch()
