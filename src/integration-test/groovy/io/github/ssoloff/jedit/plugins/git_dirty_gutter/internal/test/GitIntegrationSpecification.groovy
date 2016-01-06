@@ -35,14 +35,19 @@ import spock.lang.Specification
  * program.
  */
 class GitIntegrationSpecification extends Specification {
+    protected static final COMMAND_ADD = 'add'
+    protected static final COMMAND_COMMIT = 'commit'
+    protected static final COMMAND_CONFIG = 'config'
+    protected static final COMMAND_INIT = 'init'
+
     @Rule
     protected TemporaryFolder temporaryFolder = new TemporaryFolder()
 
     protected Path repoPath = null
 
     protected void addAndCommitFile(Path filePath) {
-        runGit('add', filePath)
-        runGit('commit', '-m', 'test commit')
+        runGit(COMMAND_ADD, filePath)
+        runGit(COMMAND_COMMIT, '-m', 'test commit')
     }
 
     protected static Path getGitProgramPath() {
@@ -52,11 +57,11 @@ class GitIntegrationSpecification extends Specification {
     private initRepo() {
         repoPath = newTemporaryFolder()
 
-        runGit('init')
+        runGit(COMMAND_INIT)
 
         // configure required user properties
-        runGit('config', 'user.name', 'TestUser')
-        runGit('config', 'user.email', 'TestEmail')
+        runGit(COMMAND_CONFIG, 'user.name', 'TestUser')
+        runGit(COMMAND_CONFIG, 'user.email', 'TestEmail')
 
         // create an initial commit so HEAD is present
         def filePath = repoPath.resolve('README')
