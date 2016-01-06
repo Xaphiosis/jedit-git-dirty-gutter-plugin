@@ -24,7 +24,7 @@ import org.gjt.sp.jedit.jEdit;
  * Provides localized messages for the plugin.
  */
 @SuppressWarnings("javadoc")
-final class Messages {
+final class Messages { //CHECKSTYLEOFF:JavadocMethod|MethodName
     private Messages() {
     }
 

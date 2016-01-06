@@ -78,6 +78,7 @@
   <!-- </module> -->
 
   <module name="TreeWalker">
+    <module name="FileContentsHolder" />
 
     <!-- Checks for Javadoc comments. -->
     <!-- See http://checkstyle.sf.net/config_javadoc.html -->
@@ -178,6 +179,12 @@
     <module name="TodoComment" />
     <module name="UpperEll" />
 
+  </module>
+
+  <module name="SuppressionCommentFilter">
+    <property name="offCommentFormat" value="CHECKSTYLEOFF\:([\w\|]+)" />
+    <property name="onCommentFormat" value="CHECKSTYLEON\:([\w\|]+)" />
+    <property name="checkFormat" value="$1" />
   </module>
 
 </module>
