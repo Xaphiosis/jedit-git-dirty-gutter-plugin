@@ -39,7 +39,7 @@ class GitCommandsSpec extends Specification {
         def gitCommands = new GitCommands(gitRunner)
 
         when:
-        def commitRef = gitCommands.getCommitRefAtHeadRevision(Paths.get('subdir1/file'))
+        def commitRef = gitCommands.getCommitRefAtHeadRevision(Paths.get('subdir/file'))
 
         then:
         commitRef == '28573fea3903ca83e973ae9d05d5d32942d1589f'
@@ -56,7 +56,7 @@ class GitCommandsSpec extends Specification {
         def gitCommands = new GitCommands(gitRunner)
 
         when:
-        gitCommands.getCommitRefAtHeadRevision(Paths.get('subdir1/file'))
+        gitCommands.getCommitRefAtHeadRevision(Paths.get('subdir/file'))
 
         then:
         def e = thrown(GitException)
@@ -75,7 +75,7 @@ class GitCommandsSpec extends Specification {
         def gitCommands = new GitCommands(gitRunner)
 
         when:
-        gitCommands.getCommitRefAtHeadRevision(Paths.get('subdir1/file'))
+        gitCommands.getCommitRefAtHeadRevision(Paths.get('subdir/file'))
 
         then:
         def e = thrown(GitException)
@@ -86,17 +86,17 @@ class GitCommandsSpec extends Specification {
         given:
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> { Writer outWriter, String[] args ->
-                outWriter.write('subdir1/subdir2/file\n')
+                outWriter.write('subdir/file\n')
                 newGitRunnerResultWithExitCode(0)
             }
         }
         def gitCommands = new GitCommands(gitRunner)
 
         when:
-        def repoRelativePath = gitCommands.getRepoRelativeFilePathAtHeadRevision(Paths.get('/root/subdir1/subdir2/file'))
+        def repoRelativePath = gitCommands.getRepoRelativeFilePathAtHeadRevision(Paths.get('/root/subdir/file'))
 
         then:
-        repoRelativePath == Paths.get('subdir1/subdir2/file')
+        repoRelativePath == Paths.get('subdir/file')
     }
 
     def 'getRepoRelativeFilePathAtHeadRevision - when file is inside repo but does not exist on HEAD it should throw an exception'() {
@@ -110,7 +110,7 @@ class GitCommandsSpec extends Specification {
         def gitCommands = new GitCommands(gitRunner)
 
         when:
-        gitCommands.getRepoRelativeFilePathAtHeadRevision(Paths.get('/root/subdir1/subdir2/file'))
+        gitCommands.getRepoRelativeFilePathAtHeadRevision(Paths.get('/root/subdir/file'))
 
         then:
         thrown(GitException)
@@ -120,14 +120,14 @@ class GitCommandsSpec extends Specification {
         given:
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> { Writer outWriter, String[] args ->
-                outWriter.write('subdir1/subdir2/file\n')
+                outWriter.write('subdir/file\n')
                 newGitRunnerResultWithExitCode(1)
             }
         }
         def gitCommands = new GitCommands(gitRunner)
 
         when:
-        gitCommands.getRepoRelativeFilePathAtHeadRevision(Paths.get('/root/subdir1/subdir2/file'))
+        gitCommands.getRepoRelativeFilePathAtHeadRevision(Paths.get('/root/subdir/file'))
 
         then:
         def e = thrown(GitException)
@@ -138,15 +138,15 @@ class GitCommandsSpec extends Specification {
         given:
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> { Writer outWriter, String[] args ->
-                outWriter.write('subdir1/subdir2/file\n')
-                outWriter.write('subdir1/subdir2/another-file\n')
+                outWriter.write('subdir/file\n')
+                outWriter.write('subdir/another-file\n')
                 newGitRunnerResultWithExitCode(0)
             }
         }
         def gitCommands = new GitCommands(gitRunner)
 
         when:
-        gitCommands.getRepoRelativeFilePathAtHeadRevision(Paths.get('/root/subdir1/subdir2/file'))
+        gitCommands.getRepoRelativeFilePathAtHeadRevision(Paths.get('/root/subdir/file'))
 
         then:
         def e = thrown(GitException)
@@ -157,14 +157,14 @@ class GitCommandsSpec extends Specification {
         given:
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> { Writer outWriter, String[] args ->
-                outWriter.write('subdir1/subdir2/file\n')
+                outWriter.write('subdir/file\n')
                 newGitRunnerResultWithExitCode(0)
             }
         }
         def gitCommands = new GitCommands(gitRunner)
 
         when:
-        def result = gitCommands.isFilePresentAtHeadRevision(Paths.get('/root/subdir1/subdir2/file'))
+        def result = gitCommands.isFilePresentAtHeadRevision(Paths.get('/root/subdir/file'))
 
         then:
         result == true
@@ -181,7 +181,7 @@ class GitCommandsSpec extends Specification {
         def gitCommands = new GitCommands(gitRunner)
 
         when:
-        def result = gitCommands.isFilePresentAtHeadRevision(Paths.get('/root/subdir1/subdir2/file'))
+        def result = gitCommands.isFilePresentAtHeadRevision(Paths.get('/root/subdir/file'))
 
         then:
         result == false
@@ -191,14 +191,14 @@ class GitCommandsSpec extends Specification {
         given:
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> { Writer outWriter, String[] args ->
-                outWriter.write('subdir1/subdir2/file\n')
+                outWriter.write('subdir/file\n')
                 newGitRunnerResultWithExitCode(1)
             }
         }
         def gitCommands = new GitCommands(gitRunner)
 
         when:
-        def result = gitCommands.isFilePresentAtHeadRevision(Paths.get('/root/subdir1/subdir2/file'))
+        def result = gitCommands.isFilePresentAtHeadRevision(Paths.get('/root/subdir/file'))
 
         then:
         result == false
@@ -208,15 +208,15 @@ class GitCommandsSpec extends Specification {
         given:
         def gitRunner = Stub(IGitRunner) {
             run(_, _) >> { Writer outWriter, String[] args ->
-                outWriter.write('subdir1/subdir2/file\n')
-                outWriter.write('subdir1/subdir2/another-file\n')
+                outWriter.write('subdir/file\n')
+                outWriter.write('subdir/another-file\n')
                 newGitRunnerResultWithExitCode(0)
             }
         }
         def gitCommands = new GitCommands(gitRunner)
 
         when:
-        def result = gitCommands.isFilePresentAtHeadRevision(Paths.get('/root/subdir1/subdir2/file'))
+        def result = gitCommands.isFilePresentAtHeadRevision(Paths.get('/root/subdir/file'))
 
         then:
         result == false
@@ -232,7 +232,7 @@ class GitCommandsSpec extends Specification {
         def gitCommands = new GitCommands(gitRunner)
 
         when:
-        def result = gitCommands.isFilePresentAtHeadRevision(Paths.get('/root/subdir1/subdir2/file'))
+        def result = gitCommands.isFilePresentAtHeadRevision(Paths.get('/root/subdir/file'))
 
         then:
         result == false
@@ -248,7 +248,7 @@ class GitCommandsSpec extends Specification {
         def gitCommands = new GitCommands(gitRunner)
 
         when:
-        gitCommands.isFilePresentAtHeadRevision(Paths.get('/root/subdir1/subdir2/file'))
+        gitCommands.isFilePresentAtHeadRevision(Paths.get('/root/subdir/file'))
 
         then:
         thrown(GitException)
