@@ -23,9 +23,9 @@ import java.nio.file.Paths
 import spock.lang.Specification
 
 class ProcessRunnerSpec extends Specification {
-    private command = ['cmd'] as String[]
-    private processRunner = new ProcessRunner({ createStubProcessExecutor(it) } as IProcessExecutorFactory)
-    private workingDirPath = Paths.get('workingDir')
+    private final command = ['cmd'] as String[]
+    private final processRunner = new ProcessRunner({ createStubProcessExecutor(it) } as IProcessExecutorFactory)
+    private final workingDirPath = Paths.get('workingDir')
 
     private static createDefaultWriter() {
         new StringWriter()

@@ -24,8 +24,8 @@ import java.nio.file.Paths
 import spock.lang.Specification
 
 class GitRunnerSpec extends Specification {
-    private programPath = Paths.get('git')
-    private workingDirPath = Paths.get('workingDir')
+    private final programPath = Paths.get('git')
+    private final workingDirPath = Paths.get('workingDir')
 
     private createGitRunnerUnderTest(processRunner) {
         new GitRunner(processRunner, workingDirPath, programPath)

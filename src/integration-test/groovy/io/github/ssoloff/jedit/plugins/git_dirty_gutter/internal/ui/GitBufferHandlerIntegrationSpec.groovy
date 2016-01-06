@@ -28,13 +28,13 @@ import java.util.concurrent.TimeUnit
 import javax.swing.SwingUtilities
 
 class GitBufferHandlerIntegrationSpec extends GitIntegrationSpecification {
-    private static ADDED_DIRTY_MARK_COLOR = Color.GREEN
-    private static CHANGED_DIRTY_MARK_COLOR = Color.ORANGE
-    private static REMOVED_DIRTY_MARK_COLOR = Color.RED
+    private static final ADDED_DIRTY_MARK_COLOR = Color.GREEN
+    private static final CHANGED_DIRTY_MARK_COLOR = Color.ORANGE
+    private static final REMOVED_DIRTY_MARK_COLOR = Color.RED
 
     private bufferHandler
-    private bufferHandlerListenerEvent = new AutoResetEvent()
-    private bufferHandlerListener = { bufferHandlerListenerEvent.signal() }
+    private final bufferHandlerListenerEvent = new AutoResetEvent()
+    private final bufferHandlerListener = { bufferHandlerListenerEvent.signal() }
 
     private createAndStartBufferHandler(filePath) {
         SwingUtilities.invokeAndWait({
