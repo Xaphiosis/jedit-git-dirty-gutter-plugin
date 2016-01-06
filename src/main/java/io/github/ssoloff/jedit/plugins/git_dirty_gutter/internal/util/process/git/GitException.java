@@ -240,10 +240,12 @@ public final class GitException extends Exception {
          *
          * @return The builder.
          */
+        // CHECKSTYLE.OFF:HiddenField
         public Builder withCommand(@SuppressWarnings("hiding") final List<String> command) {
             this.command = command;
             return this;
         }
+        // CHECKSTYLE.ON:HiddenField
 
         /**
          * Sets the content of the standard error stream of the Git process.
@@ -253,10 +255,12 @@ public final class GitException extends Exception {
          *
          * @return The builder.
          */
+        // CHECKSTYLE.OFF:HiddenField
         public Builder withError(@SuppressWarnings("hiding") final String error) {
             this.error = error;
             return this;
         }
+        // CHECKSTYLE.ON:HiddenField
 
         /**
          * Sets the exit code of the Git process.
@@ -266,10 +270,12 @@ public final class GitException extends Exception {
          *
          * @return The builder.
          */
+        // CHECKSTYLE.OFF:HiddenField
         public Builder withExitCode(@SuppressWarnings("hiding") final int exitCode) {
             this.exitCode = Integer.valueOf(exitCode);
             return this;
         }
+        // CHECKSTYLE.ON:HiddenField
 
         /**
          * Sets the exception message summary.
@@ -279,10 +285,12 @@ public final class GitException extends Exception {
          *
          * @return The builder.
          */
+        // CHECKSTYLE.OFF:HiddenField
         public Builder withMessageSummary(@SuppressWarnings("hiding") final String messageSummary) {
             this.messageSummary = messageSummary;
             return this;
         }
+        // CHECKSTYLE.ON:HiddenField
 
         /**
          * Sets the content of the standard output stream of the Git process.
@@ -292,10 +300,12 @@ public final class GitException extends Exception {
          *
          * @return The builder.
          */
+        // CHECKSTYLE.OFF:HiddenField
         public Builder withOutput(@SuppressWarnings("hiding") final String output) {
             this.output = output;
             return this;
         }
+        // CHECKSTYLE.ON:HiddenField
 
         /**
          * Sets the working directory path of the Git process.
@@ -305,9 +315,11 @@ public final class GitException extends Exception {
          *
          * @return The builder.
          */
+        // CHECKSTYLE.OFF:HiddenField
         public Builder withWorkingDirPath(@SuppressWarnings("hiding") final Path workingDirPath) {
             this.workingDirPath = workingDirPath;
             return this;
         }
+        // CHECKSTYLE.ON:HiddenField
     }
 }
