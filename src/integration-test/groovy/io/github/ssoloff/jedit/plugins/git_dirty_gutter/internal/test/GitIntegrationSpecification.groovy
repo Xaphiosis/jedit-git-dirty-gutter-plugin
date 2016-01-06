@@ -31,6 +31,10 @@ import org.junit.Rule
 import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 
+/**
+ * Superclass for all integration tests that interact with an external Git
+ * program.
+ */
 class GitIntegrationSpecification extends Specification {
     @Rule
     protected TemporaryFolder temporaryFolder = new TemporaryFolder()
