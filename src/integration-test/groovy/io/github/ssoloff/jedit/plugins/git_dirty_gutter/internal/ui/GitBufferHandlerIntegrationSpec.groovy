@@ -35,32 +35,6 @@ class GitBufferHandlerIntegrationSpec extends GitIntegrationSpecification {
     private final bufferHandlerListenerEvent = new AutoResetEvent()
     private final bufferHandlerListener = { bufferHandlerListenerEvent.signal() }
 
-    private createAndStartBufferHandler(filePath) {
-        SwingUtilities.invokeAndWait({
-            bufferHandler = createBufferHandlerForFile(filePath)
-            bufferHandler.addListener(bufferHandlerListener)
-            bufferHandler.start()
-        })
-    }
-
-    private createBufferHandlerForFile(filePath) {
-        def buffer = createBufferForFile(filePath)
-        def dirtyMarkPainterSpecificationFactoryContext = Stub(IDirtyMarkPainterSpecificationFactoryContext) {
-            getAddedDirtyMarkColor() >> ADDED_DIRTY_MARK_COLOR
-            getChangedDirtyMarkColor() >> CHANGED_DIRTY_MARK_COLOR
-            getRemovedDirtyMarkColor() >> REMOVED_DIRTY_MARK_COLOR
-        }
-        def log = Stub(ILog)
-        def context = Stub(IGitBufferHandlerContext) {
-            getBuffer() >> buffer
-            getDirtyMarkPainterSpecificationFactoryContext() >> dirtyMarkPainterSpecificationFactoryContext
-            getGitProgramPathSupplier() >> ({ getGitProgramPath() } as ISupplier<Path>)
-            getLog() >> log
-            getRepositoryPollTimeInMilliseconds() >> 500
-        }
-        new GitBufferHandler(context)
-    }
-
     private getDirtyMarkPainterSpecificationForLine(lineIndex) {
         def dirtyMarkPainterSpecification = null
         SwingUtilities.invokeAndWait({
@@ -77,9 +51,35 @@ class GitBufferHandlerIntegrationSpec extends GitIntegrationSpecification {
         assert dirtyMarkPainterSpecification == DirtyMarkPainterSpecification.NULL
     }
 
+    private newBufferHandlerForFile(filePath) {
+        def buffer = newBufferForFile(filePath)
+        def dirtyMarkPainterSpecificationFactoryContext = Stub(IDirtyMarkPainterSpecificationFactoryContext) {
+            getAddedDirtyMarkColor() >> ADDED_DIRTY_MARK_COLOR
+            getChangedDirtyMarkColor() >> CHANGED_DIRTY_MARK_COLOR
+            getRemovedDirtyMarkColor() >> REMOVED_DIRTY_MARK_COLOR
+        }
+        def log = Stub(ILog)
+        def context = Stub(IGitBufferHandlerContext) {
+            getBuffer() >> buffer
+            getDirtyMarkPainterSpecificationFactoryContext() >> dirtyMarkPainterSpecificationFactoryContext
+            getGitProgramPathSupplier() >> ({ getGitProgramPath() } as ISupplier<Path>)
+            getLog() >> log
+            getRepositoryPollTimeInMilliseconds() >> 500
+        }
+        new GitBufferHandler(context)
+    }
+
     private requestPatchUpdate() {
         SwingUtilities.invokeAndWait({
             bufferHandler.updatePatch()
+        })
+    }
+
+    private startBufferHandler(filePath) {
+        SwingUtilities.invokeAndWait({
+            bufferHandler = newBufferHandlerForFile(filePath)
+            bufferHandler.addListener(bufferHandlerListener)
+            bufferHandler.start()
         })
     }
 
@@ -101,7 +101,7 @@ class GitBufferHandlerIntegrationSpec extends GitIntegrationSpecification {
         addAndCommitFile(filePath)
 
         when:
-        createAndStartBufferHandler(filePath)
+        startBufferHandler(filePath)
         waitForPatchUpdateNotification()
         def dirtyMarkPainterSpecification = getDirtyMarkPainterSpecificationForLine(0)
 
@@ -120,7 +120,7 @@ class GitBufferHandlerIntegrationSpec extends GitIntegrationSpecification {
         touchFile(filePath, 'new line 1\n')
 
         when:
-        createAndStartBufferHandler(filePath)
+        startBufferHandler(filePath)
         waitForPatchUpdateNotification()
         def dirtyMarkPainterSpecification = getDirtyMarkPainterSpecificationForLine(0)
 
@@ -138,7 +138,7 @@ class GitBufferHandlerIntegrationSpec extends GitIntegrationSpecification {
         addAndCommitFile(filePath)
 
         when:
-        createAndStartBufferHandler(filePath)
+        startBufferHandler(filePath)
         waitForPatchUpdateNotification()
         touchFile(filePath, 'new line 1\n')
         requestPatchUpdate()
@@ -160,7 +160,7 @@ class GitBufferHandlerIntegrationSpec extends GitIntegrationSpecification {
         touchFile(filePath, 'new line 1\n')
 
         when:
-        createAndStartBufferHandler(filePath)
+        startBufferHandler(filePath)
         waitForPatchUpdateNotification()
         addAndCommitFile(filePath)
         waitForPatchUpdateNotification()

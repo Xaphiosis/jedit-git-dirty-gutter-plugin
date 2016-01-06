@@ -23,14 +23,14 @@ import spock.lang.Specification
 
 class ProcessRunnerSpec extends Specification {
     private final command = ['cmd'] as String[]
-    private final processRunner = new ProcessRunner({ createStubProcessExecutor(it) } as IProcessExecutorFactory)
+    private final processRunner = new ProcessRunner({ newStubProcessExecutor(it) } as IProcessExecutorFactory)
     private final workingDirPath = Paths.get('workingDir')
 
-    private static createDefaultWriter() {
+    private static newDefaultWriter() {
         new StringWriter()
     }
 
-    private static createFailingWriter() {
+    private static newFailingWriter() {
         new Writer() {
             @Override
             void close() {
@@ -47,7 +47,7 @@ class ProcessRunnerSpec extends Specification {
         }
     }
 
-    private static createStubProcessExecutor(command) {
+    private static newStubProcessExecutor(command) {
         new ProcessExecutor(command) {
             private ProcessExecutor.LineVisitor visitor
 
@@ -70,8 +70,8 @@ class ProcessRunnerSpec extends Specification {
 
     def 'when exception occurs while writing standard output content it should throw an exception'() {
         setup:
-        def outWriter = createFailingWriter()
-        def errWriter = createDefaultWriter()
+        def outWriter = newFailingWriter()
+        def errWriter = newDefaultWriter()
 
         when:
         processRunner.run(outWriter, errWriter, workingDirPath, command)
@@ -82,8 +82,8 @@ class ProcessRunnerSpec extends Specification {
 
     def 'when exception occurs while writing standard error content it should throw an exception'() {
         setup:
-        def outWriter = createDefaultWriter()
-        def errWriter = createFailingWriter()
+        def outWriter = newDefaultWriter()
+        def errWriter = newFailingWriter()
 
         when:
         processRunner.run(outWriter, errWriter, workingDirPath, command)

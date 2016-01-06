@@ -26,14 +26,14 @@ class GitRunnerSpec extends Specification {
     private final programPath = Paths.get('git')
     private final workingDirPath = Paths.get('workingDir')
 
-    private createGitRunnerUnderTest(processRunner) {
+    private newGitRunnerUnderTest(processRunner) {
         new GitRunner(processRunner, workingDirPath, programPath)
     }
 
     def 'it should pass configured working directory to process runner'() {
         setup:
         def processRunner = Mock(IProcessRunner)
-        def gitRunner = createGitRunnerUnderTest(processRunner)
+        def gitRunner = newGitRunnerUnderTest(processRunner)
 
         when:
         gitRunner.run(new StringWriter())
@@ -45,7 +45,7 @@ class GitRunnerSpec extends Specification {
     def 'it should pass configured git command line to process runner'() {
         setup:
         def processRunner = Mock(IProcessRunner)
-        def gitRunner = createGitRunnerUnderTest(processRunner)
+        def gitRunner = newGitRunnerUnderTest(processRunner)
 
         when:
         gitRunner.run(new StringWriter(), 'arg1', 'arg2')
@@ -62,7 +62,7 @@ class GitRunnerSpec extends Specification {
             outWriter.write('stdout-line-2\n')
             0
         }
-        def gitRunner = createGitRunnerUnderTest(processRunner)
+        def gitRunner = newGitRunnerUnderTest(processRunner)
         def outWriter = new StringWriter()
 
         when:
@@ -83,7 +83,7 @@ class GitRunnerSpec extends Specification {
             outWriter.write('stdout-line-2\n')
             1
         }
-        def gitRunner = createGitRunnerUnderTest(processRunner)
+        def gitRunner = newGitRunnerUnderTest(processRunner)
         def outWriter = new StringWriter()
 
         when:
@@ -104,7 +104,7 @@ class GitRunnerSpec extends Specification {
             errWriter.write('stderr-line-2\n')
             1
         }
-        def gitRunner = createGitRunnerUnderTest(processRunner)
+        def gitRunner = newGitRunnerUnderTest(processRunner)
 
         when:
         gitRunner.run(new StringWriter(), 'arg1', 'arg2')

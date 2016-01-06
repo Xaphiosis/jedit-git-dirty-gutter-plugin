@@ -21,18 +21,18 @@ import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.test.GitIntegra
 import java.util.concurrent.atomic.AtomicReference
 
 class BufferAnalyzerIntegrationSpec extends GitIntegrationSpecification {
-    private createBufferAnalyzerForFile(filePath) {
-        def buffer = createBufferForFile(filePath)
-        def log = Stub(ILog)
-        new BufferAnalyzer(buffer, createGitRunnerFactory(), log)
-    }
-
     private getCommitRefAtHeadRevision(repoRelativeFilePath) {
-        def gitRunner = createGitRunner()
+        def gitRunner = newGitRunner()
         def outWriter = new StringWriter()
         def result = gitRunner.run(outWriter, 'ls-tree', 'HEAD', repoRelativeFilePath.toString())
         assert result.exitCode == 0
         outWriter.toString().split(/\s+/)[2]
+    }
+
+    private newBufferAnalyzerForFile(filePath) {
+        def buffer = newBufferForFile(filePath)
+        def log = Stub(ILog)
+        new BufferAnalyzer(buffer, newGitRunnerFactory(), log)
     }
 
     def 'createPatchBetweenHeadRevisionAndCurrentState - when file exists on HEAD it should return patch'() {
@@ -41,7 +41,7 @@ class BufferAnalyzerIntegrationSpec extends GitIntegrationSpecification {
         touchFile(filePath)
         addAndCommitFile(filePath)
         touchFile(filePath, 'new content\n')
-        def bufferAnalyzer = createBufferAnalyzerForFile(filePath)
+        def bufferAnalyzer = newBufferAnalyzerForFile(filePath)
 
         when:
         def patch = bufferAnalyzer.createPatchBetweenHeadRevisionAndCurrentState()
@@ -55,7 +55,7 @@ class BufferAnalyzerIntegrationSpec extends GitIntegrationSpecification {
         def filePath = repoPath.resolve('subdir1').resolve('file')
         touchFile(filePath)
         // do not commit so it does not exist on HEAD
-        def bufferAnalyzer = createBufferAnalyzerForFile(filePath)
+        def bufferAnalyzer = newBufferAnalyzerForFile(filePath)
 
         when:
         def patch = bufferAnalyzer.createPatchBetweenHeadRevisionAndCurrentState()
@@ -75,7 +75,7 @@ class BufferAnalyzerIntegrationSpec extends GitIntegrationSpecification {
         addAndCommitFile(filePath)
         def newCommitRef = getCommitRefAtHeadRevision(repoPath.relativize(filePath))
         assert oldCommitRef != newCommitRef
-        def bufferAnalyzer = createBufferAnalyzerForFile(filePath)
+        def bufferAnalyzer = newBufferAnalyzerForFile(filePath)
 
         when:
         def result = bufferAnalyzer.hasHeadRevisionChanged(commitRefRef)
@@ -92,7 +92,7 @@ class BufferAnalyzerIntegrationSpec extends GitIntegrationSpecification {
         addAndCommitFile(filePath)
         def oldCommitRef = getCommitRefAtHeadRevision(repoPath.relativize(filePath))
         def commitRefRef = new AtomicReference<String>(oldCommitRef)
-        def bufferAnalyzer = createBufferAnalyzerForFile(filePath)
+        def bufferAnalyzer = newBufferAnalyzerForFile(filePath)
 
         when:
         def result = bufferAnalyzer.hasHeadRevisionChanged(commitRefRef)
@@ -108,7 +108,7 @@ class BufferAnalyzerIntegrationSpec extends GitIntegrationSpecification {
         touchFile(filePath)
         // do not commit so it does not exist on HEAD
         def commitRefRef = new AtomicReference<String>(null)
-        def bufferAnalyzer = createBufferAnalyzerForFile(filePath)
+        def bufferAnalyzer = newBufferAnalyzerForFile(filePath)
 
         when:
         def result = bufferAnalyzer.hasHeadRevisionChanged(commitRefRef)

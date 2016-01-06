@@ -26,7 +26,7 @@ import difflib.Patch
 import spock.lang.Specification
 
 class PatchAnalyzerSpec extends Specification {
-    private createPatch(oldLines, newLines) {
+    private newPatch(oldLines, newLines) {
         DiffUtils.diff(oldLines, newLines)
     }
 
@@ -47,7 +47,7 @@ class PatchAnalyzerSpec extends Specification {
 
     def 'getDirtyMarkForLine - when line index is negative it should throw an exception'() {
         setup:
-        def patchAnalyzer = new PatchAnalyzer(createPatch([], []))
+        def patchAnalyzer = new PatchAnalyzer(newPatch([], []))
 
         when:
         patchAnalyzer.getDirtyMarkForLine(-1)
@@ -72,7 +72,7 @@ class PatchAnalyzerSpec extends Specification {
         setup:
         def oldLines = [     '2', '3', '']
         def newLines = ['1', '2', '3', '']
-        def patchAnalyzer = new PatchAnalyzer(createPatch(oldLines, newLines))
+        def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
 
         expect:
         patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
@@ -86,7 +86,7 @@ class PatchAnalyzerSpec extends Specification {
         setup:
         def oldLines = ['1',      '3', '']
         def newLines = ['1', '2', '3', '']
-        def patchAnalyzer = new PatchAnalyzer(createPatch(oldLines, newLines))
+        def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
 
         expect:
         patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
@@ -100,7 +100,7 @@ class PatchAnalyzerSpec extends Specification {
         setup:
         def oldLines = ['1', '2',      '']
         def newLines = ['1', '2', '3', '']
-        def patchAnalyzer = new PatchAnalyzer(createPatch(oldLines, newLines))
+        def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
 
         expect:
         patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
@@ -114,7 +114,7 @@ class PatchAnalyzerSpec extends Specification {
         setup:
         def oldLines = ['1', '2', '3'    ]
         def newLines = ['1', '2', '3', '']
-        def patchAnalyzer = new PatchAnalyzer(createPatch(oldLines, newLines))
+        def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
 
         expect:
         patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
@@ -128,7 +128,7 @@ class PatchAnalyzerSpec extends Specification {
         setup:
         def oldLines = ['1/old', '2', '3', '']
         def newLines = ['1/new', '2', '3', '']
-        def patchAnalyzer = new PatchAnalyzer(createPatch(oldLines, newLines))
+        def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
 
         expect:
         patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
@@ -142,7 +142,7 @@ class PatchAnalyzerSpec extends Specification {
         setup:
         def oldLines = ['1', '2/old', '3', '']
         def newLines = ['1', '2/new', '3', '']
-        def patchAnalyzer = new PatchAnalyzer(createPatch(oldLines, newLines))
+        def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
 
         expect:
         patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
@@ -156,7 +156,7 @@ class PatchAnalyzerSpec extends Specification {
         setup:
         def oldLines = ['1', '2', '3/old', '']
         def newLines = ['1', '2', '3/new', '']
-        def patchAnalyzer = new PatchAnalyzer(createPatch(oldLines, newLines))
+        def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
 
         expect:
         patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
@@ -170,7 +170,7 @@ class PatchAnalyzerSpec extends Specification {
         setup:
         def oldLines = ['1', '2', '3', '']
         def newLines = [     '2', '3', '']
-        def patchAnalyzer = new PatchAnalyzer(createPatch(oldLines, newLines))
+        def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
 
         expect:
         patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
@@ -184,7 +184,7 @@ class PatchAnalyzerSpec extends Specification {
         setup:
         def oldLines = ['1', '2', '3', '4', '5', '']
         def newLines = ['1', '2',      '4', '5', '']
-        def patchAnalyzer = new PatchAnalyzer(createPatch(oldLines, newLines))
+        def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
 
         expect:
         patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
@@ -198,7 +198,7 @@ class PatchAnalyzerSpec extends Specification {
         setup:
         def oldLines = ['1', '2', '3', '']
         def newLines = ['1', '2',      '']
-        def patchAnalyzer = new PatchAnalyzer(createPatch(oldLines, newLines))
+        def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
 
         expect:
         patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
@@ -212,7 +212,7 @@ class PatchAnalyzerSpec extends Specification {
         setup:
         def oldLines = ['1', '2', '3', '4', '5', '']
         def newLines = ['1',      '3',      '5', '']
-        def patchAnalyzer = new PatchAnalyzer(createPatch(oldLines, newLines))
+        def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
 
         expect:
         patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
@@ -226,7 +226,7 @@ class PatchAnalyzerSpec extends Specification {
         setup:
         def oldLines = ['1', '2', '3', '']
         def newLines = ['1', '2', '3'    ]
-        def patchAnalyzer = new PatchAnalyzer(createPatch(oldLines, newLines))
+        def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
 
         expect:
         patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
@@ -296,7 +296,7 @@ class PatchAnalyzerSpec extends Specification {
             'to this document.',
             ''
         ]
-        def patchAnalyzer = new PatchAnalyzer(createPatch(oldLines, newLines))
+        def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
 
         expect:
         patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType

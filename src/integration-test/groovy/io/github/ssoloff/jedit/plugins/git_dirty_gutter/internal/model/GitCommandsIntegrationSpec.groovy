@@ -24,7 +24,7 @@ class GitCommandsIntegrationSpec extends GitIntegrationSpecification {
     private gitCommands
 
     def setup() {
-        gitCommands = new GitCommands(createGitRunner())
+        gitCommands = new GitCommands(newGitRunner())
     }
 
     def 'getCommitRefAtHeadRevision - when file exists on HEAD it should return commit ref'() {
@@ -56,7 +56,7 @@ class GitCommandsIntegrationSpec extends GitIntegrationSpecification {
     def 'getCommitRefAtHeadRevision - when file is outside repo it should throw an exception'() {
         setup:
         def filePath = newTemporaryFile()
-        def gitCommands = new GitCommands(createGitRunnerForRepo(filePath.parent))
+        def gitCommands = new GitCommands(newGitRunnerForRepo(filePath.parent))
 
         when:
         gitCommands.getCommitRefAtHeadRevision(filePath)

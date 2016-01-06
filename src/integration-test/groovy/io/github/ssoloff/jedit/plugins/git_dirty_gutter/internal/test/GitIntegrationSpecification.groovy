@@ -45,33 +45,6 @@ class GitIntegrationSpecification extends Specification {
         runGit('commit', '-m', 'test commit')
     }
 
-    protected static IBuffer createBufferForFile(Path filePath) {
-        new IBuffer() {
-            Path getFilePath() {
-                filePath
-            }
-
-            List<String> getLines() {
-                StringUtils.splitLinesWithExplicitFinalLine(new String(Files.readAllBytes(filePath)))
-            }
-        }
-    }
-
-    protected IGitRunner createGitRunner() {
-        createGitRunnerForRepo(repoPath)
-    }
-
-    protected static IGitRunnerFactory createGitRunnerFactory() {
-        { workingDirPath ->
-            new GitRunner(new ProcessRunner(), workingDirPath, getGitProgramPath())
-        } as IGitRunnerFactory
-    }
-
-    protected static IGitRunner createGitRunnerForRepo(Path repoPath) {
-        def gitRunnerFactory = createGitRunnerFactory()
-        gitRunnerFactory.createGitRunner(repoPath)
-    }
-
     protected static Path getGitProgramPath() {
         Paths.get('git')
     }
@@ -91,6 +64,33 @@ class GitIntegrationSpecification extends Specification {
         addAndCommitFile(filePath)
     }
 
+    protected static IBuffer newBufferForFile(Path filePath) {
+        new IBuffer() {
+            Path getFilePath() {
+                filePath
+            }
+
+            List<String> getLines() {
+                StringUtils.splitLinesWithExplicitFinalLine(new String(Files.readAllBytes(filePath)))
+            }
+        }
+    }
+
+    protected IGitRunner newGitRunner() {
+        newGitRunnerForRepo(repoPath)
+    }
+
+    protected static IGitRunnerFactory newGitRunnerFactory() {
+        { workingDirPath ->
+            new GitRunner(new ProcessRunner(), workingDirPath, getGitProgramPath())
+        } as IGitRunnerFactory
+    }
+
+    protected static IGitRunner newGitRunnerForRepo(Path repoPath) {
+        def gitRunnerFactory = newGitRunnerFactory()
+        gitRunnerFactory.createGitRunner(repoPath)
+    }
+
     protected Path newTemporaryFile() {
         temporaryFolder.newFile().toPath()
     }
@@ -100,7 +100,7 @@ class GitIntegrationSpecification extends Specification {
     }
 
     protected void runGit(Object... args) {
-        def gitRunner = createGitRunner()
+        def gitRunner = newGitRunner()
         gitRunner.run(new StringWriter(), args.each { it.toString() } as String[] )
     }
 
