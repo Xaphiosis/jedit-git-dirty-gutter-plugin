@@ -37,9 +37,9 @@ class GitBufferHandlerIntegrationSpec extends GitIntegrationSpecification {
 
     private getDirtyMarkPainterSpecificationForLine(lineIndex) {
         def dirtyMarkPainterSpecification = null
-        SwingUtilities.invokeAndWait({
+        SwingUtilities.invokeAndWait {
             dirtyMarkPainterSpecification = bufferHandler.getDirtyMarkPainterSpecificationForLine(lineIndex)
-        })
+        }
         dirtyMarkPainterSpecification
     }
 
@@ -71,24 +71,24 @@ class GitBufferHandlerIntegrationSpec extends GitIntegrationSpecification {
     }
 
     private requestPatchUpdate() {
-        SwingUtilities.invokeAndWait({
+        SwingUtilities.invokeAndWait {
             bufferHandler.updatePatch()
-        })
+        }
     }
 
     private startBufferHandler(filePath) {
-        SwingUtilities.invokeAndWait({
+        SwingUtilities.invokeAndWait {
             bufferHandler = newBufferHandlerForFile(filePath)
             bufferHandler.addListener(bufferHandlerListener)
             bufferHandler.start()
-        })
+        }
     }
 
     private stopBufferHandler() {
-        SwingUtilities.invokeAndWait({
+        SwingUtilities.invokeAndWait {
             bufferHandler.stop()
             bufferHandler.removeListener(bufferHandlerListener)
-        })
+        }
     }
 
     private waitForPatchUpdateNotification() {
