@@ -121,10 +121,18 @@ ruleset {
     ToStringReturnsNull
 
     // rulesets/dry.xml
-    DuplicateListLiteral
-    DuplicateMapLiteral
-    DuplicateNumberLiteral
-    DuplicateStringLiteral
+    DuplicateListLiteral {
+        doNotApplyToFileNames = '*Spec.groovy'
+    }
+    DuplicateMapLiteral {
+        doNotApplyToFileNames = '*Spec.groovy'
+    }
+    DuplicateNumberLiteral {
+        doNotApplyToFileNames = '*Spec.groovy'
+    }
+    DuplicateStringLiteral {
+        doNotApplyToFileNames = '*Spec.groovy'
+    }
 
     // rulesets/enhanced.xml
     CloneWithoutCloneable
