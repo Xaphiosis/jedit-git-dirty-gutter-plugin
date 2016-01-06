@@ -24,15 +24,16 @@ import java.awt.Color
 import spock.lang.Specification
 
 class DirtyMarkPainterSpecificationFactorySpec extends Specification {
-    private static def ADDED_DIRTY_MARK_COLOR = Color.CYAN
-    private static def CHANGED_DIRTY_MARK_COLOR = Color.BLUE
-    private static def REMOVED_DIRTY_MARK_COLOR = Color.MAGENTA
-    private def context = Stub(IDirtyMarkPainterSpecificationFactoryContext) {
+    private static ADDED_DIRTY_MARK_COLOR = Color.CYAN
+    private static CHANGED_DIRTY_MARK_COLOR = Color.BLUE
+    private static REMOVED_DIRTY_MARK_COLOR = Color.MAGENTA
+
+    private context = Stub(IDirtyMarkPainterSpecificationFactoryContext) {
         getAddedDirtyMarkColor() >> ADDED_DIRTY_MARK_COLOR
         getChangedDirtyMarkColor() >> CHANGED_DIRTY_MARK_COLOR
         getRemovedDirtyMarkColor() >> REMOVED_DIRTY_MARK_COLOR
     }
-    private def factory = new DirtyMarkPainterSpecificationFactory(context)
+    private factory = new DirtyMarkPainterSpecificationFactory(context)
 
     def 'createDirtyMarkPainterSpecification - when dirty mark type is ADDED it should return an added dirty mark painter specification'() {
         when:

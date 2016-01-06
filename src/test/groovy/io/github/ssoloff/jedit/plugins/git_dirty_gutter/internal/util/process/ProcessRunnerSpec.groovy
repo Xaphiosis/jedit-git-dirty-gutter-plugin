@@ -23,15 +23,15 @@ import java.nio.file.Paths
 import spock.lang.Specification
 
 class ProcessRunnerSpec extends Specification {
-    private def command = ['cmd'] as String[]
-    private def processRunner = new ProcessRunner({ createStubProcessExecutor(it) } as IProcessExecutorFactory)
-    private def workingDirPath = Paths.get('workingDir')
+    private command = ['cmd'] as String[]
+    private processRunner = new ProcessRunner({ createStubProcessExecutor(it) } as IProcessExecutorFactory)
+    private workingDirPath = Paths.get('workingDir')
 
-    private static Writer createDefaultWriter() {
+    private static createDefaultWriter() {
         new StringWriter()
     }
 
-    private static Writer createFailingWriter() {
+    private static createFailingWriter() {
         new Writer() {
             void close() {
             }
@@ -45,7 +45,7 @@ class ProcessRunnerSpec extends Specification {
         }
     }
 
-    private static ProcessExecutor createStubProcessExecutor(String[] command) {
+    private static createStubProcessExecutor(command) {
         new ProcessExecutor(command) {
             private ProcessExecutor.LineVisitor visitor
 

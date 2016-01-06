@@ -28,15 +28,15 @@ import java.util.concurrent.TimeUnit
 import javax.swing.SwingUtilities
 
 class GitBufferHandlerIntegrationSpec extends GitIntegrationSpecification {
-    private static def ADDED_DIRTY_MARK_COLOR = Color.GREEN
-    private static def CHANGED_DIRTY_MARK_COLOR = Color.ORANGE
-    private static def REMOVED_DIRTY_MARK_COLOR = Color.RED
+    private static ADDED_DIRTY_MARK_COLOR = Color.GREEN
+    private static CHANGED_DIRTY_MARK_COLOR = Color.ORANGE
+    private static REMOVED_DIRTY_MARK_COLOR = Color.RED
 
-    private def bufferHandler
-    private def bufferHandlerListenerEvent = new AutoResetEvent()
-    private def bufferHandlerListener = { bufferHandlerListenerEvent.signal() }
+    private bufferHandler
+    private bufferHandlerListenerEvent = new AutoResetEvent()
+    private bufferHandlerListener = { bufferHandlerListenerEvent.signal() }
 
-    private void createAndStartBufferHandler(filePath) {
+    private createAndStartBufferHandler(filePath) {
         SwingUtilities.invokeAndWait({
             bufferHandler = createBufferHandlerForFile(filePath)
             bufferHandler.addListener(bufferHandlerListener)
@@ -44,7 +44,7 @@ class GitBufferHandlerIntegrationSpec extends GitIntegrationSpecification {
         })
     }
 
-    private def createBufferHandlerForFile(filePath) {
+    private createBufferHandlerForFile(filePath) {
         def buffer = createBufferForFile(filePath)
         def dirtyMarkPainterSpecificationFactoryContext = Stub(IDirtyMarkPainterSpecificationFactoryContext) {
             getAddedDirtyMarkColor() >> ADDED_DIRTY_MARK_COLOR
@@ -62,7 +62,7 @@ class GitBufferHandlerIntegrationSpec extends GitIntegrationSpecification {
         new GitBufferHandler(context)
     }
 
-    private def getDirtyMarkPainterSpecificationForLine(lineIndex) {
+    private getDirtyMarkPainterSpecificationForLine(lineIndex) {
         def dirtyMarkPainterSpecification = null
         SwingUtilities.invokeAndWait({
             dirtyMarkPainterSpecification = bufferHandler.getDirtyMarkPainterSpecificationForLine(lineIndex)
@@ -78,20 +78,20 @@ class GitBufferHandlerIntegrationSpec extends GitIntegrationSpecification {
         assert dirtyMarkPainterSpecification == DirtyMarkPainterSpecification.NULL
     }
 
-    private void requestPatchUpdate() {
+    private requestPatchUpdate() {
         SwingUtilities.invokeAndWait({
             bufferHandler.updatePatch()
         })
     }
 
-    private void stopBufferHandler() {
+    private stopBufferHandler() {
         SwingUtilities.invokeAndWait({
             bufferHandler.stop()
             bufferHandler.removeListener(bufferHandlerListener)
         })
     }
 
-    private void waitForPatchUpdateNotification() {
+    private waitForPatchUpdateNotification() {
         bufferHandlerListenerEvent.await(30, TimeUnit.SECONDS)
     }
 

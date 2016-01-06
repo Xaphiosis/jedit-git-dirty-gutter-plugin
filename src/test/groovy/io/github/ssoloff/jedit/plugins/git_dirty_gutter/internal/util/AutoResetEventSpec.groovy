@@ -25,7 +25,7 @@ import java.util.concurrent.TimeUnit
 import spock.lang.Specification
 
 class AutoResetEventSpec extends Specification {
-    private def event = new AutoResetEvent()
+    private event = new AutoResetEvent()
 
     def 'await - when signaled within the waiting period it should return true'() {
         setup:

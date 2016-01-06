@@ -73,7 +73,7 @@ class GitIntegrationSpecification extends Specification {
         Paths.get('git')
     }
 
-    private void initRepo() {
+    private initRepo() {
         repoPath = newTemporaryFolder()
 
         runGit('init')

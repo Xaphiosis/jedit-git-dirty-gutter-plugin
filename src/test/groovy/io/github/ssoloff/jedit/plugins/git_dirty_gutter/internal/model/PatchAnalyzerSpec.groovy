@@ -27,7 +27,7 @@ import difflib.Patch
 import spock.lang.Specification
 
 class PatchAnalyzerSpec extends Specification {
-    private Patch createPatch(List<String> oldLines, List<String> newLines) {
+    private createPatch(oldLines, newLines) {
         DiffUtils.diff(oldLines, newLines)
     }
 

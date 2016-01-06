@@ -22,13 +22,13 @@ import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.test.GitIntegra
 import java.util.concurrent.atomic.AtomicReference
 
 class BufferAnalyzerIntegrationSpec extends GitIntegrationSpecification {
-    private def createBufferAnalyzerForFile(filePath) {
+    private createBufferAnalyzerForFile(filePath) {
         def buffer = createBufferForFile(filePath)
         def log = Stub(ILog)
         new BufferAnalyzer(buffer, createGitRunnerFactory(), log)
     }
 
-    private def getCommitRefAtHeadRevision(repoRelativeFilePath) {
+    private getCommitRefAtHeadRevision(repoRelativeFilePath) {
         def gitRunner = createGitRunner()
         def outWriter = new StringWriter()
         def result = gitRunner.run(outWriter, 'ls-tree', 'HEAD', repoRelativeFilePath.toString())

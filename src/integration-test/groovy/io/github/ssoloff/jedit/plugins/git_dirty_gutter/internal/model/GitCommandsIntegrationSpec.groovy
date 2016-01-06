@@ -22,7 +22,7 @@ import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.test.GitIntegra
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.GitException
 
 class GitCommandsIntegrationSpec extends GitIntegrationSpecification {
-    private def gitCommands
+    private gitCommands
 
     def setup() {
         gitCommands = new GitCommands(createGitRunner())
