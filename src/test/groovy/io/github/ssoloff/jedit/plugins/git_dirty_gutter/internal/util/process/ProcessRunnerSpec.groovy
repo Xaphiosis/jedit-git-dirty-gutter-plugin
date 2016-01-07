@@ -23,7 +23,7 @@ import spock.lang.Specification
 
 class ProcessRunnerSpec extends Specification {
     private final command = ['cmd'] as String[]
-    private final processRunner = new ProcessRunner({ newStubProcessExecutor(it) } as IProcessExecutorFactory)
+    private final processRunner = new ProcessRunner({ newStubProcessExecutor(it) })
     private final workingDirPath = Paths.get('workingDir')
 
     private static newDefaultWriter() {

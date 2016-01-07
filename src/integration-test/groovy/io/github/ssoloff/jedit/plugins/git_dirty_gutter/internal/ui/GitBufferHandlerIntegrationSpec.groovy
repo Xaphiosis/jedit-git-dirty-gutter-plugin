@@ -63,7 +63,7 @@ class GitBufferHandlerIntegrationSpec extends GitIntegrationSpecification {
         def context = Stub(IGitBufferHandlerContext) {
             getBuffer() >> buffer
             getDirtyMarkPainterSpecificationFactoryContext() >> dirtyMarkPainterSpecificationFactoryContext
-            getGitProgramPathSupplier() >> ({ getGitProgramPath() } as ISupplier<Path>)
+            getGitProgramPathSupplier() >> ({ gitProgramPath } as ISupplier<Path>)
             getLog() >> log
             getRepositoryPollTimeInMilliseconds() >> 500
         }
