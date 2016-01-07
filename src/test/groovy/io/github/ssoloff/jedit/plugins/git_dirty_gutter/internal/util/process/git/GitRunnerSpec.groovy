@@ -23,11 +23,11 @@ import java.nio.file.Paths
 import spock.lang.Specification
 
 class GitRunnerSpec extends Specification {
-    private final programPath = Paths.get('git')
-    private final workingDirPath = Paths.get('workingDir')
+    private static final PROGRAM_PATH = Paths.get('git')
+    private static final WORKING_DIR_PATH = Paths.get('workingDir')
 
     private newGitRunner(processRunner) {
-        new GitRunner(processRunner, workingDirPath, programPath)
+        new GitRunner(processRunner, WORKING_DIR_PATH, PROGRAM_PATH)
     }
 
     def 'it should pass configured working directory to process runner'() {
@@ -39,7 +39,7 @@ class GitRunnerSpec extends Specification {
         gitRunner.run(new StringWriter())
 
         then:
-        1 * processRunner.run(_, _, workingDirPath, _)
+        1 * processRunner.run(_, _, WORKING_DIR_PATH, _)
     }
 
     def 'it should pass configured git command line to process runner'() {
@@ -51,7 +51,7 @@ class GitRunnerSpec extends Specification {
         gitRunner.run(new StringWriter(), 'arg1', 'arg2')
 
         then:
-        1 * processRunner.run(_, _, _, [programPath.toString(), 'arg1', 'arg2'])
+        1 * processRunner.run(_, _, _, [PROGRAM_PATH.toString(), 'arg1', 'arg2'])
     }
 
     def 'when the process exits without error and when the exit code is zero it should capture stdout'() {
@@ -69,9 +69,11 @@ class GitRunnerSpec extends Specification {
         def result = gitRunner.run(outWriter)
 
         then:
-        result.command == [programPath.toString()]
-        result.exitCode == 0
-        result.workingDirPath == workingDirPath
+        with(result) {
+            command == [PROGRAM_PATH.toString()]
+            exitCode == 0
+            workingDirPath == WORKING_DIR_PATH
+        }
         outWriter.toString() == 'stdout-line-1\nstdout-line-2\n'
     }
 
@@ -90,9 +92,11 @@ class GitRunnerSpec extends Specification {
         def result = gitRunner.run(outWriter)
 
         then:
-        result.command == [programPath.toString()]
-        result.exitCode == 1
-        result.workingDirPath == workingDirPath
+        with(result) {
+            command == [PROGRAM_PATH.toString()]
+            exitCode == 1
+            workingDirPath == WORKING_DIR_PATH
+        }
         outWriter.toString() == 'stdout-line-1\nstdout-line-2\n'
     }
 
@@ -111,9 +115,11 @@ class GitRunnerSpec extends Specification {
 
         then:
         def e = thrown(GitException)
-        e.command == [programPath.toString(), 'arg1', 'arg2']
-        e.error == 'stderr-line-1\nstderr-line-2\n'
-        e.exitCode == 1
-        e.workingDirPath == workingDirPath
+        with(e) {
+            command == [PROGRAM_PATH.toString(), 'arg1', 'arg2']
+            error == 'stderr-line-1\nstderr-line-2\n'
+            exitCode == 1
+            workingDirPath == WORKING_DIR_PATH
+        }
     }
 }

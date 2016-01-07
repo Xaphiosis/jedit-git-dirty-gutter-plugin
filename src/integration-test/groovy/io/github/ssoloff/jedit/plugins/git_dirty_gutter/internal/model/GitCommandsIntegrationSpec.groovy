@@ -26,7 +26,6 @@ class GitCommandsIntegrationSpecification extends GitIntegrationSpecification {
     def setup() {
         gitCommands = new GitCommands(newGitRunner())
     }
-
 }
 
 class GitCommands_GetCommitRefAtHeadRevisionIntegrationSpec extends GitCommandsIntegrationSpecification {

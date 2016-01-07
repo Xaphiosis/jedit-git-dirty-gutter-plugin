@@ -49,10 +49,12 @@ class DirtyMarkPainterSpecificationFactory_CreateDirtyMarkPainterSpecificationSp
         def specification = factory.createDirtyMarkPainterSpecification(ADDED)
 
         then:
-        specification.bodyPainted == true
-        specification.bottomStripPainted == false
-        specification.color == ADDED_DIRTY_MARK_COLOR
-        specification.topStripPainted == false
+        with(specification) {
+            bodyPainted == true
+            bottomStripPainted == false
+            color == ADDED_DIRTY_MARK_COLOR
+            topStripPainted == false
+        }
     }
 
     def 'when dirty mark type is CHANGED it should return a changed specification'() {
@@ -60,10 +62,12 @@ class DirtyMarkPainterSpecificationFactory_CreateDirtyMarkPainterSpecificationSp
         def specification = factory.createDirtyMarkPainterSpecification(CHANGED)
 
         then:
-        specification.bodyPainted == true
-        specification.bottomStripPainted == false
-        specification.color == CHANGED_DIRTY_MARK_COLOR
-        specification.topStripPainted == false
+        with(specification) {
+            bodyPainted == true
+            bottomStripPainted == false
+            color == CHANGED_DIRTY_MARK_COLOR
+            topStripPainted == false
+        }
     }
 
     def 'when dirty mark type is REMOVED_ABOVE it should return a removed above specification'() {
@@ -71,10 +75,12 @@ class DirtyMarkPainterSpecificationFactory_CreateDirtyMarkPainterSpecificationSp
         def specification = factory.createDirtyMarkPainterSpecification(REMOVED_ABOVE)
 
         then:
-        specification.bodyPainted == false
-        specification.bottomStripPainted == false
-        specification.color == REMOVED_DIRTY_MARK_COLOR
-        specification.topStripPainted == true
+        with(specification) {
+            bodyPainted == false
+            bottomStripPainted == false
+            color == REMOVED_DIRTY_MARK_COLOR
+            topStripPainted == true
+        }
     }
 
     def 'when dirty mark type is REMOVED_BELOW it should return a removed below specification'() {
@@ -82,10 +88,12 @@ class DirtyMarkPainterSpecificationFactory_CreateDirtyMarkPainterSpecificationSp
         def specification = factory.createDirtyMarkPainterSpecification(REMOVED_BELOW)
 
         then:
-        specification.bodyPainted == false
-        specification.bottomStripPainted == true
-        specification.color == REMOVED_DIRTY_MARK_COLOR
-        specification.topStripPainted == false
+        with(specification) {
+            bodyPainted == false
+            bottomStripPainted == true
+            color == REMOVED_DIRTY_MARK_COLOR
+            topStripPainted == false
+        }
     }
 
     def 'when dirty mark type is REMOVED_ABOVE_AND_BELOW it should return a removed above and below specification'() {
@@ -93,10 +101,12 @@ class DirtyMarkPainterSpecificationFactory_CreateDirtyMarkPainterSpecificationSp
         def specification = factory.createDirtyMarkPainterSpecification(REMOVED_ABOVE_AND_BELOW)
 
         then:
-        specification.bodyPainted == false
-        specification.bottomStripPainted == true
-        specification.color == REMOVED_DIRTY_MARK_COLOR
-        specification.topStripPainted == true
+        with(specification) {
+            bodyPainted == false
+            bottomStripPainted == true
+            color == REMOVED_DIRTY_MARK_COLOR
+            topStripPainted == true
+        }
     }
 
     def 'when dirty mark type is UNCHANGED it should return null object'() {
