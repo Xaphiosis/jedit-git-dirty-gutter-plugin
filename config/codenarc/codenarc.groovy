@@ -138,9 +138,15 @@ ruleset {
     }
 
     // rulesets/enhanced.xml
-    CloneWithoutCloneable
-    JUnitAssertEqualsConstantActualValue
-    UnsafeImplementationAsMap
+    CloneWithoutCloneable {
+        enabled = false
+    }
+    JUnitAssertEqualsConstantActualValue {
+        enabled = false
+    }
+    UnsafeImplementationAsMap {
+        enabled = false
+    }
 
     // rulesets/exceptions.xml
     CatchArrayIndexOutOfBoundsException
