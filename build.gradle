@@ -95,7 +95,6 @@ check {
 
 codenarc {
     configFile = file("${project.projectDir}/config/codenarc/codenarc.groovy")
-    ignoreFailures = true
 }
 
 integrationTest {
