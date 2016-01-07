@@ -20,8 +20,8 @@ package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.g
 import java.nio.file.Paths
 import spock.lang.Specification
 
-class GitExceptionSpec extends Specification {
-    def 'getMessage - when the message summary is not empty it should include the message summary'() {
+class GitException_GetMessageSpec extends Specification {
+    def 'when the message summary is not empty it should include the message summary'() {
         given:
         def messageSummary = '123custom message321'
         def e = GitException.newBuilder().withMessageSummary(messageSummary).build()
@@ -30,7 +30,7 @@ class GitExceptionSpec extends Specification {
         e.message.startsWith(messageSummary)
     }
 
-    def 'getMessage - when the message summary is empty it should include the default message summary'() {
+    def 'when the message summary is empty it should include the default message summary'() {
         given:
         def e = GitException.newBuilder().withMessageSummary('').build()
 
@@ -38,7 +38,7 @@ class GitExceptionSpec extends Specification {
         e.message.startsWith(GitException.defaultMessageSummary)
     }
 
-    def 'getMessage - when the message summary is not specified it should include the default message summary'() {
+    def 'when the message summary is not specified it should include the default message summary'() {
         given:
         def e = GitException.newBuilder().build()
 
@@ -46,7 +46,7 @@ class GitExceptionSpec extends Specification {
         e.message.startsWith(GitException.defaultMessageSummary)
     }
 
-    def 'getMessage - when the working directory path is specified it should include the working directory path'() {
+    def 'when the working directory path is specified it should include the working directory path'() {
         given:
         def e = GitException.newBuilder().withWorkingDirPath(Paths.get('/path/to/working-dir')).build()
 
@@ -54,7 +54,7 @@ class GitExceptionSpec extends Specification {
         e.message =~ /(?m)^\s*working dir:/
     }
 
-    def 'getMessage - when the working directory path is not specified it should not include the working directory path'() {
+    def 'when the working directory path is not specified it should not include the working directory path'() {
         given:
         def e = GitException.newBuilder().build()
 
@@ -62,7 +62,7 @@ class GitExceptionSpec extends Specification {
         !(e.message =~ /(?m)^\s*working dir:/)
     }
 
-    def 'getMessage - when the command is specified it should include the command'() {
+    def 'when the command is specified it should include the command'() {
         given:
         def e = GitException.newBuilder().withCommand(command).build()
 
@@ -73,7 +73,7 @@ class GitExceptionSpec extends Specification {
         command << [[], ['git'], ['git', 'arg1'], ['git', 'arg1', 'arg2']]
     }
 
-    def 'getMessage - when the command is not specified it should not include the command'() {
+    def 'when the command is not specified it should not include the command'() {
         given:
         def e = GitException.newBuilder().build()
 
@@ -81,7 +81,7 @@ class GitExceptionSpec extends Specification {
         !(e.message =~ /(?m)^\s*command:/)
     }
 
-    def 'getMessage - when the exit code is specified it should include the exit code'() {
+    def 'when the exit code is specified it should include the exit code'() {
         given:
         def e = GitException.newBuilder().withExitCode(0).build()
 
@@ -89,7 +89,7 @@ class GitExceptionSpec extends Specification {
         e.message =~ /(?m)^\s*exit code:/
     }
 
-    def 'getMessage - when the exit code is not specified it should not include the exit code'() {
+    def 'when the exit code is not specified it should not include the exit code'() {
         given:
         def e = GitException.newBuilder().build()
 
@@ -97,7 +97,7 @@ class GitExceptionSpec extends Specification {
         !(e.message =~ /(?m)^\s*exit code:/)
     }
 
-    def 'getMessage - when the standard output content is not empty it should include the standard output content'() {
+    def 'when the standard output content is not empty it should include the standard output content'() {
         given:
         def e = GitException.newBuilder().withOutput('foo').build()
 
@@ -105,7 +105,7 @@ class GitExceptionSpec extends Specification {
         e.message =~ /(?m)^\s*output:/
     }
 
-    def 'getMessage - when the standard output content is empty it should not include the standard output content'() {
+    def 'when the standard output content is empty it should not include the standard output content'() {
         given:
         def e = GitException.newBuilder().withOutput('').build()
 
@@ -113,7 +113,7 @@ class GitExceptionSpec extends Specification {
         !(e.message =~ /(?m)^\s*output:/)
     }
 
-    def 'getMessage - when the standard output content is not specified it should not include the standard output content'() {
+    def 'when the standard output content is not specified it should not include the standard output content'() {
         given:
         def e = GitException.newBuilder().build()
 
@@ -121,7 +121,7 @@ class GitExceptionSpec extends Specification {
         !(e.message =~ /(?m)^\s*output:/)
     }
 
-    def 'getMessage - when the standard error content is not empty it should include the standard error content'() {
+    def 'when the standard error content is not empty it should include the standard error content'() {
         given:
         def e = GitException.newBuilder().withError('foo').build()
 
@@ -129,7 +129,7 @@ class GitExceptionSpec extends Specification {
         e.message =~ /(?m)^\s*error:/
     }
 
-    def 'getMessage - when the standard error content is empty it should not include the standard error content'() {
+    def 'when the standard error content is empty it should not include the standard error content'() {
         given:
         def e = GitException.newBuilder().withError('').build()
 
@@ -137,7 +137,7 @@ class GitExceptionSpec extends Specification {
         !(e.message =~ /(?m)^\s*error:/)
     }
 
-    def 'getMessage - when the standard error content is not specified it should not include the standard error content'() {
+    def 'when the standard error content is not specified it should not include the standard error content'() {
         given:
         def e = GitException.newBuilder().build()
 

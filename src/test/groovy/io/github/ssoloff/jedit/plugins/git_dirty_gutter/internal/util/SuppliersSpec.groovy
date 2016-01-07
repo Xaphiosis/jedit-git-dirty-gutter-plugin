@@ -19,8 +19,8 @@ package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util
 
 import spock.lang.Specification
 
-class SuppliersSpec extends Specification {
-    def 'forObject - it should return a supplier that returns the specified object'() {
+class Suppliers_ForObjectSpec extends Specification {
+    def 'it should return a supplier that returns the specified object'() {
         given:
         def object = new Object()
 

@@ -23,10 +23,10 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import spock.lang.Specification
 
-class AutoResetEventSpec extends Specification {
+class AutoResetEvent_AwaitSpec extends Specification {
     private final event = new AutoResetEvent()
 
-    def 'await - when signaled within the waiting period it should return true'() {
+    def 'when signaled within the waiting period it should return true'() {
         given:
         def barrier = new CyclicBarrier(2)
         def executorService = Executors.newCachedThreadPool()
@@ -47,7 +47,7 @@ class AutoResetEventSpec extends Specification {
         executorService.shutdown()
     }
 
-    def 'await - when not signaled within the waiting period it should return false'() {
+    def 'when not signaled within the waiting period it should return false'() {
         when:
         def result = event.await(1, TimeUnit.MILLISECONDS)
 

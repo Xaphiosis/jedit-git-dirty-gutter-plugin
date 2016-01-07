@@ -19,13 +19,13 @@ package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util
 
 import spock.lang.Specification
 
-class StringUtilsSpec extends Specification {
-    def 'joinLinesWithExplicitFinalLine - when line count is zero it should return an empty string'() {
+class StringUtils_JoinLinesWithExplicitFinalLineSpec extends Specification {
+    def 'when line count is zero it should return an empty string'() {
         expect:
         StringUtils.joinLinesWithExplicitFinalLine([]) == ''
     }
 
-    def 'joinLinesWithExplicitFinalLine - when line count is one it should return a string with the line and no final newline'() {
+    def 'when line count is one it should return a string with the line and no final newline'() {
         expect:
         StringUtils.joinLinesWithExplicitFinalLine([line1]) == "$line1"
 
@@ -33,7 +33,7 @@ class StringUtilsSpec extends Specification {
         line1 << ['line1', '']
     }
 
-    def 'joinLinesWithExplicitFinalLine - when line count is two it should return a string with a newline between each line and no final newline'() {
+    def 'when line count is two it should return a string with a newline between each line and no final newline'() {
         expect:
         StringUtils.joinLinesWithExplicitFinalLine([line1, line2]) == "$line1\n$line2"
 
@@ -41,13 +41,15 @@ class StringUtilsSpec extends Specification {
         line1 << ['line1', '',      'line1', '']
         line2 << ['line2', 'line2', '',      '']
     }
+}
 
-    def 'joinLinesWithImplicitFinalLine - when line count is zero it should return an empty string'() {
+class StringUtils_JoinLinesWithImplicitFinalLineSpec extends Specification {
+    def 'when line count is zero it should return an empty string'() {
         expect:
         StringUtils.joinLinesWithImplicitFinalLine([]) == ''
     }
 
-    def 'joinLinesWithImplicitFinalLine - when line count is one it should return a string with the line and a final newline'() {
+    def 'when line count is one it should return a string with the line and a final newline'() {
         expect:
         StringUtils.joinLinesWithImplicitFinalLine([line1]) == "$line1\n"
 
@@ -55,7 +57,7 @@ class StringUtilsSpec extends Specification {
         line1 << ['line1', '']
     }
 
-    def 'joinLinesWithImplicitFinalLine - when line count is two it should return a string with a newline between each line and a final newline'() {
+    def 'when line count is two it should return a string with a newline between each line and a final newline'() {
         expect:
         StringUtils.joinLinesWithImplicitFinalLine([line1, line2]) == "$line1\n$line2\n"
 
@@ -63,18 +65,20 @@ class StringUtilsSpec extends Specification {
         line1 << ['line1', '',      'line1', '']
         line2 << ['line2', 'line2', '',      '']
     }
+}
 
-    def 'splitLinesWithExplicitFinalLine - when input is empty it should return an empty collection'() {
+class StringUtils_SplitLinesWithExplicitFinalLineSpec extends Specification {
+    def 'when input is empty it should return an empty collection'() {
         expect:
         StringUtils.splitLinesWithExplicitFinalLine('') == []
     }
 
-    def 'splitLinesWithExplicitFinalLine - when input contains one line and no final newline it should return a collection with one line'() {
+    def 'when input contains one line and no final newline it should return a collection with one line'() {
         expect:
         StringUtils.splitLinesWithExplicitFinalLine('line1') == ['line1']
     }
 
-    def 'splitLinesWithExplicitFinalLine - when input contains one line and a final newline it should return a collection with two lines'() {
+    def 'when input contains one line and a final newline it should return a collection with two lines'() {
         expect:
         StringUtils.splitLinesWithExplicitFinalLine("$line1\n") == [line1, '']
 
@@ -82,7 +86,7 @@ class StringUtilsSpec extends Specification {
         line1 << ['line1', '']
     }
 
-    def 'splitLinesWithExplicitFinalLine - when input contains two lines and no final newline it should return a collection with two lines'() {
+    def 'when input contains two lines and no final newline it should return a collection with two lines'() {
         expect:
         StringUtils.splitLinesWithExplicitFinalLine("$line1\n$line2") == [line1, line2]
 
@@ -91,7 +95,7 @@ class StringUtilsSpec extends Specification {
         line2 << ['line2', 'line2', '',      '']
     }
 
-    def 'splitLinesWithExplicitFinalLine - when input contains two lines and a final newline it should return a collection with three lines'() {
+    def 'when input contains two lines and a final newline it should return a collection with three lines'() {
         expect:
         StringUtils.splitLinesWithExplicitFinalLine("$line1\n$line2\n") == [line1, line2, '']
 
@@ -100,27 +104,29 @@ class StringUtilsSpec extends Specification {
         line2 << ['line2', 'line2', '',      '']
     }
 
-    def 'splitLinesWithExplicitFinalLine - it should handle Mac line separators'() {
+    def 'it should handle Mac line separators'() {
         expect:
         StringUtils.splitLinesWithExplicitFinalLine('line1\rline2\r') == ['line1', 'line2', '']
     }
 
-    def 'splitLinesWithExplicitFinalLine - it should handle Windows line separators'() {
+    def 'it should handle Windows line separators'() {
         expect:
         StringUtils.splitLinesWithExplicitFinalLine('line1\r\nline2\r\n') == ['line1', 'line2', '']
     }
+}
 
-    def 'splitLinesWithImplicitFinalLine - when input is empty it should return an empty collection'() {
+class StringUtils_SplitLinesWithImplicitFinalLineSpec extends Specification {
+    def 'when input is empty it should return an empty collection'() {
         expect:
         StringUtils.splitLinesWithImplicitFinalLine('') == []
     }
 
-    def 'splitLinesWithImplicitFinalLine - when input contains one line and no final newline it should return a collection with one line'() {
+    def 'when input contains one line and no final newline it should return a collection with one line'() {
         expect:
         StringUtils.splitLinesWithImplicitFinalLine('line1') == ['line1']
     }
 
-    def 'splitLinesWithImplicitFinalLine - when input contains one line and a final newline it should return a collection with one line'() {
+    def 'when input contains one line and a final newline it should return a collection with one line'() {
         expect:
         StringUtils.splitLinesWithImplicitFinalLine("$line1\n") == [line1]
 
@@ -128,7 +134,7 @@ class StringUtilsSpec extends Specification {
         line1 << ['line1', '']
     }
 
-    def 'splitLinesWithImplicitFinalLine - when input contains two lines and no final newline it should return a collection with two lines'() {
+    def 'when input contains two lines and no final newline it should return a collection with two lines'() {
         expect:
         StringUtils.splitLinesWithImplicitFinalLine("$line1\n$line2") == [line1, line2]
 
@@ -137,7 +143,7 @@ class StringUtilsSpec extends Specification {
         line2 << ['line2', 'line2']
     }
 
-    def 'splitLinesWithImplicitFinalLine - when input contains two lines and a final newline it should return a collection with two lines'() {
+    def 'when input contains two lines and a final newline it should return a collection with two lines'() {
         expect:
         StringUtils.splitLinesWithImplicitFinalLine("$line1\n$line2\n") == [line1, line2]
 
@@ -146,12 +152,12 @@ class StringUtilsSpec extends Specification {
         line2 << ['line2', 'line2', '',      '']
     }
 
-    def 'splitLinesWithImplicitFinalLine - it should handle Mac line separators'() {
+    def 'it should handle Mac line separators'() {
         expect:
         StringUtils.splitLinesWithImplicitFinalLine('line1\rline2\r') == ['line1', 'line2']
     }
 
-    def 'splitLinesWithImplicitFinalLine - it should handle Windows line separators'() {
+    def 'it should handle Windows line separators'() {
         expect:
         StringUtils.splitLinesWithImplicitFinalLine('line1\r\nline2\r\n') == ['line1', 'line2']
     }

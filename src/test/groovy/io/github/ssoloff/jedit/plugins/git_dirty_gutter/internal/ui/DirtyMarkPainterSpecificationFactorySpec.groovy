@@ -27,7 +27,7 @@ import static io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.Di
 import java.awt.Color
 import spock.lang.Specification
 
-class DirtyMarkPainterSpecificationFactorySpec extends Specification {
+class DirtyMarkPainterSpecificationFactory_CreateDirtyMarkPainterSpecificationSpec extends Specification {
     private static final ADDED_DIRTY_MARK_COLOR = Color.CYAN
     private static final CHANGED_DIRTY_MARK_COLOR = Color.BLUE
     private static final REMOVED_DIRTY_MARK_COLOR = Color.MAGENTA
@@ -44,7 +44,7 @@ class DirtyMarkPainterSpecificationFactorySpec extends Specification {
         new DirtyMarkPainterSpecificationFactory(context)
     }
 
-    def 'createDirtyMarkPainterSpecification - when dirty mark type is ADDED it should return an added dirty mark painter specification'() {
+    def 'when dirty mark type is ADDED it should return an added specification'() {
         when:
         def specification = factory.createDirtyMarkPainterSpecification(ADDED)
 
@@ -55,7 +55,7 @@ class DirtyMarkPainterSpecificationFactorySpec extends Specification {
         specification.topStripPainted == false
     }
 
-    def 'createDirtyMarkPainterSpecification - when dirty mark type is CHANGED it should return a changed dirty mark painter specification'() {
+    def 'when dirty mark type is CHANGED it should return a changed specification'() {
         when:
         def specification = factory.createDirtyMarkPainterSpecification(CHANGED)
 
@@ -66,7 +66,7 @@ class DirtyMarkPainterSpecificationFactorySpec extends Specification {
         specification.topStripPainted == false
     }
 
-    def 'createDirtyMarkPainterSpecification - when dirty mark type is REMOVED_ABOVE it should return a removed above dirty mark painter specification'() {
+    def 'when dirty mark type is REMOVED_ABOVE it should return a removed above specification'() {
         when:
         def specification = factory.createDirtyMarkPainterSpecification(REMOVED_ABOVE)
 
@@ -77,7 +77,7 @@ class DirtyMarkPainterSpecificationFactorySpec extends Specification {
         specification.topStripPainted == true
     }
 
-    def 'createDirtyMarkPainterSpecification - when dirty mark type is REMOVED_BELOW it should return a removed below dirty mark painter specification'() {
+    def 'when dirty mark type is REMOVED_BELOW it should return a removed below specification'() {
         when:
         def specification = factory.createDirtyMarkPainterSpecification(REMOVED_BELOW)
 
@@ -88,7 +88,7 @@ class DirtyMarkPainterSpecificationFactorySpec extends Specification {
         specification.topStripPainted == false
     }
 
-    def 'createDirtyMarkPainterSpecification - when dirty mark type is REMOVED_ABOVE_AND_BELOW it should return a removed above and below dirty mark painter specification'() {
+    def 'when dirty mark type is REMOVED_ABOVE_AND_BELOW it should return a removed above and below specification'() {
         when:
         def specification = factory.createDirtyMarkPainterSpecification(REMOVED_ABOVE_AND_BELOW)
 
@@ -99,7 +99,7 @@ class DirtyMarkPainterSpecificationFactorySpec extends Specification {
         specification.topStripPainted == true
     }
 
-    def 'createDirtyMarkPainterSpecification - when dirty mark type is UNCHANGED it should return null object'() {
+    def 'when dirty mark type is UNCHANGED it should return null object'() {
         when:
         def specification = factory.createDirtyMarkPainterSpecification(UNCHANGED)
 

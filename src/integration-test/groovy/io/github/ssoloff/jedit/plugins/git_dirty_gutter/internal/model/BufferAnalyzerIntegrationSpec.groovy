@@ -18,24 +18,20 @@
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model
 
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.test.GitIntegrationSpecification
+import java.nio.file.Path
 import java.util.concurrent.atomic.AtomicReference
 
-class BufferAnalyzerIntegrationSpec extends GitIntegrationSpecification {
-    private getCommitRefAtHeadRevision(repoRelativeFilePath) {
-        def gitRunner = newGitRunner()
-        def outWriter = new StringWriter()
-        def result = gitRunner.run(outWriter, 'ls-tree', 'HEAD', repoRelativeFilePath.toString())
-        assert result.exitCode == 0
-        outWriter.toString().split(/\s+/)[2]
-    }
-
-    private newBufferAnalyzerForFile(filePath) {
+class BufferAnalyzerIntegrationSpecification extends GitIntegrationSpecification {
+    protected BufferAnalyzer newBufferAnalyzerForFile(Path filePath) {
         def buffer = newBufferForFile(filePath)
         def log = Stub(ILog)
         new BufferAnalyzer(buffer, newGitRunnerFactory(), log)
     }
+}
 
-    def 'createPatchBetweenHeadRevisionAndCurrentState - when file exists on HEAD it should return patch'() {
+class BufferAnalyzer_CreatePatchBetweenHeadRevisionAndCurrentStateIntegrationSpec
+        extends BufferAnalyzerIntegrationSpecification {
+    def 'when file exists on HEAD it should return patch'() {
         given:
         def filePath = repoPath.resolve('subdir1').resolve('file')
         touchFile(filePath)
@@ -50,7 +46,7 @@ class BufferAnalyzerIntegrationSpec extends GitIntegrationSpecification {
         patch.deltas.size() == 1
     }
 
-    def 'createPatchBetweenHeadRevisionAndCurrentState - when file does not exist on HEAD it should return an empty patch'() {
+    def 'when file does not exist on HEAD it should return an empty patch'() {
         given:
         def filePath = repoPath.resolve('subdir1').resolve('file')
         touchFile(filePath)
@@ -63,8 +59,18 @@ class BufferAnalyzerIntegrationSpec extends GitIntegrationSpecification {
         then:
         patch.deltas.size() == 0
     }
+}
 
-    def 'hasHeadRevisionChanged - when HEAD revision has changed it should return true and update commit ref'() {
+class BufferAnalyzer_HasHeadRevisionChangedIntegrationSpec extends BufferAnalyzerIntegrationSpecification {
+    private getCommitRefAtHeadRevision(repoRelativeFilePath) {
+        def gitRunner = newGitRunner()
+        def outWriter = new StringWriter()
+        def result = gitRunner.run(outWriter, 'ls-tree', 'HEAD', repoRelativeFilePath.toString())
+        assert result.exitCode == 0
+        outWriter.toString().split(/\s+/)[2]
+    }
+
+    def 'when HEAD revision has changed it should return true and update commit ref'() {
         given:
         def filePath = repoPath.resolve('subdir1').resolve('file')
         touchFile(filePath)
@@ -85,7 +91,7 @@ class BufferAnalyzerIntegrationSpec extends GitIntegrationSpecification {
         commitRefRef.get() == newCommitRef
     }
 
-    def 'hasHeadRevisionChanged - when HEAD revision has not changed it should return false and not update commit ref'() {
+    def 'when HEAD revision has not changed it should return false and not update commit ref'() {
         given:
         def filePath = repoPath.resolve('subdir1').resolve('file')
         touchFile(filePath)
@@ -102,7 +108,7 @@ class BufferAnalyzerIntegrationSpec extends GitIntegrationSpecification {
         commitRefRef.get() == oldCommitRef
     }
 
-    def 'hasHeadRevisionChanged - when file does not exist on HEAD it should return false and not update commit ref'() {
+    def 'when file does not exist on HEAD it should return false and not update commit ref'() {
         given:
         def filePath = repoPath.resolve('subdir1').resolve('file')
         touchFile(filePath)

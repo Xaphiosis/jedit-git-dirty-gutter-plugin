@@ -308,7 +308,9 @@ ruleset {
     // rulesets/naming.xml
     AbstractClassName
     ClassName
-    ClassNameSameAsFilename
+    ClassNameSameAsFilename {
+        doNotApplyToFileNames = '*Spec.groovy'
+    }
     ClassNameSameAsSuperclass
     ConfusingMethodName
     FactoryMethodName
