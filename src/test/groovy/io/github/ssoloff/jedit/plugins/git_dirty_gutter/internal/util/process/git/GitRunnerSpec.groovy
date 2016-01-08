@@ -21,7 +21,11 @@ import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.IP
 import java.nio.file.Path
 import java.nio.file.Paths
 import spock.lang.Specification
+import spock.lang.Subject
+import spock.lang.Title
 
+@Subject(GitRunner)
+@Title('Unit tests for GitRunner')
 class GitRunnerSpec extends Specification {
     private static final PROGRAM_PATH = Paths.get('git')
     private static final WORKING_DIR_PATH = Paths.get('workingDir')
@@ -31,31 +35,31 @@ class GitRunnerSpec extends Specification {
     }
 
     def 'it should pass configured working directory to process runner'() {
-        given:
+        given: 'a Git runner with a working directory path'
         def processRunner = Mock(IProcessRunner)
         def gitRunner = newGitRunner(processRunner)
 
-        when:
+        when: 'Git is run'
         gitRunner.run(new StringWriter())
 
-        then:
+        then: 'the process runner should be passed the configured working directory path'
         1 * processRunner.run(_, _, WORKING_DIR_PATH, _)
     }
 
-    def 'it should pass configured git command line to process runner'() {
-        given:
+    def 'it should pass configured program command line to process runner'() {
+        given: 'a Git runner with a program path'
         def processRunner = Mock(IProcessRunner)
         def gitRunner = newGitRunner(processRunner)
 
-        when:
+        when: 'Git is run'
         gitRunner.run(new StringWriter(), 'arg1', 'arg2')
 
-        then:
+        then: 'the process runner should be passed the configured program path followed by the program arguments'
         1 * processRunner.run(_, _, _, [PROGRAM_PATH.toString(), 'arg1', 'arg2'])
     }
 
     def 'when the process exits without error and when the exit code is zero it should capture stdout'() {
-        given:
+        given: 'a process that exits with code 0 and writes to standard output'
         def processRunner = Stub(IProcessRunner)
         processRunner.run(_, _, _, _) >> { Writer outWriter, Writer errWriter, Path workingDirPath, String[] command ->
             outWriter.write('stdout-line-1\n')
@@ -65,20 +69,22 @@ class GitRunnerSpec extends Specification {
         def gitRunner = newGitRunner(processRunner)
         def outWriter = new StringWriter()
 
-        when:
+        when: 'Git is run'
         def result = gitRunner.run(outWriter)
 
-        then:
+        then: 'the result should capture the process context'
         with(result) {
             command == [PROGRAM_PATH.toString()]
             exitCode == 0
             workingDirPath == WORKING_DIR_PATH
         }
+
+        and: 'it should capture standard output'
         outWriter.toString() == 'stdout-line-1\nstdout-line-2\n'
     }
 
     def 'when the process exits without error and when the exit code is nonzero it should capture stdout'() {
-        given:
+        given: 'a process that exits with code 1 and writes to standard output'
         def processRunner = Stub(IProcessRunner)
         processRunner.run(_, _, _, _) >> { Writer outWriter, Writer errWriter, Path workingDirPath, String[] command ->
             outWriter.write('stdout-line-1\n')
@@ -88,20 +94,22 @@ class GitRunnerSpec extends Specification {
         def gitRunner = newGitRunner(processRunner)
         def outWriter = new StringWriter()
 
-        when:
+        when: 'Git is run'
         def result = gitRunner.run(outWriter)
 
-        then:
+        then: 'the result should capture the process context'
         with(result) {
             command == [PROGRAM_PATH.toString()]
             exitCode == 1
             workingDirPath == WORKING_DIR_PATH
         }
+
+        and: 'it should capture standard output'
         outWriter.toString() == 'stdout-line-1\nstdout-line-2\n'
     }
 
     def 'when the process exits with error it should throw an exception'() {
-        given:
+        given: 'a process that writes to standard error'
         def processRunner = Stub(IProcessRunner)
         processRunner.run(_, _, _, _) >> { Writer outWriter, Writer errWriter, Path workingDirPath, String[] command ->
             errWriter.write('stderr-line-1\n')
@@ -110,10 +118,10 @@ class GitRunnerSpec extends Specification {
         }
         def gitRunner = newGitRunner(processRunner)
 
-        when:
+        when: 'Git is run'
         gitRunner.run(new StringWriter(), 'arg1', 'arg2')
 
-        then:
+        then: 'it should throw an exception containing the process context and captured standard error'
         def e = thrown(GitException)
         with(e) {
             command == [PROGRAM_PATH.toString(), 'arg1', 'arg2']

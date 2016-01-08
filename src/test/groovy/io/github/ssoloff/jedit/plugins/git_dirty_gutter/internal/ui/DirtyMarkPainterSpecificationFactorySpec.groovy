@@ -26,7 +26,11 @@ import static io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.model.Di
 
 import java.awt.Color
 import spock.lang.Specification
+import spock.lang.Subject
+import spock.lang.Title
 
+@Subject(DirtyMarkPainterSpecificationFactory)
+@Title('Unit tests for DirtyMarkPainterSpecificationFactory#createDirtyMarkPainterSpecification')
 class DirtyMarkPainterSpecificationFactory_CreateDirtyMarkPainterSpecificationSpec extends Specification {
     private static final ADDED_DIRTY_MARK_COLOR = Color.CYAN
     private static final CHANGED_DIRTY_MARK_COLOR = Color.BLUE
@@ -45,10 +49,10 @@ class DirtyMarkPainterSpecificationFactory_CreateDirtyMarkPainterSpecificationSp
     }
 
     def 'when dirty mark type is ADDED it should return an added specification'() {
-        when:
+        when: 'creating a specification for the ADDED dirty mark type'
         def specification = factory.createDirtyMarkPainterSpecification(ADDED)
 
-        then:
+        then: 'the specification should paint the body using the ADDED color'
         with(specification) {
             bodyPainted == true
             bottomStripPainted == false
@@ -58,10 +62,10 @@ class DirtyMarkPainterSpecificationFactory_CreateDirtyMarkPainterSpecificationSp
     }
 
     def 'when dirty mark type is CHANGED it should return a changed specification'() {
-        when:
+        when: 'creating a specification for the CHANGED dirty mark type'
         def specification = factory.createDirtyMarkPainterSpecification(CHANGED)
 
-        then:
+        then: 'the specification should paint the body using the CHANGED color'
         with(specification) {
             bodyPainted == true
             bottomStripPainted == false
@@ -71,10 +75,10 @@ class DirtyMarkPainterSpecificationFactory_CreateDirtyMarkPainterSpecificationSp
     }
 
     def 'when dirty mark type is REMOVED_ABOVE it should return a removed above specification'() {
-        when:
+        when: 'creating a specification for the REMOVED_ABOVE dirty mark type'
         def specification = factory.createDirtyMarkPainterSpecification(REMOVED_ABOVE)
 
-        then:
+        then: 'the specification should paint the top strip using the REMOVED color'
         with(specification) {
             bodyPainted == false
             bottomStripPainted == false
@@ -84,10 +88,10 @@ class DirtyMarkPainterSpecificationFactory_CreateDirtyMarkPainterSpecificationSp
     }
 
     def 'when dirty mark type is REMOVED_BELOW it should return a removed below specification'() {
-        when:
+        when: 'creating a specification for the REMOVED_BELOW dirty mark type'
         def specification = factory.createDirtyMarkPainterSpecification(REMOVED_BELOW)
 
-        then:
+        then: 'the specification should paint the bottom strip using the REMOVED color'
         with(specification) {
             bodyPainted == false
             bottomStripPainted == true
@@ -97,10 +101,10 @@ class DirtyMarkPainterSpecificationFactory_CreateDirtyMarkPainterSpecificationSp
     }
 
     def 'when dirty mark type is REMOVED_ABOVE_AND_BELOW it should return a removed above and below specification'() {
-        when:
+        when: 'creating a specification for the REMOVED_ABOVE_AND_BELOW dirty mark type'
         def specification = factory.createDirtyMarkPainterSpecification(REMOVED_ABOVE_AND_BELOW)
 
-        then:
+        then: 'the specification should paint the top and bottom strips using the REMOVED color'
         with(specification) {
             bodyPainted == false
             bottomStripPainted == true
@@ -110,10 +114,10 @@ class DirtyMarkPainterSpecificationFactory_CreateDirtyMarkPainterSpecificationSp
     }
 
     def 'when dirty mark type is UNCHANGED it should return null object'() {
-        when:
+        when: 'creating a specification for the UNCHANGED dirty mark type'
         def specification = factory.createDirtyMarkPainterSpecification(UNCHANGED)
 
-        then:
+        then: 'the specification should be the Null Object specification'
         specification == DirtyMarkPainterSpecification.NULL
     }
 }

@@ -20,11 +20,16 @@ package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process
 import common.io.ProcessExecutor
 import java.nio.file.Paths
 import spock.lang.Specification
+import spock.lang.Subject
+import spock.lang.Title
 
+@Subject(ProcessRunner)
+@Title('Unit tests for ProcessRunner')
 class ProcessRunnerSpec extends Specification {
-    private final command = ['cmd'] as String[]
+    private static final COMMAND = ['cmd'] as String[]
+    private static final WORKING_DIR_PATH = Paths.get('workingDir')
+
     private final processRunner = new ProcessRunner({ newStubProcessExecutor(it) })
-    private final workingDirPath = Paths.get('workingDir')
 
     private static newDefaultWriter() {
         new StringWriter()
@@ -70,26 +75,26 @@ class ProcessRunnerSpec extends Specification {
     }
 
     def 'when exception occurs while writing standard output content it should throw an exception'() {
-        given:
+        given: 'a writer that simulates an error when writing to standard output'
         def outWriter = newFailingWriter()
         def errWriter = newDefaultWriter()
 
-        when:
-        processRunner.run(outWriter, errWriter, workingDirPath, command)
+        when: 'the process is run'
+        processRunner.run(outWriter, errWriter, WORKING_DIR_PATH, COMMAND)
 
-        then:
+        then: 'an exception is thrown'
         thrown(IOException)
     }
 
     def 'when exception occurs while writing standard error content it should throw an exception'() {
-        given:
+        given: 'a writer that simulates an error when writing to standard error'
         def outWriter = newDefaultWriter()
         def errWriter = newFailingWriter()
 
-        when:
-        processRunner.run(outWriter, errWriter, workingDirPath, command)
+        when: 'the process is run'
+        processRunner.run(outWriter, errWriter, WORKING_DIR_PATH, COMMAND)
 
-        then:
+        then: 'an exception is thrown'
         thrown(IOException)
     }
 }

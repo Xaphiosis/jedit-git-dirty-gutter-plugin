@@ -18,7 +18,11 @@
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util
 
 import spock.lang.Specification
+import spock.lang.Subject
+import spock.lang.Title
 
+@Subject(StringUtils)
+@Title('Unit tests for StringUtils#joinLinesWithExplicitFinalLine')
 class StringUtils_JoinLinesWithExplicitFinalLineSpec extends Specification {
     def 'when line count is zero it should return an empty string'() {
         expect:
@@ -43,6 +47,8 @@ class StringUtils_JoinLinesWithExplicitFinalLineSpec extends Specification {
     }
 }
 
+@Subject(StringUtils)
+@Title('Unit tests for StringUtils#joinLinesWithImplicitFinalLine')
 class StringUtils_JoinLinesWithImplicitFinalLineSpec extends Specification {
     def 'when line count is zero it should return an empty string'() {
         expect:
@@ -67,6 +73,8 @@ class StringUtils_JoinLinesWithImplicitFinalLineSpec extends Specification {
     }
 }
 
+@Subject(StringUtils)
+@Title('Unit tests for StringUtils#splitLinesWithExplicitFinalLine')
 class StringUtils_SplitLinesWithExplicitFinalLineSpec extends Specification {
     def 'when input is empty it should return an empty collection'() {
         expect:
@@ -115,6 +123,8 @@ class StringUtils_SplitLinesWithExplicitFinalLineSpec extends Specification {
     }
 }
 
+@Subject(StringUtils)
+@Title('Unit tests for StringUtils#splitLinesWithImplicitFinalLine')
 class StringUtils_SplitLinesWithImplicitFinalLineSpec extends Specification {
     def 'when input is empty it should return an empty collection'() {
         expect:

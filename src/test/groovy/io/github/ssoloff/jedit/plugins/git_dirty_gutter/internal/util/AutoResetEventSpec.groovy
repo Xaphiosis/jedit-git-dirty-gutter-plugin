@@ -22,12 +22,16 @@ import java.util.concurrent.CyclicBarrier
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit
 import spock.lang.Specification
+import spock.lang.Subject
+import spock.lang.Title
 
+@Subject(AutoResetEvent)
+@Title('Unit tests for AutoResetEvent#await')
 class AutoResetEvent_AwaitSpec extends Specification {
     private final event = new AutoResetEvent()
 
     def 'when signaled within the waiting period it should return true'() {
-        given:
+        given: 'a task awaiting the event to be signaled'
         def barrier = new CyclicBarrier(2)
         def executorService = Executors.newCachedThreadPool()
         def task = executorService.submit({
@@ -35,11 +39,11 @@ class AutoResetEvent_AwaitSpec extends Specification {
             event.await(5, TimeUnit.SECONDS)
         } as Callable<Boolean>)
 
-        when:
+        when: 'the event is signaled'
         barrier.await()
         event.signal()
 
-        then:
+        then: 'the task should complete'
         def result = task.get(5, TimeUnit.SECONDS)
         result == true
 
@@ -48,10 +52,10 @@ class AutoResetEvent_AwaitSpec extends Specification {
     }
 
     def 'when not signaled within the waiting period it should return false'() {
-        when:
+        when: 'awaiting the event to be signaled'
         def result = event.await(1, TimeUnit.MILLISECONDS)
 
-        then:
+        then: 'it should timeout'
         result == false
     }
 }

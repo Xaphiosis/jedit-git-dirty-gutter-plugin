@@ -18,16 +18,20 @@
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util
 
 import spock.lang.Specification
+import spock.lang.Subject
+import spock.lang.Title
 
+@Subject(Suppliers)
+@Title('Unit tests for Suppliers#forObject')
 class Suppliers_ForObjectSpec extends Specification {
-    def 'it should return a supplier that returns the specified object'() {
-        given:
+    def 'it should return a supplier that provides the specified object'() {
+        given: 'an object'
         def object = new Object()
 
-        when:
+        when: 'creating a supplier for the object'
         def supplier = Suppliers.forObject(object)
 
-        then:
+        then: 'the supplier should provide the object'
         supplier.get() == object
     }
 }

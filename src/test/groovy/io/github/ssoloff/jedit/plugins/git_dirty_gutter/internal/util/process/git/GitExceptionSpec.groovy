@@ -19,54 +19,58 @@ package io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.g
 
 import java.nio.file.Paths
 import spock.lang.Specification
+import spock.lang.Subject
+import spock.lang.Title
 
+@Subject(GitException)
+@Title('Unit tests for GitException#getMessage')
 class GitException_GetMessageSpec extends Specification {
     def 'when the message summary is not empty it should include the message summary'() {
-        given:
+        given: 'an exception with a non-empty message summary'
         def messageSummary = '123custom message321'
         def e = GitException.newBuilder().withMessageSummary(messageSummary).build()
 
-        expect:
+        expect: 'the message to include the message summary'
         e.message.startsWith(messageSummary)
     }
 
     def 'when the message summary is empty it should include the default message summary'() {
-        given:
+        given: 'an exception with an empty message summary'
         def e = GitException.newBuilder().withMessageSummary('').build()
 
-        expect:
+        expect: 'the message to include the default message summary'
         e.message.startsWith(GitException.defaultMessageSummary)
     }
 
     def 'when the message summary is not specified it should include the default message summary'() {
-        given:
+        given: 'an exception without a message summary'
         def e = GitException.newBuilder().build()
 
-        expect:
+        expect: 'the message to include the default message summary'
         e.message.startsWith(GitException.defaultMessageSummary)
     }
 
     def 'when the working directory path is specified it should include the working directory path'() {
-        given:
+        given: 'an exception with a working directory path'
         def e = GitException.newBuilder().withWorkingDirPath(Paths.get('/path/to/working-dir')).build()
 
-        expect:
+        expect: 'the message to include the working directory path'
         e.message =~ /(?m)^\s*working dir:/
     }
 
     def 'when the working directory path is not specified it should not include the working directory path'() {
-        given:
+        given: 'an exception without a working directory path'
         def e = GitException.newBuilder().build()
 
-        expect:
+        expect: 'the message to not include the working directory path'
         !(e.message =~ /(?m)^\s*working dir:/)
     }
 
     def 'when the command is specified it should include the command'() {
-        given:
+        given: 'an exception with a command'
         def e = GitException.newBuilder().withCommand(command).build()
 
-        expect:
+        expect: 'the message to include the command'
         e.message =~ /(?m)^\s*command:/
 
         where:
@@ -74,74 +78,74 @@ class GitException_GetMessageSpec extends Specification {
     }
 
     def 'when the command is not specified it should not include the command'() {
-        given:
+        given: 'an exception without a command'
         def e = GitException.newBuilder().build()
 
-        expect:
+        expect: 'the message to not include the command'
         !(e.message =~ /(?m)^\s*command:/)
     }
 
     def 'when the exit code is specified it should include the exit code'() {
-        given:
+        given: 'an exception with an exit code'
         def e = GitException.newBuilder().withExitCode(0).build()
 
-        expect:
+        expect: 'the message to include the exit code'
         e.message =~ /(?m)^\s*exit code:/
     }
 
     def 'when the exit code is not specified it should not include the exit code'() {
-        given:
+        given: 'an exception without an exit code'
         def e = GitException.newBuilder().build()
 
-        expect:
+        expect: 'the message to not include the exit code'
         !(e.message =~ /(?m)^\s*exit code:/)
     }
 
     def 'when the standard output content is not empty it should include the standard output content'() {
-        given:
+        given: 'an exception with non-empty standard output content'
         def e = GitException.newBuilder().withOutput('foo').build()
 
-        expect:
+        expect: 'the message to include the standard output content'
         e.message =~ /(?m)^\s*output:/
     }
 
     def 'when the standard output content is empty it should not include the standard output content'() {
-        given:
+        given: 'an exception with empty standard output content'
         def e = GitException.newBuilder().withOutput('').build()
 
-        expect:
+        expect: 'the message to not include the standard output content'
         !(e.message =~ /(?m)^\s*output:/)
     }
 
     def 'when the standard output content is not specified it should not include the standard output content'() {
-        given:
+        given: 'an exception without standard output content'
         def e = GitException.newBuilder().build()
 
-        expect:
+        expect: 'the message to not include the standard output content'
         !(e.message =~ /(?m)^\s*output:/)
     }
 
     def 'when the standard error content is not empty it should include the standard error content'() {
-        given:
+        given: 'an exception with non-empty standard error content'
         def e = GitException.newBuilder().withError('foo').build()
 
-        expect:
+        expect: 'the message to include the standard error content'
         e.message =~ /(?m)^\s*error:/
     }
 
     def 'when the standard error content is empty it should not include the standard error content'() {
-        given:
+        given: 'an exception with empty standard error content'
         def e = GitException.newBuilder().withError('').build()
 
-        expect:
+        expect: 'the message to not include the standard error content'
         !(e.message =~ /(?m)^\s*error:/)
     }
 
     def 'when the standard error content is not specified it should not include the standard error content'() {
-        given:
+        given: 'an exception without standard error content'
         def e = GitException.newBuilder().build()
 
-        expect:
+        expect: 'the message to not include the standard error content'
         !(e.message =~ /(?m)^\s*error:/)
     }
 }

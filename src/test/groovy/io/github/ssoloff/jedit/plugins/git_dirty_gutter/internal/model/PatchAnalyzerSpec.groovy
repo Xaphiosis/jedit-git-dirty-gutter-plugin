@@ -29,47 +29,56 @@ import difflib.Chunk
 import difflib.DiffUtils
 import difflib.Patch
 import spock.lang.Specification
+import spock.lang.Subject
+import spock.lang.Title
 
+@Subject(PatchAnalyzer)
+@Title('Unit tests for PatchAnalyzer#PatchAnalyzer')
 class PatchAnalyzer_CtorSpec extends Specification {
     @SuppressWarnings('UnusedObject')
     def 'when patch contains context lines it should throw an exception'() {
-        given:
+        given: 'a patch that contains context lines'
         def patch = new Patch()
         patch.addDelta(new ChangeDelta(
             new Chunk(8, ['9', '10/old', '11']),
             new Chunk(8, ['9', '10/new', '11'])
         ))
 
-        when:
+        when: 'instantiating a PatchAnalyzer'
         new PatchAnalyzer(patch)
 
-        then:
+        then: 'it should throw an exception'
         thrown(IllegalArgumentException)
     }
 }
 
+@Subject(PatchAnalyzer)
+@Title('Unit tests for PatchAnalyzer#getDirtyMarkForLine')
 class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
     private static newPatch(oldLines, newLines) {
         DiffUtils.diff(oldLines, newLines)
     }
 
     def 'when line index is negative it should throw an exception'() {
-        given:
+        given: 'an empty patch'
         def patchAnalyzer = new PatchAnalyzer(newPatch([], []))
 
-        when:
+        when: 'getting the dirty mark for line -1'
         patchAnalyzer.getDirtyMarkForLine(-1)
 
-        then:
+        then: 'it should throw an exception'
         thrown(IllegalArgumentException)
     }
 
     def 'it should handle an empty patch'() {
-        given:
+        given: 'an empty patch'
         def patchAnalyzer = new PatchAnalyzer(new Patch())
 
-        expect:
-        patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
+        when: 'getting the dirty mark for line #lineIndex'
+        def result = patchAnalyzer.getDirtyMarkForLine(lineIndex)
+
+        then: 'it should be #dirtyMarkType'
+        result == dirtyMarkType
 
         where:
         lineIndex << [0, 1, 2]
@@ -77,139 +86,169 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
     }
 
     def 'it should handle addition of the first line'() {
-        given:
+        given: 'a patch describing an addition at line 0 in range [0,2]'
         def oldLines = [     '2', '3', '']
         def newLines = ['1', '2', '3', '']
         def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
 
-        expect:
-        patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
+        when: 'getting the dirty mark for line #lineIndex'
+        def result = patchAnalyzer.getDirtyMarkForLine(lineIndex)
+
+        then: 'it should be #dirtyMarkType'
+        result == dirtyMarkType
 
         where:
-        lineIndex << [0, 1]
-        dirtyMarkType << [ADDED, UNCHANGED]
+        lineIndex << [0, 1, 2, 3]
+        dirtyMarkType << [ADDED, UNCHANGED, UNCHANGED, UNCHANGED]
     }
 
     def 'it should handle addition of an intermediate line'() {
-        given:
+        given: 'a patch describing an addition at line 1 in range [0,2]'
         def oldLines = ['1',      '3', '']
         def newLines = ['1', '2', '3', '']
         def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
 
-        expect:
-        patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
+        when: 'getting the dirty mark for line #lineIndex'
+        def result = patchAnalyzer.getDirtyMarkForLine(lineIndex)
+
+        then: 'it should be #dirtyMarkType'
+        result == dirtyMarkType
 
         where:
-        lineIndex << [0, 1, 2]
-        dirtyMarkType << [UNCHANGED, ADDED, UNCHANGED]
+        lineIndex << [0, 1, 2, 3]
+        dirtyMarkType << [UNCHANGED, ADDED, UNCHANGED, UNCHANGED]
     }
 
     def 'it should handle addition of the last line'() {
-        given:
+        given: 'a patch describing an addition at line 2 in range [0,2]'
         def oldLines = ['1', '2',      '']
         def newLines = ['1', '2', '3', '']
         def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
 
-        expect:
-        patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
+        when: 'getting the dirty mark for line #lineIndex'
+        def result = patchAnalyzer.getDirtyMarkForLine(lineIndex)
+
+        then: 'it should be #dirtyMarkType'
+        result == dirtyMarkType
 
         where:
-        lineIndex << [1, 2, 3]
-        dirtyMarkType << [UNCHANGED, ADDED, UNCHANGED]
+        lineIndex << [0, 1, 2, 3]
+        dirtyMarkType << [UNCHANGED, UNCHANGED, ADDED, UNCHANGED]
     }
 
     def 'it should handle addition of the final newline'() {
-        given:
+        given: 'a patch describing an addition at line 3 in range [0,2]'
         def oldLines = ['1', '2', '3'    ]
         def newLines = ['1', '2', '3', '']
         def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
 
-        expect:
-        patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
+        when: 'getting the dirty mark for line #lineIndex'
+        def result = patchAnalyzer.getDirtyMarkForLine(lineIndex)
+
+        then: 'it should be #dirtyMarkType'
+        result == dirtyMarkType
 
         where:
-        lineIndex << [2, 3]
-        dirtyMarkType << [UNCHANGED, ADDED]
+        lineIndex << [0, 1, 2, 3]
+        dirtyMarkType << [UNCHANGED, UNCHANGED, UNCHANGED, ADDED]
     }
 
     def 'it should handle modification of the first line'() {
-        given:
+        given: 'a patch describing a modification at line 0 in range [0,3]'
         def oldLines = ['1/old', '2', '3', '']
         def newLines = ['1/new', '2', '3', '']
         def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
 
-        expect:
-        patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
+        when: 'getting the dirty mark for line #lineIndex'
+        def result = patchAnalyzer.getDirtyMarkForLine(lineIndex)
+
+        then: 'it should be #dirtyMarkType'
+        result == dirtyMarkType
 
         where:
-        lineIndex << [0, 1]
-        dirtyMarkType << [CHANGED, UNCHANGED]
+        lineIndex << [0, 1, 2, 3]
+        dirtyMarkType << [CHANGED, UNCHANGED, UNCHANGED, UNCHANGED]
     }
 
     def 'it should handle modification of an intermediate line'() {
-        given:
+        given: 'a patch describing a modification at line 1 in range [0,3]'
         def oldLines = ['1', '2/old', '3', '']
         def newLines = ['1', '2/new', '3', '']
         def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
 
-        expect:
-        patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
+        when: 'getting the dirty mark for line #lineIndex'
+        def result = patchAnalyzer.getDirtyMarkForLine(lineIndex)
+
+        then: 'it should be #dirtyMarkType'
+        result == dirtyMarkType
 
         where:
-        lineIndex << [0, 1, 2]
-        dirtyMarkType << [UNCHANGED, CHANGED, UNCHANGED]
+        lineIndex << [0, 1, 2, 3]
+        dirtyMarkType << [UNCHANGED, CHANGED, UNCHANGED, UNCHANGED]
     }
 
     def 'it should handle modification of the last line'() {
-        given:
+        given: 'a patch describing a modification at line 2 in range [0,3]'
         def oldLines = ['1', '2', '3/old', '']
         def newLines = ['1', '2', '3/new', '']
         def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
 
-        expect:
-        patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
+        when: 'getting the dirty mark for line #lineIndex'
+        def result = patchAnalyzer.getDirtyMarkForLine(lineIndex)
+
+        then: 'it should be #dirtyMarkType'
+        result == dirtyMarkType
 
         where:
-        lineIndex << [1, 2, 3]
-        dirtyMarkType << [UNCHANGED, CHANGED, UNCHANGED]
+        lineIndex << [0, 1, 2, 3]
+        dirtyMarkType << [UNCHANGED, UNCHANGED, CHANGED, UNCHANGED]
     }
 
     def 'it should handle removal of the first line'() {
-        given:
+        given: 'a patch describing a removal at line 0 in range [0,3]'
         def oldLines = ['1', '2', '3', '']
         def newLines = [     '2', '3', '']
         def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
 
-        expect:
-        patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
+        when: 'getting the dirty mark for line #lineIndex'
+        def result = patchAnalyzer.getDirtyMarkForLine(lineIndex)
+
+        then: 'it should be #dirtyMarkType'
+        result == dirtyMarkType
 
         where:
-        lineIndex << [0, 1]
-        dirtyMarkType << [REMOVED_ABOVE, UNCHANGED]
+        lineIndex << [0, 1, 2]
+        dirtyMarkType << [REMOVED_ABOVE, UNCHANGED, UNCHANGED]
     }
 
     def 'it should handle removal of an intermediate line'() {
-        given:
+        given: 'a patch describing a removal at line 2 in range [0,5]'
         def oldLines = ['1', '2', '3', '4', '5', '']
         def newLines = ['1', '2',      '4', '5', '']
         def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
 
-        expect:
-        patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
+        when: 'getting the dirty mark for line #lineIndex'
+        def result = patchAnalyzer.getDirtyMarkForLine(lineIndex)
+
+        then: 'it should be #dirtyMarkType'
+        result == dirtyMarkType
 
         where:
-        lineIndex << [0, 1, 2, 3]
-        dirtyMarkType << [UNCHANGED, REMOVED_BELOW, REMOVED_ABOVE, UNCHANGED]
+        lineIndex << [0, 1, 2, 3, 4]
+        dirtyMarkType << [UNCHANGED, REMOVED_BELOW, REMOVED_ABOVE, UNCHANGED, UNCHANGED]
     }
 
     def 'it should handle removal of the last line'() {
-        given:
+        given: 'a patch describing a removal at line 2 in range [0,3]'
         def oldLines = ['1', '2', '3', '']
         def newLines = ['1', '2',      '']
         def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
 
-        expect:
-        patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
+        when: 'getting the dirty mark for line #lineIndex'
+        def result = patchAnalyzer.getDirtyMarkForLine(lineIndex)
+
+        then: 'it should be #dirtyMarkType'
+        result == dirtyMarkType
 
         where:
         lineIndex << [0, 1, 2]
@@ -217,35 +256,41 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
     }
 
     def 'it should handle removal of lines above and below a single line'() {
-        given:
+        given: 'a patch describing a removal at lines 1 and 3 in range [0,5]'
         def oldLines = ['1', '2', '3', '4', '5', '']
         def newLines = ['1',      '3',      '5', '']
         def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
 
-        expect:
-        patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
+        when: 'getting the dirty mark for line #lineIndex'
+        def result = patchAnalyzer.getDirtyMarkForLine(lineIndex)
+
+        then: 'it should be #dirtyMarkType'
+        result == dirtyMarkType
 
         where:
-        lineIndex << [0, 1, 2]
-        dirtyMarkType << [REMOVED_BELOW, REMOVED_ABOVE_AND_BELOW, REMOVED_ABOVE]
+        lineIndex << [0, 1, 2, 3]
+        dirtyMarkType << [REMOVED_BELOW, REMOVED_ABOVE_AND_BELOW, REMOVED_ABOVE, UNCHANGED]
     }
 
     def 'it should handle removal of the final newline'() {
-        given:
+        given: 'a patch describing a removal at line 3 in range [0,3]'
         def oldLines = ['1', '2', '3', '']
         def newLines = ['1', '2', '3'    ]
         def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
 
-        expect:
-        patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
+        when: 'getting the dirty mark for line #lineIndex'
+        def result = patchAnalyzer.getDirtyMarkForLine(lineIndex)
+
+        then: 'it should be #dirtyMarkType'
+        result == dirtyMarkType
 
         where:
-        lineIndex << [1, 2]
-        dirtyMarkType << [UNCHANGED, REMOVED_BELOW]
+        lineIndex << [0, 1, 2]
+        dirtyMarkType << [UNCHANGED, UNCHANGED, REMOVED_BELOW]
     }
 
     def 'it should handle a mixed collection of added, changed, and removed lines'() {
-        given:
+        given: 'a patch describing a mixed collection of added, changed, and removed lines'
         def oldLines = [
             'This part of the',
             'document has stayed the',
@@ -306,8 +351,11 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
         ]
         def patchAnalyzer = new PatchAnalyzer(newPatch(oldLines, newLines))
 
-        expect:
-        patchAnalyzer.getDirtyMarkForLine(lineIndex) == dirtyMarkType
+        when: 'getting the dirty mark for line #lineIndex'
+        def result = patchAnalyzer.getDirtyMarkForLine(lineIndex)
+
+        then: 'it should be #dirtyMarkType'
+        result == dirtyMarkType
 
         where:
         lineIndex << (0..28).toList()
