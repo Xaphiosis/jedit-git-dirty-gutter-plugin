@@ -25,7 +25,11 @@ import java.awt.Color
 import java.nio.file.Path
 import java.util.concurrent.TimeUnit
 import javax.swing.SwingUtilities
+import spock.lang.Subject
+import spock.lang.Title
 
+@Subject(GitBufferHandler)
+@Title('Integration tests for GitBufferHandler')
 class GitBufferHandlerIntegrationSpec extends GitIntegrationSpecification {
     private static final ADDED_DIRTY_MARK_COLOR = Color.GREEN
     private static final CHANGED_DIRTY_MARK_COLOR = Color.ORANGE
@@ -86,8 +90,10 @@ class GitBufferHandlerIntegrationSpec extends GitIntegrationSpecification {
 
     private stopBufferHandler() {
         SwingUtilities.invokeAndWait {
-            bufferHandler.stop()
-            bufferHandler.removeListener(bufferHandlerListener)
+            if (bufferHandler) {
+                bufferHandler.stop()
+                bufferHandler.removeListener(bufferHandlerListener)
+            }
         }
     }
 
@@ -95,82 +101,104 @@ class GitBufferHandlerIntegrationSpec extends GitIntegrationSpecification {
         bufferHandlerListenerEvent.await(30, TimeUnit.SECONDS)
     }
 
+    def cleanup() {
+        stopBufferHandler()
+    }
+
     def 'when buffer does not differ from HEAD revision at start it should not report dirty lines'() {
-        given:
+        given: 'a file with one line committed on HEAD'
         def filePath = repoPath.resolve('file')
         touchFile(filePath, 'line 1\n')
         addAndCommitFile(filePath)
 
-        when:
+        when: 'starting the buffer handler for the file'
         startBufferHandler(filePath)
+
+        and: 'waiting for the initial patch update notification'
         waitForPatchUpdateNotification()
+
+        and: 'getting the dirty mark painter specification for line 0'
         def dirtyMarkPainterSpecification = getDirtyMarkPainterSpecificationForLine(0)
 
-        then:
+        then: 'it should be an UNCHANGED dirty mark painter specification'
         matchesUnchangedDirtyMarkPainterSpecification(dirtyMarkPainterSpecification)
-
-        cleanup:
-        stopBufferHandler()
     }
 
     def 'when buffer differs from HEAD revision at start it should report dirty lines'() {
-        given:
+        given: 'a file with one line committed on HEAD'
         def filePath = repoPath.resolve('file')
         touchFile(filePath, 'line 1\n')
         addAndCommitFile(filePath)
+
+        and: 'modifying the first line of the file'
         touchFile(filePath, 'new line 1\n')
 
-        when:
+        when: 'starting the buffer handler for the file'
         startBufferHandler(filePath)
+
+        and: 'waiting for the initial patch update notification'
         waitForPatchUpdateNotification()
+
+        and: 'getting the dirty mark painter specification for line 0'
         def dirtyMarkPainterSpecification = getDirtyMarkPainterSpecificationForLine(0)
 
-        then:
+        then: 'it should be a CHANGED dirty mark painter specification'
         matchesChangedDirtyMarkPainterSpecification(dirtyMarkPainterSpecification)
-
-        cleanup:
-        stopBufferHandler()
     }
 
     def 'when buffer differs from HEAD revision after explicit update request it should report dirty lines'() {
-        given:
+        given: 'a file with one line committed on HEAD'
         def filePath = repoPath.resolve('file')
         touchFile(filePath, 'line 1\n')
         addAndCommitFile(filePath)
 
-        when:
+        when: 'starting the buffer handler for the file'
         startBufferHandler(filePath)
+
+        and: 'waiting for the initial patch update notification'
         waitForPatchUpdateNotification()
+
+        and: 'modifying the first line of the file'
         touchFile(filePath, 'new line 1\n')
+
+        and: 'requesting a patch update'
         requestPatchUpdate()
+
+        and: 'waiting for the subsequent patch update notification'
         waitForPatchUpdateNotification()
+
+        and: 'getting the dirty mark painter specification for line 0'
         def dirtyMarkPainterSpecification = getDirtyMarkPainterSpecificationForLine(0)
 
-        then:
+        then: 'it should be a CHANGED dirty mark painter specification'
         matchesChangedDirtyMarkPainterSpecification(dirtyMarkPainterSpecification)
-
-        cleanup:
-        stopBufferHandler()
     }
 
     def 'when buffer does not differ from HEAD revision after commit it should not report dirty lines'() {
-        given:
+        given: 'a file with one line committed on HEAD'
         def filePath = repoPath.resolve('file')
         touchFile(filePath, 'line 1\n')
         addAndCommitFile(filePath)
+
+        when: 'modifying the first line of the file'
         touchFile(filePath, 'new line 1\n')
 
-        when:
+        and: 'starting the buffer handler for the file'
         startBufferHandler(filePath)
+
+        and: 'waiting for the initial patch update notification'
         waitForPatchUpdateNotification()
+
+        and: 'committing the changes made to the file'
         addAndCommitFile(filePath)
+
+        and: 'waiting for the subsequent patch update notification'
         waitForPatchUpdateNotification()
+
+        and: 'getting the dirty mark painter specification for line 0'
         def dirtyMarkPainterSpecification = getDirtyMarkPainterSpecificationForLine(0)
 
-        then:
+        then: 'it should be an UNCHANGED dirty mark painter specification'
         matchesUnchangedDirtyMarkPainterSpecification(dirtyMarkPainterSpecification)
-
-        cleanup:
-        stopBufferHandler()
     }
 }
