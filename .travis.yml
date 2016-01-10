@@ -5,6 +5,6 @@ before_install:
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
 script:
-  - ./gradlew --info check
+  - ./gradlew --info check shadowJar
 after_success:
   - ./gradlew jacocoCoverallsReport coveralls

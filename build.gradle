@@ -5,6 +5,7 @@ plugins {
     id 'codenarc'
     id 'findbugs'
     id 'pmd'
+    id 'com.github.johnrengelman.shadow' version '1.2.2'
     id 'com.github.kt3k.coveralls' version '2.4.0'
     id 'nebula.provided-base' version '3.0.3'
 }
@@ -15,6 +16,10 @@ sourceCompatibility = '1.7'
 repositories {
     jcenter()
     mavenCentral()
+
+    flatDir {
+        dirs 'libs/jedit'
+    }
 }
 
 dependencies {
@@ -23,7 +28,10 @@ dependencies {
         [group: 'org.eclipse.jdt', name: 'org.eclipse.jdt.annotation', version: '1.1.0']
     )
     provided(
-        fileTree(dir: 'libs/jedit', include: '*.jar')
+        [name: 'jedit-5.2.0'],
+        [name: 'jedit-common-controls-plugin-1.7.4'],
+        [name: 'jedit-dirty-gutter-plugin-0.3b'],
+        [name: 'jedit-git-plugin-0.7.1']
     )
     testCompile(
         [group: 'com.athaydes', name: 'spock-reports', version: '1.2.8', transitive: false],
@@ -31,6 +39,16 @@ dependencies {
         [group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.13'],
         [group: 'org.spockframework', name: 'spock-core', version: '1.0-groovy-2.4']
     )
+}
+
+configurations {
+    provided.allDependencies.each { dep ->
+        shadowJar {
+            dependencies {
+                exclude(dependency(dep))
+            }
+        }
+    }
 }
 
 sourceSets {
@@ -41,18 +59,6 @@ sourceSets {
         compileClasspath = sourceSets.main.output + configurations.testRuntime
         runtimeClasspath = output + compileClasspath
     }
-}
-
-task fatJar(type: Jar) {
-    classifier = 'all'
-    from {
-        (configurations.compile - configurations.provided).collect {
-            it.isDirectory() ? it : zipTree(it)
-        }
-    } {
-        exclude 'META-INF/**'
-    }
-    with jar
 }
 
 task integrationTest(type: Test) {
@@ -120,6 +126,13 @@ integrationTest {
 pmd {
     ruleSetFiles = files("${project.projectDir}/config/pmd/pmd.xml")
     ruleSets = []
+}
+
+shadowJar {
+    exclude 'META-INF/**/*'
+
+    relocate 'difflib', 'myjarjardifflib.difflib'
+    relocate 'org.eclipse', 'myjarjareclipse.org.eclipse'
 }
 
 test {
