@@ -23,7 +23,6 @@ import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.Pr
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.GitRunner
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.IGitRunner
 import io.github.ssoloff.jedit.plugins.git_dirty_gutter.internal.util.process.git.IGitRunnerFactory
-import java.nio.file.Files
 import java.nio.file.Path
 import java.nio.file.Paths
 import org.junit.Rule
@@ -108,9 +107,9 @@ class GitIntegrationSpecification extends Specification {
     }
 
     protected static void touchFile(Path filePath, String fileContent='') {
-        def parentPath = filePath.parent
-        if (Files.notExists(parentPath)) {
-            assert parentPath.toFile().mkdirs()
+        def parentDir = filePath.parent.toFile()
+        if (!parentDir.exists()) {
+            assert parentDir.mkdirs()
         }
 
         filePath.setText(fileContent)
