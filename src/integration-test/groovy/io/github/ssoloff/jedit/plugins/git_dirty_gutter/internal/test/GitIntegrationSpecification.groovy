@@ -76,7 +76,7 @@ class GitIntegrationSpecification extends Specification {
             }
 
             List<String> getLines() {
-                StringUtils.splitLinesWithExplicitFinalLine(new String(Files.readAllBytes(filePath)))
+                StringUtils.splitLinesWithExplicitFinalLine(new String(filePath.readBytes()))
             }
         }
     }
