@@ -22,7 +22,7 @@ import org.gjt.sp.jedit.EditPlugin;
 
 /**
  * A jEdit plugin that adds highlights in the gutter for lines that have been
- * changed since the last Git commit.
+ * modified since the last Git commit.
  */
 public final class GitDirtyGutterPlugin extends EditPlugin {
     // do nothing

@@ -5,7 +5,7 @@ plugin.io.github.ssoloff.jedit.plugins.git_dirty_gutter.GitDirtyGutterPlugin.dep
 plugin.io.github.ssoloff.jedit.plugins.git_dirty_gutter.GitDirtyGutterPlugin.depend.2=plugin CommonControlsPlugin 1.7.4
 plugin.io.github.ssoloff.jedit.plugins.git_dirty_gutter.GitDirtyGutterPlugin.depend.3=plugin lcm.LCMPlugin 0.3b
 plugin.io.github.ssoloff.jedit.plugins.git_dirty_gutter.GitDirtyGutterPlugin.depend.4=plugin git.GitPlugin 0.7.1
-plugin.io.github.ssoloff.jedit.plugins.git_dirty_gutter.GitDirtyGutterPlugin.description=Adds highlights in the gutter for lines that have been changed since the last Git commit.
+plugin.io.github.ssoloff.jedit.plugins.git_dirty_gutter.GitDirtyGutterPlugin.description=Adds highlights in the gutter for lines that have been modified since the last Git commit.
 plugin.io.github.ssoloff.jedit.plugins.git_dirty_gutter.GitDirtyGutterPlugin.docs=docs/index.html
 plugin.io.github.ssoloff.jedit.plugins.git_dirty_gutter.GitDirtyGutterPlugin.longdescription=description.html
 plugin.io.github.ssoloff.jedit.plugins.git_dirty_gutter.GitDirtyGutterPlugin.name=Git DirtyGutter

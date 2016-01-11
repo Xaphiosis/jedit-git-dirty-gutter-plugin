@@ -18,7 +18,7 @@
 
 /**
  * Provides a jEdit plugin that adds highlights in the gutter for lines that
- * have been changed since the last Git commit.
+ * have been modified since the last Git commit.
  */
 
 @org.eclipse.jdt.annotation.NonNullByDefault
