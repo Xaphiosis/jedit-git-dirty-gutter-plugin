@@ -22,6 +22,10 @@ repositories {
     flatDir {
         dirs 'libs/jedit'
     }
+
+    maven {
+        url 'https://dl.bintray.com/ssoloff/maven/'
+    }
 }
 
 dependencies {
@@ -30,7 +34,7 @@ dependencies {
         [group: 'org.eclipse.jdt', name: 'org.eclipse.jdt.annotation', version: '1.1.0']
     )
     provided(
-        [name: 'jedit-5.2.0'],
+        [group: 'io.github.ssoloff', name: 'jedit', version: '5.2.0'],
         [name: 'jedit-common-controls-plugin-1.7.4'],
         [name: 'jedit-dirty-gutter-plugin-0.3b'],
         [name: 'jedit-git-plugin-0.7.1']
