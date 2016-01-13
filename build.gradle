@@ -100,6 +100,10 @@ task jacocoIntegrationTestReport(type: JacocoReport) {
     executionData integrationTest
 }
 
+tasks.withType(Test) {
+    systemProperty 'com.athaydes.spockframework.report.outputDir', "$reportsDir/spock"
+}
+
 task wrapper(type: Wrapper) {
     description = 'Generates Gradle wrapper files.'
     group = 'Build Setup'
