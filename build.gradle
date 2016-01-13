@@ -19,10 +19,6 @@ repositories {
     jcenter()
     mavenCentral()
 
-    flatDir {
-        dirs 'libs/jedit'
-    }
-
     maven {
         url 'https://dl.bintray.com/ssoloff/maven/'
     }
@@ -35,9 +31,9 @@ dependencies {
     )
     provided(
         [group: 'io.github.ssoloff', name: 'jedit', version: '5.2.0'],
-        [name: 'jedit-common-controls-plugin-1.7.4'],
-        [name: 'jedit-dirty-gutter-plugin-0.3b'],
-        [name: 'jedit-git-plugin-0.7.1']
+        [group: 'io.github.ssoloff', name: 'jedit-common-controls-plugin', version: '1.7.4'],
+        [group: 'io.github.ssoloff', name: 'jedit-dirty-gutter-plugin', version: '0.3b'],
+        [group: 'io.github.ssoloff', name: 'jedit-git-plugin', version: '0.7.1']
     )
     testCompile(
         [group: 'com.athaydes', name: 'spock-reports', version: '1.2.8', transitive: false],
