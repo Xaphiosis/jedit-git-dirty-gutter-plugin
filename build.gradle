@@ -9,15 +9,40 @@ plugins {
     id 'pmd'
     id 'com.github.johnrengelman.shadow' version '1.2.2'
     id 'com.github.kt3k.coveralls' version '2.4.0'
+    id 'de.undercouch.download' version '2.1.0'
     id 'nebula.provided-base' version '3.0.3'
 }
 
 version = '0.1.0'
 sourceCompatibility = '1.7'
 
+ext {
+    jeditAcceptanceTestVersion = '5.3.0'
+    downloadsDir = file("$buildDir/tmp/downloads")
+    jeditInstallDir = file("$buildDir/tmp/installs/jedit")
+    jeditHomeDir = file("$jeditInstallDir/usr/share/jedit-$jeditAcceptanceTestVersion")
+    jeditDistUrl = "http://downloads.sourceforge.net/project/jedit/jedit/$jeditAcceptanceTestVersion/jedit-$jeditAcceptanceTestVersion-noarch-1sao.tgz"
+    jeditDistArchive = file("$downloadsDir/jedit-${jeditAcceptanceTestVersion}.tgz")
+}
+
+configurations {
+    acceptanceTestCompile {
+        description = 'Acceptance test compile-time dependences'
+    }
+
+    acceptanceTestRuntime {
+        description = 'Acceptance test runtime dependences'
+        extendsFrom acceptanceTestCompile
+    }
+}
+
 repositories {
     jcenter()
     mavenCentral()
+
+    flatDir {
+        dirs 'libs'
+    }
 
     maven {
         url 'https://dl.bintray.com/ssoloff/maven/'
@@ -41,6 +66,15 @@ dependencies {
         [group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.13'],
         [group: 'org.spockframework', name: 'spock-core', version: '1.0-groovy-2.4']
     )
+    acceptanceTestCompile(
+        [name: "jedit-test-framework-$jeditAcceptanceTestVersion"],
+        [group: 'io.github.ssoloff', name: 'jedit', version: jeditAcceptanceTestVersion], // TODO: remove when jedit-test-framework is available from bintray
+        [group: 'org.easytesting', name: 'fest-swing', version: '1.2'], // TODO: remove when jedit-test-framework is available from bintray
+        [group: 'com.athaydes', name: 'spock-reports', version: '1.2.8', transitive: false],
+        [group: 'org.slf4j', name: 'slf4j-api', version: '1.7.13'],
+        [group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.13'],
+        [group: 'org.spockframework', name: 'spock-core', version: '1.0-groovy-2.4']
+    )
 }
 
 configurations {
@@ -54,12 +88,48 @@ configurations {
 }
 
 sourceSets {
+    acceptanceTest {
+        java.srcDir file('src/acceptance-test/java')
+        groovy.srcDir file('src/acceptance-test/groovy')
+        resources.srcDir file('src/acceptance-test/resources')
+        compileClasspath = configurations.acceptanceTestRuntime
+        runtimeClasspath = output + compileClasspath
+    }
+
     integrationTest {
         java.srcDir file('src/integration-test/java')
         groovy.srcDir file('src/integration-test/groovy')
         resources.srcDir file('src/integration-test/resources')
         compileClasspath = sourceSets.main.output + configurations.testRuntime
         runtimeClasspath = output + compileClasspath
+    }
+}
+
+task acceptanceTest(type: Test) {
+    description = 'Runs the acceptance tests.'
+    group = 'Verification'
+    dependsOn 'downloadJEdit'
+    mustRunAfter 'integrationTest'
+
+    testClassesDir = sourceSets.acceptanceTest.output.classesDir
+    classpath = sourceSets.acceptanceTest.runtimeClasspath
+
+    systemProperty 'jedit.home', jeditHomeDir
+}
+
+task downloadJEdit() {
+    outputs.dir jeditInstallDir
+
+    doLast {
+        download {
+            src jeditDistUrl
+            dest jeditDistArchive
+        }
+
+        copy {
+            from tarTree(jeditDistArchive)
+            into jeditInstallDir
+        }
     }
 }
 
@@ -72,12 +142,20 @@ task integrationTest(type: Test) {
     classpath = sourceSets.integrationTest.runtimeClasspath
 }
 
+task jacocoAcceptanceTestReport(type: JacocoReport) {
+    description = 'Generates code coverage report for the acceptance tests.'
+    group = 'Verification'
+
+    sourceSets sourceSets.main
+    executionData acceptanceTest
+}
+
 task jacocoCoverallsReport(type: JacocoReport) {
     description = 'Generates code coverage report for all tests suitable for Coveralls.'
     group = 'Verification'
 
     sourceSets sourceSets.main
-    executionData test, integrationTest
+    executionData test, integrationTest, acceptanceTest
 
     // coveralls plugin is hard-coded to look for reports associated with "jacocoTestReport" task
     reports {
@@ -111,8 +189,18 @@ task wrapper(type: Wrapper) {
     gradleVersion = '2.10'
 }
 
+acceptanceTest {
+    reports.html.destination = file("$reports.html.destination/$name")
+    reports.junitXml.destination = file("$reports.junitXml.destination/$name")
+
+    jacocoAcceptanceTestReport.reports.html.destination = file("$project.jacoco.reportsDir/$name/html")
+    jacocoAcceptanceTestReport.reports.xml.destination = file("$project.jacoco.reportsDir/$name/jacocoTestReport.xml")
+    jacocoAcceptanceTestReport.reports.html.enabled = true
+    jacocoAcceptanceTestReport.reports.xml.enabled = true
+}
+
 check {
-    dependsOn integrationTest
+    dependsOn integrationTest, acceptanceTest
 }
 
 codenarc {
