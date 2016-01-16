@@ -81,8 +81,10 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
         result == dirtyMarkType
 
         where:
-        lineIndex << [0, 1, 2]
-        dirtyMarkType << [UNCHANGED, UNCHANGED, UNCHANGED]
+        lineIndex || dirtyMarkType
+        0         || UNCHANGED
+        1         || UNCHANGED
+        2         || UNCHANGED
     }
 
     def 'it should handle addition of the first line'() {
@@ -98,8 +100,11 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
         result == dirtyMarkType
 
         where:
-        lineIndex << [0, 1, 2, 3]
-        dirtyMarkType << [ADDED, UNCHANGED, UNCHANGED, UNCHANGED]
+        lineIndex || dirtyMarkType
+        0         || ADDED
+        1         || UNCHANGED
+        2         || UNCHANGED
+        3         || UNCHANGED
     }
 
     def 'it should handle addition of an intermediate line'() {
@@ -115,8 +120,11 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
         result == dirtyMarkType
 
         where:
-        lineIndex << [0, 1, 2, 3]
-        dirtyMarkType << [UNCHANGED, ADDED, UNCHANGED, UNCHANGED]
+        lineIndex || dirtyMarkType
+        0         || UNCHANGED
+        1         || ADDED
+        2         || UNCHANGED
+        3         || UNCHANGED
     }
 
     def 'it should handle addition of the last line'() {
@@ -132,8 +140,11 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
         result == dirtyMarkType
 
         where:
-        lineIndex << [0, 1, 2, 3]
-        dirtyMarkType << [UNCHANGED, UNCHANGED, ADDED, UNCHANGED]
+        lineIndex || dirtyMarkType
+        0         || UNCHANGED
+        1         || UNCHANGED
+        2         || ADDED
+        3         || UNCHANGED
     }
 
     def 'it should handle addition of the final newline'() {
@@ -149,8 +160,11 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
         result == dirtyMarkType
 
         where:
-        lineIndex << [0, 1, 2, 3]
-        dirtyMarkType << [UNCHANGED, UNCHANGED, UNCHANGED, ADDED]
+        lineIndex || dirtyMarkType
+        0         || UNCHANGED
+        1         || UNCHANGED
+        2         || UNCHANGED
+        3         || ADDED
     }
 
     def 'it should handle modification of the first line'() {
@@ -166,8 +180,11 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
         result == dirtyMarkType
 
         where:
-        lineIndex << [0, 1, 2, 3]
-        dirtyMarkType << [CHANGED, UNCHANGED, UNCHANGED, UNCHANGED]
+        lineIndex || dirtyMarkType
+        0         || CHANGED
+        1         || UNCHANGED
+        2         || UNCHANGED
+        3         || UNCHANGED
     }
 
     def 'it should handle modification of an intermediate line'() {
@@ -183,8 +200,11 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
         result == dirtyMarkType
 
         where:
-        lineIndex << [0, 1, 2, 3]
-        dirtyMarkType << [UNCHANGED, CHANGED, UNCHANGED, UNCHANGED]
+        lineIndex || dirtyMarkType
+        0         || UNCHANGED
+        1         || CHANGED
+        2         || UNCHANGED
+        3         || UNCHANGED
     }
 
     def 'it should handle modification of the last line'() {
@@ -200,8 +220,11 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
         result == dirtyMarkType
 
         where:
-        lineIndex << [0, 1, 2, 3]
-        dirtyMarkType << [UNCHANGED, UNCHANGED, CHANGED, UNCHANGED]
+        lineIndex || dirtyMarkType
+        0         || UNCHANGED
+        1         || UNCHANGED
+        2         || CHANGED
+        3         || UNCHANGED
     }
 
     def 'it should handle removal of the first line'() {
@@ -217,8 +240,10 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
         result == dirtyMarkType
 
         where:
-        lineIndex << [0, 1, 2]
-        dirtyMarkType << [REMOVED_ABOVE, UNCHANGED, UNCHANGED]
+        lineIndex || dirtyMarkType
+        0         || REMOVED_ABOVE
+        1         || UNCHANGED
+        2         || UNCHANGED
     }
 
     def 'it should handle removal of an intermediate line'() {
@@ -234,8 +259,12 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
         result == dirtyMarkType
 
         where:
-        lineIndex << [0, 1, 2, 3, 4]
-        dirtyMarkType << [UNCHANGED, REMOVED_BELOW, REMOVED_ABOVE, UNCHANGED, UNCHANGED]
+        lineIndex || dirtyMarkType
+        0         || UNCHANGED
+        1         || REMOVED_BELOW
+        2         || REMOVED_ABOVE
+        3         || UNCHANGED
+        4         || UNCHANGED
     }
 
     def 'it should handle removal of the last line'() {
@@ -251,8 +280,10 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
         result == dirtyMarkType
 
         where:
-        lineIndex << [0, 1, 2]
-        dirtyMarkType << [UNCHANGED, REMOVED_BELOW, REMOVED_ABOVE]
+        lineIndex || dirtyMarkType
+        0         || UNCHANGED
+        1         || REMOVED_BELOW
+        2         || REMOVED_ABOVE
     }
 
     def 'it should handle removal of lines above and below a single line'() {
@@ -268,8 +299,11 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
         result == dirtyMarkType
 
         where:
-        lineIndex << [0, 1, 2, 3]
-        dirtyMarkType << [REMOVED_BELOW, REMOVED_ABOVE_AND_BELOW, REMOVED_ABOVE, UNCHANGED]
+        lineIndex || dirtyMarkType
+        0         || REMOVED_BELOW
+        1         || REMOVED_ABOVE_AND_BELOW
+        2         || REMOVED_ABOVE
+        3         || UNCHANGED
     }
 
     def 'it should handle removal of the final newline'() {
@@ -285,8 +319,10 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
         result == dirtyMarkType
 
         where:
-        lineIndex << [0, 1, 2]
-        dirtyMarkType << [UNCHANGED, UNCHANGED, REMOVED_BELOW]
+        lineIndex || dirtyMarkType
+        0         || UNCHANGED
+        1         || UNCHANGED
+        2         || REMOVED_BELOW
     }
 
     def 'it should handle a mixed collection of added, changed, and removed lines'() {
@@ -358,14 +394,35 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
         result == dirtyMarkType
 
         where:
-        lineIndex << (0..28).toList()
-        dirtyMarkType << [
-            ADDED, ADDED, ADDED, ADDED, ADDED,
-            ADDED, UNCHANGED, UNCHANGED, UNCHANGED, UNCHANGED,
-            UNCHANGED, UNCHANGED, UNCHANGED, CHANGED, REMOVED_BELOW,
-            REMOVED_ABOVE, CHANGED, UNCHANGED, UNCHANGED, UNCHANGED,
-            UNCHANGED, UNCHANGED, UNCHANGED, UNCHANGED, UNCHANGED,
-            ADDED, ADDED, ADDED, ADDED
-        ]
+        lineIndex || dirtyMarkType
+        0         || ADDED
+        1         || ADDED
+        2         || ADDED
+        3         || ADDED
+        4         || ADDED
+        5         || ADDED
+        6         || UNCHANGED
+        7         || UNCHANGED
+        8         || UNCHANGED
+        9         || UNCHANGED
+        10        || UNCHANGED
+        11        || UNCHANGED
+        12        || UNCHANGED
+        13        || CHANGED
+        14        || REMOVED_BELOW
+        15        || REMOVED_ABOVE
+        16        || CHANGED
+        17        || UNCHANGED
+        18        || UNCHANGED
+        19        || UNCHANGED
+        20        || UNCHANGED
+        21        || UNCHANGED
+        22        || UNCHANGED
+        23        || UNCHANGED
+        24        || UNCHANGED
+        25        || ADDED
+        26        || ADDED
+        27        || ADDED
+        28        || ADDED
     }
 }
