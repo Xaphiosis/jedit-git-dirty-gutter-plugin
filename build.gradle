@@ -40,10 +40,6 @@ repositories {
     jcenter()
     mavenCentral()
 
-    flatDir {
-        dirs 'libs'
-    }
-
     maven {
         url 'https://dl.bintray.com/ssoloff/maven/'
     }
@@ -67,10 +63,8 @@ dependencies {
         [group: 'org.spockframework', name: 'spock-core', version: '1.0-groovy-2.4']
     )
     acceptanceTestCompile(
-        [name: "jedit-test-framework-$jeditAcceptanceTestVersion"],
-        [group: 'io.github.ssoloff', name: 'jedit', version: jeditAcceptanceTestVersion], // TODO: remove when jedit-test-framework is available from bintray
-        [group: 'org.easytesting', name: 'fest-swing', version: '1.2'], // TODO: remove when jedit-test-framework is available from bintray
         [group: 'com.athaydes', name: 'spock-reports', version: '1.2.8', transitive: false],
+        [group: 'io.github.ssoloff', name: 'jedit-test-framework', version: jeditAcceptanceTestVersion],
         [group: 'org.slf4j', name: 'slf4j-api', version: '1.7.13'],
         [group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.13'],
         [group: 'org.spockframework', name: 'spock-core', version: '1.0-groovy-2.4']
