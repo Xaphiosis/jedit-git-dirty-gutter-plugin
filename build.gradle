@@ -193,6 +193,10 @@ acceptanceTest {
     jacocoAcceptanceTestReport.reports.xml.enabled = true
 }
 
+artifacts {
+    archives shadowJar
+}
+
 check {
     dependsOn integrationTest, acceptanceTest
 }
