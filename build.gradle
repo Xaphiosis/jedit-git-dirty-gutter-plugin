@@ -2,10 +2,11 @@ import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
     id 'groovy'
-    id 'jacoco'
     id 'checkstyle'
     id 'codenarc'
+    id 'distribution'
     id 'findbugs'
+    id 'jacoco'
     id 'pmd'
     id 'com.github.johnrengelman.shadow' version '1.2.2'
     id 'com.github.kt3k.coveralls' version '2.4.0'
@@ -13,6 +14,7 @@ plugins {
     id 'nebula.provided-base' version '3.0.3'
 }
 
+group = 'io.github.ssoloff'
 version = '0.1.0'
 sourceCompatibility = '1.7'
 
@@ -28,6 +30,10 @@ ext {
 configurations {
     acceptanceTestCompile {
         description = 'Acceptance test compile-time dependences'
+    }
+
+    acceptanceTestPlugins {
+        description = 'Plugins to be installed during acceptance tests'
     }
 
     acceptanceTestRuntime {
@@ -64,10 +70,18 @@ dependencies {
     )
     acceptanceTestCompile(
         [group: 'com.athaydes', name: 'spock-reports', version: '1.2.8', transitive: false],
+        [group: 'commons-io', name: 'commons-io', version: '2.4'],
         [group: 'io.github.ssoloff', name: 'jedit-test-framework', version: jeditAcceptanceTestVersion],
         [group: 'org.slf4j', name: 'slf4j-api', version: '1.7.13'],
         [group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.13'],
         [group: 'org.spockframework', name: 'spock-core', version: '1.0-groovy-2.4']
+    )
+    acceptanceTestPlugins(
+        [group: 'io.github.ssoloff', name: 'jedit-common-controls-plugin', version: '1.7.4', classifier: 'bin', ext: 'tar.gz'],
+        [group: 'io.github.ssoloff', name: 'jedit-dirty-gutter-plugin', version: '0.3b', classifier: 'bin', ext: 'tar.gz'],
+        [group: 'io.github.ssoloff', name: 'jedit-git-plugin', version: '0.7.1', classifier: 'bin', ext: 'tar.gz'],
+        [group: 'io.github.ssoloff', name: 'jedit-project-viewer-plugin', version: '3.5.3', classifier: 'bin', ext: 'tar.gz'],
+        files("$distsDir/${project.name}-${project.version}-bin.tar.gz")
     )
 }
 
@@ -109,6 +123,19 @@ task acceptanceTest(type: Test) {
     classpath = sourceSets.acceptanceTest.runtimeClasspath
 
     systemProperty 'jedit.home', jeditHomeDir
+
+    doFirst {
+        def acceptanceTestPluginJarsDir = file("$buildDir/tmp/jedit-plugin-jars")
+        systemProperty 'io.github.ssoloff.acceptanceTestPluginJarsDir', acceptanceTestPluginJarsDir
+
+        def acceptanceTestPluginBinDistTarPaths = configurations.acceptanceTestPlugins.files*.path
+        acceptanceTestPluginBinDistTarPaths.each { path ->
+            copy {
+                from tarTree(path).files
+                into acceptanceTestPluginJarsDir
+            }
+        }
+    }
 }
 
 task downloadJEdit() {
@@ -203,6 +230,25 @@ check {
 
 codenarc {
     configFile = file("${project.projectDir}/config/codenarc/codenarc.groovy")
+}
+
+distTar {
+    classifier = 'bin'
+    compression = Compression.GZIP
+    extension = 'tar.gz'
+}
+
+distZip {
+    classifier = 'bin'
+}
+
+distributions {
+    main {
+        baseName = archivesBaseName
+        contents {
+            from shadowJar
+        }
+    }
 }
 
 integrationTest {
