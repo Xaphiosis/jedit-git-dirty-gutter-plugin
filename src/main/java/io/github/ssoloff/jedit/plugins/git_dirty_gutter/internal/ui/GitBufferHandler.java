@@ -114,6 +114,8 @@ final class GitBufferHandler {
     }
 
     private void setPatch(final Patch patch) {
+        assert SwingUtilities.isEventDispatchThread();
+
         this.patch = patch;
         raisePatchUpdatedEvent();
     }
