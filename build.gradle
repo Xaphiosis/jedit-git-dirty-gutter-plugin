@@ -167,7 +167,10 @@ task jacocoAcceptanceTestReport(type: JacocoReport) {
     description = 'Generates code coverage report for the acceptance tests.'
     group = 'Verification'
 
-    sourceSets sourceSets.main
+    classDirectories = zipTree(shadowJar.archivePath).matching {
+        include 'io/github/ssoloff/**/*'
+    }
+    sourceDirectories = files(sourceSets.main.allSource.srcDirs)
     executionData acceptanceTest
 }
 
