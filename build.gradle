@@ -20,14 +20,16 @@ sourceCompatibility = '1.7'
 
 ext {
     jeditAcceptanceTestVersion = '5.3.0'
-    downloadsDir = file("$buildDir/tmp/downloads")
-    jeditInstallDir = file("$buildDir/tmp/installs/jedit")
-    jeditHomeDir = file("$jeditInstallDir/usr/share/jedit-$jeditAcceptanceTestVersion")
-    jeditDistUrl = "http://downloads.sourceforge.net/project/jedit/jedit/$jeditAcceptanceTestVersion/jedit-$jeditAcceptanceTestVersion-noarch-1sao.tgz"
-    jeditDistArchive = file("$downloadsDir/jedit-${jeditAcceptanceTestVersion}.tgz")
+    acceptanceTestApplicationInstallDir = file("$buildDir/tmp/jedit/application")
+    acceptanceTestApplicationHomeDir = file("$acceptanceTestApplicationInstallDir/usr/share/jedit-$jeditAcceptanceTestVersion")
+    acceptanceTestPluginJarsDir = file("$buildDir/tmp/jedit/plugin-jars")
 }
 
 configurations {
+    acceptanceTestApplication {
+        description = 'Application to be installed during acceptance tests'
+    }
+
     acceptanceTestCompile {
         description = 'Acceptance test compile-time dependences'
     }
@@ -76,6 +78,9 @@ dependencies {
         [group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.13'],
         [group: 'org.spockframework', name: 'spock-core', version: '1.0-groovy-2.4']
     )
+    acceptanceTestApplication(
+        [group: 'io.github.ssoloff', name: 'jedit', version: jeditAcceptanceTestVersion, classifier: 'bin', ext: 'tar.gz']
+    )
     acceptanceTestPlugins(
         [group: 'io.github.ssoloff', name: 'jedit-common-controls-plugin', version: '1.7.4', classifier: 'bin', ext: 'tar.gz'],
         [group: 'io.github.ssoloff', name: 'jedit-dirty-gutter-plugin', version: '0.3b', classifier: 'bin', ext: 'tar.gz'],
@@ -116,40 +121,27 @@ sourceSets {
 task acceptanceTest(type: Test) {
     description = 'Runs the acceptance tests.'
     group = 'Verification'
-    dependsOn 'downloadJEdit'
     mustRunAfter 'integrationTest'
 
     testClassesDir = sourceSets.acceptanceTest.output.classesDir
     classpath = sourceSets.acceptanceTest.runtimeClasspath
 
-    systemProperty 'jedit.home', jeditHomeDir
+    systemProperty 'jedit.home', acceptanceTestApplicationHomeDir
 
     doFirst {
-        def acceptanceTestPluginJarsDir = file("$buildDir/tmp/jedit-plugin-jars")
-        systemProperty 'io.github.ssoloff.acceptanceTestPluginJarsDir', acceptanceTestPluginJarsDir
+        def acceptanceTestApplicationBinDistTarPath = configurations.acceptanceTestApplication.singleFile.path
+        copy {
+            from tarTree(acceptanceTestApplicationBinDistTarPath)
+            into acceptanceTestApplicationInstallDir
+        }
 
+        systemProperty 'io.github.ssoloff.acceptanceTestPluginJarsDir', acceptanceTestPluginJarsDir
         def acceptanceTestPluginBinDistTarPaths = configurations.acceptanceTestPlugins.files*.path
         acceptanceTestPluginBinDistTarPaths.each { path ->
             copy {
                 from tarTree(path).files
                 into acceptanceTestPluginJarsDir
             }
-        }
-    }
-}
-
-task downloadJEdit() {
-    outputs.dir jeditInstallDir
-
-    doLast {
-        download {
-            src jeditDistUrl
-            dest jeditDistArchive
-        }
-
-        copy {
-            from tarTree(jeditDistArchive)
-            into jeditInstallDir
         }
     }
 }
