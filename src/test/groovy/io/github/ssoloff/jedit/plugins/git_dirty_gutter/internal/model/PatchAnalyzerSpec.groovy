@@ -81,10 +81,10 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
         result == dirtyMarkType
 
         where:
-        lineIndex | dirtyMarkType
-        0         | UNCHANGED
-        1         | UNCHANGED
-        2         | UNCHANGED
+        lineIndex || dirtyMarkType
+        0         || UNCHANGED
+        1         || UNCHANGED
+        2         || UNCHANGED
     }
 
     def 'it should handle addition of the first line'() {
@@ -100,11 +100,11 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
         result == dirtyMarkType
 
         where:
-        lineIndex | dirtyMarkType
-        0         | ADDED
-        1         | UNCHANGED
-        2         | UNCHANGED
-        3         | UNCHANGED
+        lineIndex || dirtyMarkType
+        0         || ADDED
+        1         || UNCHANGED
+        2         || UNCHANGED
+        3         || UNCHANGED
     }
 
     def 'it should handle addition of an intermediate line'() {
@@ -120,11 +120,11 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
         result == dirtyMarkType
 
         where:
-        lineIndex | dirtyMarkType
-        0         | UNCHANGED
-        1         | ADDED
-        2         | UNCHANGED
-        3         | UNCHANGED
+        lineIndex || dirtyMarkType
+        0         || UNCHANGED
+        1         || ADDED
+        2         || UNCHANGED
+        3         || UNCHANGED
     }
 
     def 'it should handle addition of the last line'() {
@@ -140,11 +140,11 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
         result == dirtyMarkType
 
         where:
-        lineIndex | dirtyMarkType
-        0         | UNCHANGED
-        1         | UNCHANGED
-        2         | ADDED
-        3         | UNCHANGED
+        lineIndex || dirtyMarkType
+        0         || UNCHANGED
+        1         || UNCHANGED
+        2         || ADDED
+        3         || UNCHANGED
     }
 
     def 'it should handle addition of the final newline'() {
@@ -160,11 +160,11 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
         result == dirtyMarkType
 
         where:
-        lineIndex | dirtyMarkType
-        0         | UNCHANGED
-        1         | UNCHANGED
-        2         | UNCHANGED
-        3         | ADDED
+        lineIndex || dirtyMarkType
+        0         || UNCHANGED
+        1         || UNCHANGED
+        2         || UNCHANGED
+        3         || ADDED
     }
 
     def 'it should handle modification of the first line'() {
@@ -180,11 +180,11 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
         result == dirtyMarkType
 
         where:
-        lineIndex | dirtyMarkType
-        0         | CHANGED
-        1         | UNCHANGED
-        2         | UNCHANGED
-        3         | UNCHANGED
+        lineIndex || dirtyMarkType
+        0         || CHANGED
+        1         || UNCHANGED
+        2         || UNCHANGED
+        3         || UNCHANGED
     }
 
     def 'it should handle modification of an intermediate line'() {
@@ -200,11 +200,11 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
         result == dirtyMarkType
 
         where:
-        lineIndex | dirtyMarkType
-        0         | UNCHANGED
-        1         | CHANGED
-        2         | UNCHANGED
-        3         | UNCHANGED
+        lineIndex || dirtyMarkType
+        0         || UNCHANGED
+        1         || CHANGED
+        2         || UNCHANGED
+        3         || UNCHANGED
     }
 
     def 'it should handle modification of the last line'() {
@@ -220,11 +220,11 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
         result == dirtyMarkType
 
         where:
-        lineIndex | dirtyMarkType
-        0         | UNCHANGED
-        1         | UNCHANGED
-        2         | CHANGED
-        3         | UNCHANGED
+        lineIndex || dirtyMarkType
+        0         || UNCHANGED
+        1         || UNCHANGED
+        2         || CHANGED
+        3         || UNCHANGED
     }
 
     def 'it should handle removal of the first line'() {
@@ -240,10 +240,10 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
         result == dirtyMarkType
 
         where:
-        lineIndex | dirtyMarkType
-        0         | REMOVED_ABOVE
-        1         | UNCHANGED
-        2         | UNCHANGED
+        lineIndex || dirtyMarkType
+        0         || REMOVED_ABOVE
+        1         || UNCHANGED
+        2         || UNCHANGED
     }
 
     def 'it should handle removal of an intermediate line'() {
@@ -259,12 +259,12 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
         result == dirtyMarkType
 
         where:
-        lineIndex | dirtyMarkType
-        0         | UNCHANGED
-        1         | REMOVED_BELOW
-        2         | REMOVED_ABOVE
-        3         | UNCHANGED
-        4         | UNCHANGED
+        lineIndex || dirtyMarkType
+        0         || UNCHANGED
+        1         || REMOVED_BELOW
+        2         || REMOVED_ABOVE
+        3         || UNCHANGED
+        4         || UNCHANGED
     }
 
     def 'it should handle removal of the last line'() {
@@ -280,10 +280,10 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
         result == dirtyMarkType
 
         where:
-        lineIndex | dirtyMarkType
-        0         | UNCHANGED
-        1         | REMOVED_BELOW
-        2         | REMOVED_ABOVE
+        lineIndex || dirtyMarkType
+        0         || UNCHANGED
+        1         || REMOVED_BELOW
+        2         || REMOVED_ABOVE
     }
 
     def 'it should handle removal of lines above and below a single line'() {
@@ -299,11 +299,11 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
         result == dirtyMarkType
 
         where:
-        lineIndex | dirtyMarkType
-        0         | REMOVED_BELOW
-        1         | REMOVED_ABOVE_AND_BELOW
-        2         | REMOVED_ABOVE
-        3         | UNCHANGED
+        lineIndex || dirtyMarkType
+        0         || REMOVED_BELOW
+        1         || REMOVED_ABOVE_AND_BELOW
+        2         || REMOVED_ABOVE
+        3         || UNCHANGED
     }
 
     def 'it should handle removal of the final newline'() {
@@ -319,12 +319,13 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
         result == dirtyMarkType
 
         where:
-        lineIndex | dirtyMarkType
-        0         | UNCHANGED
-        1         | UNCHANGED
-        2         | REMOVED_BELOW
+        lineIndex || dirtyMarkType
+        0         || UNCHANGED
+        1         || UNCHANGED
+        2         || REMOVED_BELOW
     }
 
+    @SuppressWarnings(['CyclomaticComplexity', 'MethodSize'])
     def 'it should handle a mixed collection of added, changed, and removed lines'() {
         given: 'a patch describing a mixed collection of added, changed, and removed lines'
         def oldLines = [
@@ -394,35 +395,35 @@ class PatchAnalyzer_GetDirtyMarkForLineSpec extends Specification {
         result == dirtyMarkType
 
         where:
-        lineIndex | dirtyMarkType
-        0         | ADDED
-        1         | ADDED
-        2         | ADDED
-        3         | ADDED
-        4         | ADDED
-        5         | ADDED
-        6         | UNCHANGED
-        7         | UNCHANGED
-        8         | UNCHANGED
-        9         | UNCHANGED
-        10        | UNCHANGED
-        11        | UNCHANGED
-        12        | UNCHANGED
-        13        | CHANGED
-        14        | REMOVED_BELOW
-        15        | REMOVED_ABOVE
-        16        | CHANGED
-        17        | UNCHANGED
-        18        | UNCHANGED
-        19        | UNCHANGED
-        20        | UNCHANGED
-        21        | UNCHANGED
-        22        | UNCHANGED
-        23        | UNCHANGED
-        24        | UNCHANGED
-        25        | ADDED
-        26        | ADDED
-        27        | ADDED
-        28        | ADDED
+        lineIndex || dirtyMarkType
+        0         || ADDED
+        1         || ADDED
+        2         || ADDED
+        3         || ADDED
+        4         || ADDED
+        5         || ADDED
+        6         || UNCHANGED
+        7         || UNCHANGED
+        8         || UNCHANGED
+        9         || UNCHANGED
+        10        || UNCHANGED
+        11        || UNCHANGED
+        12        || UNCHANGED
+        13        || CHANGED
+        14        || REMOVED_BELOW
+        15        || REMOVED_ABOVE
+        16        || CHANGED
+        17        || UNCHANGED
+        18        || UNCHANGED
+        19        || UNCHANGED
+        20        || UNCHANGED
+        21        || UNCHANGED
+        22        || UNCHANGED
+        23        || UNCHANGED
+        24        || UNCHANGED
+        25        || ADDED
+        26        || ADDED
+        27        || ADDED
+        28        || ADDED
     }
 }

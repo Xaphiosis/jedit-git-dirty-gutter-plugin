@@ -371,7 +371,9 @@ ruleset {
     ConsecutiveStringConcatenation
     UnnecessaryBigDecimalInstantiation
     UnnecessaryBigIntegerInstantiation
-    UnnecessaryBooleanExpression
+    UnnecessaryBooleanExpression {
+        doNotApplyToClassNames = '*Spec'
+    }
     UnnecessaryBooleanInstantiation
     UnnecessaryCallForLastElement
     UnnecessaryCallToSubstring
