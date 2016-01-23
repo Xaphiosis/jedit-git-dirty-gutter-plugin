@@ -74,7 +74,11 @@ class GitException_GetMessageSpec extends Specification {
         e.message =~ /(?m)^\s*command:/
 
         where:
-        command << [[], ['git'], ['git', 'arg1'], ['git', 'arg1', 'arg2']]
+        command                 | _
+        []                      | _
+        ['git']                 | _
+        ['git', 'arg1']         | _
+        ['git', 'arg1', 'arg2'] | _
     }
 
     def 'when the command is not specified it should not include the command'() {

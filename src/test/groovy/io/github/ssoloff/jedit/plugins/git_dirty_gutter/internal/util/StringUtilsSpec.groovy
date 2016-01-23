@@ -34,7 +34,9 @@ class StringUtils_JoinLinesWithExplicitFinalLineSpec extends Specification {
         StringUtils.joinLinesWithExplicitFinalLine([line1]) == "$line1"
 
         where:
-        line1 << ['line1', '']
+        line1   | _
+        'line1' | _
+        ''      | _
     }
 
     def 'when line count is two it should return a string with a newline between each line and no final newline'() {
@@ -63,7 +65,9 @@ class StringUtils_JoinLinesWithImplicitFinalLineSpec extends Specification {
         StringUtils.joinLinesWithImplicitFinalLine([line1]) == "$line1\n"
 
         where:
-        line1 << ['line1', '']
+        line1   | _
+        'line1' | _
+        ''      | _
     }
 
     def 'when line count is two it should return a string with a newline between each line and a final newline'() {
@@ -97,7 +101,9 @@ class StringUtils_SplitLinesWithExplicitFinalLineSpec extends Specification {
         StringUtils.splitLinesWithExplicitFinalLine("$line1\n") == [line1, '']
 
         where:
-        line1 << ['line1', '']
+        line1   | _
+        'line1' | _
+        ''      | _
     }
 
     def 'when input contains two lines and no final newline it should return a collection with two lines'() {
@@ -153,7 +159,9 @@ class StringUtils_SplitLinesWithImplicitFinalLineSpec extends Specification {
         StringUtils.splitLinesWithImplicitFinalLine("$line1\n") == [line1]
 
         where:
-        line1 << ['line1', '']
+        line1   | _
+        'line1' | _
+        ''      | _
     }
 
     def 'when input contains two lines and no final newline it should return a collection with two lines'() {
