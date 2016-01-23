@@ -17,8 +17,12 @@
  */
 package io.github.ssoloff.jedit.plugins.git_dirty_gutter
 
-import org.apache.commons.io.FileUtils
 import java.nio.file.Paths
+import javax.swing.JComboBox
+import org.apache.commons.io.FileUtils
+import org.fest.swing.core.GenericTypeMatcher
+import org.fest.swing.timing.Pause
+import org.gjt.sp.jedit.jEdit
 import org.gjt.sp.jedit.testframework.TestUtils
 import org.junit.Rule
 import org.junit.rules.TemporaryFolder
@@ -27,7 +31,10 @@ import spock.lang.Title
 
 @Title('Acceptance tests for Git DirtyBuffer plugin')
 class GitDirtyBufferPluginAcceptanceSpec extends Specification {
-    private static final String PROP_ACCEPTANCE_TEST_PLUGIN_JARS_DIR = 'io.github.ssoloff.acceptanceTestPluginJarsDir'
+    private static final String GIT_DIRTY_LINE_PROVIDER_ITEM = 'Git'
+    private static final String PROP_DIRTY_LINE_PROVIDER = 'options.LCMPlugin.provider'
+    private static final String SYS_PROP_ACCEPTANCE_TEST_PLUGIN_JARS_DIR =
+        'io.github.ssoloff.acceptanceTestPluginJarsDir'
 
     @Rule
     @SuppressWarnings('PublicInstanceField')
@@ -38,8 +45,40 @@ class GitDirtyBufferPluginAcceptanceSpec extends Specification {
         def settingsPluginJarsDirPath = settingsDirPath.resolve('jars')
         settingsPluginJarsDirPath.toFile().mkdirs()
 
-        def acceptanceTestPluginJarsDirPath = Paths.get(System.getProperty(PROP_ACCEPTANCE_TEST_PLUGIN_JARS_DIR))
+        def acceptanceTestPluginJarsDirPath = Paths.get(System.getProperty(SYS_PROP_ACCEPTANCE_TEST_PLUGIN_JARS_DIR))
         FileUtils.copyDirectory(acceptanceTestPluginJarsDirPath.toFile(), settingsPluginJarsDirPath.toFile())
+    }
+
+    private static newDirtyLineProviderComboBoxMatcher() {
+        // dirty line provider combo box has no name but is the only combo box in the panel
+        new GenericTypeMatcher<JComboBox>(JComboBox, true) {
+            @Override
+            boolean isMatching(JComboBox component) {
+                true
+            }
+        }
+    }
+
+    private void propertyMatches(name, value) {
+        waitForCondition(1000) {
+            assert jEdit.getProperty(name) == value
+        }
+    }
+
+    private void waitForCondition(long timeoutInMilliseconds, Closure condition) {
+        def startTimeInMilliseconds = System.currentTimeMillis()
+        while (true) {
+            try {
+                condition()
+                return
+            } catch (AssertionError e) {
+                if (System.currentTimeMillis() - startTimeInMilliseconds > timeoutInMilliseconds) {
+                    throw e
+                } else {
+                    Pause.pause(10)
+                }
+            }
+        }
     }
 
     def setup() {
@@ -54,11 +93,21 @@ class GitDirtyBufferPluginAcceptanceSpec extends Specification {
         TestUtils.tearDownNewjEdit() // HACK: work around logic bug: call twice to hit all code paths
     }
 
-    def 'TODO'() {
-        when: 'TODO'
-        Thread.sleep(1000)
+    def 'it should be enableable from the plugin options dialog'() {
+        given: 'the plugin options dialog is open'
+        def optionsDialog = TestUtils.pluginOptions()
 
-        then: 'TODO'
-        true
+        and: 'the DirtyGutter plugin options are displayed'
+        def optionPane = optionsDialog.optionPane('DirtyGutter', 'DirtyGutter')
+
+        when: 'the Git dirty line provider is selected'
+        def comboBox = optionPane.comboBox(newDirtyLineProviderComboBoxMatcher())
+        comboBox.selectItem(GIT_DIRTY_LINE_PROVIDER_ITEM)
+
+        and: 'the plugin options dialog is closed with OK'
+        optionsDialog.OK()
+
+        then: 'the Git dirty line provider should be enabled'
+        propertyMatches(PROP_DIRTY_LINE_PROVIDER, GIT_DIRTY_LINE_PROVIDER_ITEM)
     }
 }
