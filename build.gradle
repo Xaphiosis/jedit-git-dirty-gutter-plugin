@@ -19,6 +19,8 @@ version = '0.1.0'
 sourceCompatibility = '1.7'
 
 ext {
+    gradleVersion = '2.10'
+
     jeditAcceptanceTestVersion = '5.3.0'
     acceptanceTestApplicationInstallDir = file("$buildDir/tmp/jedit/application")
     acceptanceTestApplicationHomeDir = file("$acceptanceTestApplicationInstallDir/usr/share/jedit-$jeditAcceptanceTestVersion")
@@ -193,15 +195,15 @@ task jacocoRootReport(type: JacocoReport) {
     }
 }
 
-tasks.withType(Test) {
-    systemProperty 'com.athaydes.spockframework.report.outputDir', "$reportsDir/spock"
-}
-
 task wrapper(type: Wrapper) {
     description = 'Generates Gradle wrapper files.'
     group = 'Build Setup'
 
-    gradleVersion = '2.10'
+    gradleVersion = project.gradleVersion
+}
+
+tasks.withType(Test) {
+    systemProperty 'com.athaydes.spockframework.report.outputDir', "$reportsDir/spock"
 }
 
 acceptanceTest {
