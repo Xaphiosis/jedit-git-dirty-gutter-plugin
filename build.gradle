@@ -166,32 +166,31 @@ task jacocoAcceptanceTestReport(type: JacocoReport) {
     executionData acceptanceTest
 }
 
-task jacocoCoverallsReport(type: JacocoReport) {
-    description = 'Generates code coverage report for all tests suitable for Coveralls.'
-    group = 'Verification'
-
-    sourceSets sourceSets.main
-    executionData test, integrationTest, acceptanceTest
-
-    // coveralls plugin is hard-coded to look for reports associated with "jacocoTestReport" task
-    reports {
-        html {
-            destination = jacocoTestReport.reports.html.destination
-            enabled = true
-        }
-        xml {
-            destination = jacocoTestReport.reports.xml.destination
-            enabled = true
-        }
-    }
-}
-
 task jacocoIntegrationTestReport(type: JacocoReport) {
     description = 'Generates code coverage report for the integration tests.'
     group = 'Verification'
 
     sourceSets sourceSets.main
     executionData integrationTest
+}
+
+task jacocoRootReport(type: JacocoReport) {
+    description = 'Generates aggregate code coverage report for all tests.'
+    group = 'Verification'
+
+    sourceSets sourceSets.main
+    executionData test, integrationTest, acceptanceTest
+
+    reports {
+        html {
+            destination = file("$project.jacoco.reportsDir/root/html")
+            enabled = true
+        }
+        xml {
+            destination = file("$project.jacoco.reportsDir/root/jacocoRootReport.xml")
+            enabled = true
+        }
+    }
 }
 
 tasks.withType(Test) {
@@ -210,7 +209,7 @@ acceptanceTest {
     reports.junitXml.destination = file("$reports.junitXml.destination/$name")
 
     jacocoAcceptanceTestReport.reports.html.destination = file("$project.jacoco.reportsDir/$name/html")
-    jacocoAcceptanceTestReport.reports.xml.destination = file("$project.jacoco.reportsDir/$name/jacocoTestReport.xml")
+    jacocoAcceptanceTestReport.reports.xml.destination = file("$project.jacoco.reportsDir/$name/jacoco${name.capitalize()}Report.xml")
     jacocoAcceptanceTestReport.reports.html.enabled = true
     jacocoAcceptanceTestReport.reports.xml.enabled = true
 }
@@ -225,6 +224,10 @@ check {
 
 codenarc {
     configFile = file("${project.projectDir}/config/codenarc/codenarc.groovy")
+}
+
+coveralls {
+    jacocoReportPath = jacocoRootReport.reports.xml.destination
 }
 
 distTar {
@@ -251,7 +254,7 @@ integrationTest {
     reports.junitXml.destination = file("$reports.junitXml.destination/$name")
 
     jacocoIntegrationTestReport.reports.html.destination = file("$project.jacoco.reportsDir/$name/html")
-    jacocoIntegrationTestReport.reports.xml.destination = file("$project.jacoco.reportsDir/$name/jacocoTestReport.xml")
+    jacocoIntegrationTestReport.reports.xml.destination = file("$project.jacoco.reportsDir/$name/jacoco${name.capitalize()}Report.xml")
     jacocoIntegrationTestReport.reports.html.enabled = true
     jacocoIntegrationTestReport.reports.xml.enabled = true
 }
