@@ -275,8 +275,8 @@ processResources {
 shadowJar {
     exclude 'META-INF/**/*'
 
-    relocate 'difflib', 'myjarjardifflib.difflib'
-    relocate 'org.eclipse', 'myjarjareclipse.org.eclipse'
+    relocate 'difflib', 'gitdirtygutterjarjar.difflib'
+    relocate 'org.eclipse', 'gitdirtygutterjarjar.org.eclipse'
 }
 
 test {
