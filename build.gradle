@@ -273,7 +273,7 @@ processResources {
 }
 
 shadowJar {
-    exclude 'META-INF/**/*'
+    exclude 'META-INF/maven/**/*'
 
     relocate 'difflib', 'gitdirtygutterjarjar.difflib'
     relocate 'org.eclipse', 'gitdirtygutterjarjar.org.eclipse'
