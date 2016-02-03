@@ -223,6 +223,16 @@ task jacocoRootReport(type: JacocoReport) {
     }
 }
 
+task validateShadowJars(dependsOn: [shadowJar, instrumentedShadowJar]) << {
+    def shadowJar = new java.util.jar.JarFile(file(shadowJar.archivePath))
+    def shadowJarEntryNames = shadowJar.entries().collect({ it.name }).toSorted()
+    def instrumentedShadowJar = new java.util.jar.JarFile(file(instrumentedShadowJar.archivePath))
+    def instrumentedShadowJarEntryNames = instrumentedShadowJar.entries().collect({ it.name }).toSorted()
+    if (shadowJarEntryNames != instrumentedShadowJarEntryNames) {
+        throw new GradleException('shadowJar contents do not match instrumentedShadowJar contents')
+    }
+}
+
 task wrapper(type: Wrapper) {
     description = 'Generates Gradle wrapper files.'
     group = 'Build Setup'
@@ -257,6 +267,10 @@ acceptanceTest {
 
 artifacts {
     archives shadowJar
+}
+
+assemble {
+    dependsOn validateShadowJars
 }
 
 check {
