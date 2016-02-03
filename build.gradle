@@ -1,3 +1,6 @@
+import com.github.jengelman.gradle.plugins.shadow.ShadowBasePlugin
+import com.github.jengelman.gradle.plugins.shadow.ShadowJavaPlugin
+import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.apache.tools.ant.filters.ReplaceTokens
 
 plugins {
@@ -20,11 +23,12 @@ sourceCompatibility = '1.7'
 
 ext {
     gradleVersion = '2.10'
-
     jeditAcceptanceTestVersion = '5.3.0'
+
     acceptanceTestApplicationInstallDir = file("$buildDir/tmp/jedit/application")
     acceptanceTestApplicationHomeDir = file("$acceptanceTestApplicationInstallDir/usr/share/jedit-$jeditAcceptanceTestVersion")
     acceptanceTestPluginJarsDir = file("$buildDir/tmp/jedit/plugin-jars")
+    instrumentedClassesDir = file("$buildDir/instrumented-classes/${sourceSets.main.name}")
 }
 
 configurations {
@@ -88,18 +92,8 @@ dependencies {
         [group: 'io.github.ssoloff', name: 'jedit-dirty-gutter-plugin', version: '0.3b', classifier: 'bin', ext: 'tar.gz'],
         [group: 'io.github.ssoloff', name: 'jedit-git-plugin', version: '0.7.1', classifier: 'bin', ext: 'tar.gz'],
         [group: 'io.github.ssoloff', name: 'jedit-project-viewer-plugin', version: '3.5.3', classifier: 'bin', ext: 'tar.gz'],
-        files("$distsDir/${project.name}-${project.version}-bin.tar.gz")
+        files("$distsDir/${project.name}-${project.version}-bin-instrumented.tar.gz")
     )
-}
-
-configurations {
-    provided.allDependencies.each { dep ->
-        shadowJar {
-            dependencies {
-                exclude(dependency(dep))
-            }
-        }
-    }
 }
 
 sourceSets {
@@ -148,6 +142,43 @@ task acceptanceTest(type: Test) {
     }
 }
 
+task instrumentClasses(dependsOn: classes) << {
+    ant {
+        taskdef(name:'jacocoinstrument', classname: 'org.jacoco.ant.InstrumentTask') {
+            classpath path: configurations.jacocoAnt.asPath
+        }
+
+        jacocoinstrument(destdir: instrumentedClassesDir) {
+            fileset(dir: sourceSets.main.output.classesDir) {
+                include(name: '**/*.class')
+            }
+        }
+    }
+}
+
+task instrumentedShadowJar(type: ShadowJar, dependsOn: instrumentClasses) {
+    // apply default configuration (from ShadowJavaPlugin.configureShadowTask)
+    group = ShadowJavaPlugin.SHADOW_GROUP
+    description = 'Create a combined JAR of project and instrumented runtime dependencies.'
+    conventionMapping.with {
+        map('classifier') {
+            'all-instrumented'
+        }
+    }
+    manifest.inheritFrom project.tasks.jar.manifest
+    doFirst {
+        def files = project.configurations.findByName(ShadowBasePlugin.CONFIGURATION_NAME).files
+        if (files) {
+            def libs = [project.tasks.jar.manifest.attributes.get('Class-Path')]
+            libs.addAll files.collect { "${it.name}" }
+            manifest.attributes 'Class-Path': libs.findAll { it }.join(' ')
+        }
+    }
+    from(project.sourceSets.main.output.resourcesDir, instrumentedClassesDir)
+    configurations = [project.configurations.runtime]
+    exclude('META-INF/INDEX.LIST', 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA')
+}
+
 task integrationTest(type: Test) {
     description = 'Runs the integration tests.'
     group = 'Verification'
@@ -161,10 +192,7 @@ task jacocoAcceptanceTestReport(type: JacocoReport) {
     description = 'Generates code coverage report for the acceptance tests.'
     group = 'Verification'
 
-    classDirectories = zipTree(shadowJar.archivePath).matching {
-        include 'io/github/ssoloff/**/*'
-    }
-    sourceDirectories = files(sourceSets.main.allSource.srcDirs)
+    sourceSets sourceSets.main
     executionData acceptanceTest
 }
 
@@ -200,6 +228,17 @@ task wrapper(type: Wrapper) {
     group = 'Build Setup'
 
     gradleVersion = project.gradleVersion
+}
+
+tasks.withType(ShadowJar) {
+    dependencies { deps ->
+        project.configurations.provided.allDependencies.each { dep ->
+            deps.exclude(dependency(dep))
+        }
+    }
+    exclude 'META-INF/maven/**/*'
+    relocate 'difflib', 'gitdirtygutterjarjar.difflib'
+    relocate 'org.eclipse', 'gitdirtygutterjarjar.org.eclipse'
 }
 
 tasks.withType(Test) {
@@ -243,12 +282,29 @@ distZip {
 }
 
 distributions {
+    instrumented {
+        baseName = archivesBaseName
+        contents {
+            from instrumentedShadowJar
+        }
+    }
+
     main {
         baseName = archivesBaseName
         contents {
             from shadowJar
         }
     }
+}
+
+instrumentedDistTar {
+    classifier = 'bin-instrumented'
+    compression = Compression.GZIP
+    extension = 'tar.gz'
+}
+
+instrumentedDistZip {
+    classifier = 'bin-instrumented'
 }
 
 integrationTest {
@@ -270,13 +326,6 @@ processResources {
     filter ReplaceTokens, tokens: [
         'version': project.version
     ]
-}
-
-shadowJar {
-    exclude 'META-INF/maven/**/*'
-
-    relocate 'difflib', 'gitdirtygutterjarjar.difflib'
-    relocate 'org.eclipse', 'gitdirtygutterjarjar.org.eclipse'
 }
 
 test {
