@@ -259,6 +259,9 @@ tasks.withType(ShadowJar) {
 }
 
 tasks.withType(Test) {
+    reports.html.destination = file("${reports.html.destination}/$name")
+    reports.junitXml.destination = file("${reports.junitXml.destination}/$name")
+
     systemProperty 'com.athaydes.spockframework.report.outputDir', "$reportsDir/spock"
 }
 
@@ -288,9 +291,6 @@ tasks.withType(Test) {
 }
 
 acceptanceTest {
-    reports.html.destination = file("${reports.html.destination}/$name")
-    reports.junitXml.destination = file("${reports.junitXml.destination}/$name")
-
     jacocoAcceptanceTestReport.reports.html.destination = file("${project.jacoco.reportsDir}/$name/html")
     jacocoAcceptanceTestReport.reports.xml.destination = file("${project.jacoco.reportsDir}/$name/jacoco${name.capitalize()}Report.xml")
     jacocoAcceptanceTestReport.reports.html.enabled = true
@@ -354,9 +354,6 @@ instrumentedDistZip {
 }
 
 integrationTest {
-    reports.html.destination = file("${reports.html.destination}/$name")
-    reports.junitXml.destination = file("${reports.junitXml.destination}/$name")
-
     jacocoIntegrationTestReport.reports.html.destination = file("${project.jacoco.reportsDir}/$name/html")
     jacocoIntegrationTestReport.reports.xml.destination = file("${project.jacoco.reportsDir}/$name/jacoco${name.capitalize()}Report.xml")
     jacocoIntegrationTestReport.reports.html.enabled = true
@@ -374,15 +371,7 @@ processResources {
     ]
 }
 
-smokeTest {
-    reports.html.destination = file("${reports.html.destination}/$name")
-    reports.junitXml.destination = file("${reports.junitXml.destination}/$name")
-}
-
 test {
-    reports.html.destination = file("${reports.html.destination}/$name")
-    reports.junitXml.destination = file("${reports.junitXml.destination}/$name")
-
     jacocoTestReport.reports.html.enabled = true
     jacocoTestReport.reports.xml.enabled = true
 }
