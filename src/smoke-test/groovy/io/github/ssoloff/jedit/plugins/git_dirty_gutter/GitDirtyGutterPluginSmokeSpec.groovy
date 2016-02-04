@@ -29,8 +29,8 @@ import org.junit.rules.TemporaryFolder
 import spock.lang.Specification
 import spock.lang.Title
 
-@Title('Acceptance tests for Git DirtyBuffer plugin')
-class GitDirtyBufferPluginAcceptanceSpec extends Specification {
+@Title('Smoke tests for Git DirtyBuffer plugin')
+class GitDirtyBufferPluginSmokeSpec extends Specification {
     private static final String GIT_DIRTY_LINE_PROVIDER_ITEM = 'Git'
     private static final String PROP_DIRTY_LINE_PROVIDER = 'options.LCMPlugin.provider'
     private static final String SYS_PROP_FUNCTIONAL_TEST_PLUGIN_JARS_DIR =

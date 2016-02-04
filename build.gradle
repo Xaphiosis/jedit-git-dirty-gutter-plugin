@@ -23,30 +23,40 @@ sourceCompatibility = '1.7'
 
 ext {
     gradleVersion = '2.10'
-    jeditAcceptanceTestVersion = '5.3.0'
+    jeditFunctionalTestVersion = '5.3.0'
 
-    acceptanceTestApplicationInstallDir = file("$buildDir/tmp/jedit/application")
-    acceptanceTestApplicationHomeDir = file("$acceptanceTestApplicationInstallDir/usr/share/jedit-$jeditAcceptanceTestVersion")
-    acceptanceTestPluginJarsDir = file("$buildDir/tmp/jedit/plugin-jars")
+    functionalTestApplicationInstallDir = file("$buildDir/tmp/jedit/application")
+    functionalTestApplicationHomeDir = file("$functionalTestApplicationInstallDir/usr/share/jedit-$jeditFunctionalTestVersion")
+    functionalTestPluginJarsDir = file("$buildDir/tmp/jedit/plugin-jars")
     instrumentedClassesDir = file("$buildDir/instrumented-classes/${sourceSets.main.name}")
 }
 
 configurations {
-    acceptanceTestApplication {
-        description = 'Application to be installed during acceptance tests'
+    functionalTestApplication {
+        description = 'Application to be installed during functional tests'
     }
 
-    acceptanceTestCompile {
-        description = 'Acceptance test compile-time dependences'
+    functionalTestCompile {
+        description = 'Functional test compile-time dependences'
+    }
+
+    functionalTestRuntime {
+        description = 'Functional test runtime dependences'
+        extendsFrom functionalTestCompile
+    }
+
+    functionalTestPlugins {
+        description = 'Plugins to be installed during functional tests'
     }
 
     acceptanceTestPlugins {
         description = 'Plugins to be installed during acceptance tests'
+        extendsFrom functionalTestPlugins
     }
 
-    acceptanceTestRuntime {
-        description = 'Acceptance test runtime dependences'
-        extendsFrom acceptanceTestCompile
+    smokeTestPlugins {
+        description = 'Plugins to be installed during smoke tests'
+        extendsFrom functionalTestPlugins
     }
 }
 
@@ -76,23 +86,28 @@ dependencies {
         [group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.13'],
         [group: 'org.spockframework', name: 'spock-core', version: '1.0-groovy-2.4']
     )
-    acceptanceTestCompile(
+    functionalTestCompile(
         [group: 'com.athaydes', name: 'spock-reports', version: '1.2.8', transitive: false],
         [group: 'commons-io', name: 'commons-io', version: '2.4'],
-        [group: 'io.github.ssoloff', name: 'jedit-test-framework', version: jeditAcceptanceTestVersion],
+        [group: 'io.github.ssoloff', name: 'jedit-test-framework', version: jeditFunctionalTestVersion],
         [group: 'org.slf4j', name: 'slf4j-api', version: '1.7.13'],
         [group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.13'],
         [group: 'org.spockframework', name: 'spock-core', version: '1.0-groovy-2.4']
     )
-    acceptanceTestApplication(
-        [group: 'io.github.ssoloff', name: 'jedit', version: jeditAcceptanceTestVersion, classifier: 'bin', ext: 'tar.gz']
+    functionalTestApplication(
+        [group: 'io.github.ssoloff', name: 'jedit', version: jeditFunctionalTestVersion, classifier: 'bin', ext: 'tar.gz']
     )
-    acceptanceTestPlugins(
+    functionalTestPlugins(
         [group: 'io.github.ssoloff', name: 'jedit-common-controls-plugin', version: '1.7.4', classifier: 'bin', ext: 'tar.gz'],
         [group: 'io.github.ssoloff', name: 'jedit-dirty-gutter-plugin', version: '0.3b', classifier: 'bin', ext: 'tar.gz'],
         [group: 'io.github.ssoloff', name: 'jedit-git-plugin', version: '0.7.1', classifier: 'bin', ext: 'tar.gz'],
-        [group: 'io.github.ssoloff', name: 'jedit-project-viewer-plugin', version: '3.5.3', classifier: 'bin', ext: 'tar.gz'],
+        [group: 'io.github.ssoloff', name: 'jedit-project-viewer-plugin', version: '3.5.3', classifier: 'bin', ext: 'tar.gz']
+    )
+    acceptanceTestPlugins(
         files("$distsDir/${project.name}-${project.version}-bin-instrumented.tar.gz")
+    )
+    smokeTestPlugins(
+        files("$distsDir/${project.name}-${project.version}-bin.tar.gz")
     )
 }
 
@@ -101,7 +116,7 @@ sourceSets {
         java.srcDir file('src/acceptance-test/java')
         groovy.srcDir file('src/acceptance-test/groovy')
         resources.srcDir file('src/acceptance-test/resources')
-        compileClasspath = configurations.acceptanceTestRuntime
+        compileClasspath = configurations.functionalTestRuntime
         runtimeClasspath = output + compileClasspath
     }
 
@@ -112,34 +127,20 @@ sourceSets {
         compileClasspath = sourceSets.main.output + configurations.testRuntime
         runtimeClasspath = output + compileClasspath
     }
+
+    smokeTest {
+        java.srcDir file('src/smoke-test/java')
+        groovy.srcDir file('src/smoke-test/groovy')
+        resources.srcDir file('src/smoke-test/resources')
+        compileClasspath = configurations.functionalTestRuntime
+        runtimeClasspath = output + compileClasspath
+    }
 }
 
 task acceptanceTest(type: Test) {
     description = 'Runs the acceptance tests.'
     group = 'Verification'
     mustRunAfter 'integrationTest'
-
-    testClassesDir = sourceSets.acceptanceTest.output.classesDir
-    classpath = sourceSets.acceptanceTest.runtimeClasspath
-
-    systemProperty 'jedit.home', acceptanceTestApplicationHomeDir
-
-    doFirst {
-        def acceptanceTestApplicationBinDistTarPath = configurations.acceptanceTestApplication.singleFile.path
-        copy {
-            from tarTree(acceptanceTestApplicationBinDistTarPath)
-            into acceptanceTestApplicationInstallDir
-        }
-
-        systemProperty 'io.github.ssoloff.acceptanceTestPluginJarsDir', acceptanceTestPluginJarsDir
-        def acceptanceTestPluginBinDistTarPaths = configurations.acceptanceTestPlugins.files*.path
-        acceptanceTestPluginBinDistTarPaths.each { path ->
-            copy {
-                from tarTree(path).files
-                into acceptanceTestPluginJarsDir
-            }
-        }
-    }
 }
 
 task instrumentClasses(dependsOn: classes) << {
@@ -223,6 +224,12 @@ task jacocoRootReport(type: JacocoReport) {
     }
 }
 
+task smokeTest(type: Test) {
+    description = 'Runs the smoke tests.'
+    group = 'Verification'
+    mustRunAfter 'acceptanceTest'
+}
+
 task validateShadowJars(dependsOn: [shadowJar, instrumentedShadowJar]) << {
     def shadowJar = new java.util.jar.JarFile(file(shadowJar.archivePath))
     def shadowJarEntryNames = shadowJar.entries().collect({ it.name }).toSorted()
@@ -255,6 +262,31 @@ tasks.withType(Test) {
     systemProperty 'com.athaydes.spockframework.report.outputDir', "$reportsDir/spock"
 }
 
+[acceptanceTest, smokeTest].each { task ->
+    def sourceSet = sourceSets[task.name]
+    task.testClassesDir = sourceSet.output.classesDir
+    task.classpath = sourceSet.runtimeClasspath
+    task.systemProperty 'jedit.home', functionalTestApplicationHomeDir
+    task.doFirst {
+        functionalTestApplicationInstallDir.deleteDir()
+        def functionalTestApplicationBinDistTarPath = configurations.functionalTestApplication.singleFile.path
+        copy {
+            from tarTree(functionalTestApplicationBinDistTarPath)
+            into functionalTestApplicationInstallDir
+        }
+
+        functionalTestPluginJarsDir.deleteDir()
+        systemProperty 'io.github.ssoloff.functionalTestPluginJarsDir', functionalTestPluginJarsDir
+        def functionalTestPluginBinDistTarPaths = configurations["${task.name}Plugins"].files*.path
+        functionalTestPluginBinDistTarPaths.each { path ->
+            copy {
+                from tarTree(path).files
+                into functionalTestPluginJarsDir
+            }
+        }
+    }
+}
+
 acceptanceTest {
     reports.html.destination = file("${reports.html.destination}/$name")
     reports.junitXml.destination = file("${reports.junitXml.destination}/$name")
@@ -274,7 +306,7 @@ assemble {
 }
 
 check {
-    dependsOn integrationTest, acceptanceTest
+    dependsOn integrationTest, acceptanceTest, smokeTest
 }
 
 codenarc {
@@ -340,6 +372,11 @@ processResources {
     filter ReplaceTokens, tokens: [
         'version': project.version
     ]
+}
+
+smokeTest {
+    reports.html.destination = file("${reports.html.destination}/$name")
+    reports.junitXml.destination = file("${reports.junitXml.destination}/$name")
 }
 
 test {
