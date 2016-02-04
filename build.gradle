@@ -195,6 +195,17 @@ task jacocoAcceptanceTestReport(type: JacocoReport) {
 
     sourceSets sourceSets.main
     executionData acceptanceTest
+
+    reports {
+        html {
+            destination = file("${project.jacoco.reportsDir}/acceptanceTest/html")
+            enabled = true
+        }
+        xml {
+            destination = file("${project.jacoco.reportsDir}/acceptanceTest/jacocoAcceptanceTestReport.xml")
+            enabled = true
+        }
+    }
 }
 
 task jacocoIntegrationTestReport(type: JacocoReport) {
@@ -203,6 +214,17 @@ task jacocoIntegrationTestReport(type: JacocoReport) {
 
     sourceSets sourceSets.main
     executionData integrationTest
+
+    reports {
+        html {
+            destination = file("${project.jacoco.reportsDir}/integrationTest/html")
+            enabled = true
+        }
+        xml {
+            destination = file("${project.jacoco.reportsDir}/integrationTest/jacocoIntegrationTestReport.xml")
+            enabled = true
+        }
+    }
 }
 
 task jacocoRootReport(type: JacocoReport) {
@@ -290,13 +312,6 @@ tasks.withType(Test) {
     }
 }
 
-acceptanceTest {
-    jacocoAcceptanceTestReport.reports.html.destination = file("${project.jacoco.reportsDir}/$name/html")
-    jacocoAcceptanceTestReport.reports.xml.destination = file("${project.jacoco.reportsDir}/$name/jacoco${name.capitalize()}Report.xml")
-    jacocoAcceptanceTestReport.reports.html.enabled = true
-    jacocoAcceptanceTestReport.reports.xml.enabled = true
-}
-
 artifacts {
     archives shadowJar
 }
@@ -353,11 +368,11 @@ instrumentedDistZip {
     classifier = 'bin-instrumented'
 }
 
-integrationTest {
-    jacocoIntegrationTestReport.reports.html.destination = file("${project.jacoco.reportsDir}/$name/html")
-    jacocoIntegrationTestReport.reports.xml.destination = file("${project.jacoco.reportsDir}/$name/jacoco${name.capitalize()}Report.xml")
-    jacocoIntegrationTestReport.reports.html.enabled = true
-    jacocoIntegrationTestReport.reports.xml.enabled = true
+jacocoTestReport {
+    reports {
+        html.enabled = true
+        xml.enabled = true
+    }
 }
 
 pmd {
@@ -369,9 +384,4 @@ processResources {
     filter ReplaceTokens, tokens: [
         'version': project.version
     ]
-}
-
-test {
-    jacocoTestReport.reports.html.enabled = true
-    jacocoTestReport.reports.xml.enabled = true
 }
