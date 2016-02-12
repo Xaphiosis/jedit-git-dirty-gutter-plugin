@@ -10,9 +10,11 @@ plugins {
     id 'distribution'
     id 'findbugs'
     id 'jacoco'
+    id 'maven-publish'
     id 'pmd'
     id 'com.github.johnrengelman.shadow' version '1.2.3'
     id 'com.github.kt3k.coveralls' version '2.4.0'
+    id 'com.jfrog.bintray' version '1.6'
     id 'de.undercouch.download' version '2.1.0'
     id 'nebula.provided-base' version '3.0.3'
 }
@@ -384,4 +386,38 @@ processResources {
     filter ReplaceTokens, tokens: [
         'version': project.version
     ]
+}
+
+publishing {
+    publications {
+        maven(MavenPublication) {
+            artifact shadowJar
+            artifact source: distTar, classifier: 'bin', extension: 'tar.gz'
+            artifact source: distZip, classifier: 'bin', extension: 'zip'
+        }
+    }
+}
+
+bintray {
+    user = bintrayUser
+    key = bintrayKey
+
+    publish = true
+    publications = ['maven']
+
+    pkg {
+        repo = 'maven'
+        name = 'io.github.ssoloff:jedit-git-dirty-gutter-plugin'
+        desc = 'jEdit Git DirtyGutter plugin'
+        websiteUrl = 'https://github.com/ssoloff/jedit-git-dirty-gutter-plugin'
+        issueTrackerUrl = 'https://github.com/ssoloff/jedit-git-dirty-gutter-plugin/issues'
+        vcsUrl = 'https://github.com/ssoloff/jedit-git-dirty-gutter-plugin.git'
+        licenses = ['GPL-2.0']
+        publicDownloadNumbers = true
+
+        version {
+            name = "${project.version}"
+            desc = "jEdit Git DirtyGutter plugin ${project.version}"
+        }
+    }
 }
