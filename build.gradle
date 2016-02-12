@@ -402,6 +402,7 @@ bintray {
     user = bintrayUser
     key = bintrayKey
 
+    dryRun = bintrayDryRun.toBoolean()
     publish = true
     publications = ['maven']
 
