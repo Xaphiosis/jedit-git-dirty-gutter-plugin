@@ -307,7 +307,8 @@ tasks.withType(Test) {
         def functionalTestPluginBinDistTarPaths = configurations["${task.name}Plugins"].files*.path
         functionalTestPluginBinDistTarPaths.each { path ->
             copy {
-                from tarTree(path).files
+                from tarTree(path)
+                include '*.jar'
                 into functionalTestPluginJarsDir
             }
         }
@@ -419,5 +420,12 @@ bintray {
             name = "${project.version}"
             desc = "jEdit Git DirtyGutter plugin ${project.version}"
         }
+    }
+}
+
+[distTar, distZip, instrumentedDistTar, instrumentedDistZip].each { task ->
+    def distRootDir = "${task.baseName}-${task.version}-${task.classifier}/"
+    task.eachFile { fileCopyDetails ->
+        fileCopyDetails.path -= distRootDir
     }
 }
