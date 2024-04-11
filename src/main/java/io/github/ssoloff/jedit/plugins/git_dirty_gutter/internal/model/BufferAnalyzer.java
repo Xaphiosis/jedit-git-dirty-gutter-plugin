@@ -30,6 +30,8 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
+import lcm.XSymbolSubst;
+
 /**
  * Provides various types of analysis for a buffer.
  */
@@ -103,7 +105,14 @@ public final class BufferAnalyzer {
         final Path repoRelativeFilePath = gitCommands.getRepoRelativeFilePathAtHeadRevision(buffer.getFilePath());
         final StringWriter headRevisionFileWriter = new StringWriter();
         gitCommands.readFileContentAtHeadRevision(repoRelativeFilePath, headRevisionFileWriter);
-        return StringUtils.splitLinesWithExplicitFinalLine(headRevisionFileWriter.getBuffer());
+
+        // we only want to do xsymbol translation if this is an Isabelle buffer
+        if (buffer.getEncoding().equals("UTF-8-Isabelle")) {
+            final StringBuffer xsymb = XSymbolSubst.xsymbolToUnicodeBuffer(headRevisionFileWriter.getBuffer().toString());
+            return StringUtils.splitLinesWithExplicitFinalLine(xsymb);
+        } else {
+            return StringUtils.splitLinesWithExplicitFinalLine(headRevisionFileWriter.getBuffer());
+        }
     }
 
     /**
