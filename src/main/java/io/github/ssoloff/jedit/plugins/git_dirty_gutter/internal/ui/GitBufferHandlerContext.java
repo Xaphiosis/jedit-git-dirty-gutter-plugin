@@ -68,6 +68,12 @@ final class GitBufferHandlerContext implements IGitBufferHandlerContext {
             public Path getFilePath() {
                 return Paths.get(buffer.getPath());
             }
+
+            @Override
+            public String getEncoding() {
+                return buffer.getStringProperty(buffer.ENCODING);
+            }
+
         };
     }
 

@@ -38,4 +38,11 @@ public interface IBuffer {
      * @return The lines of text in the buffer.
      */
     List<String> getLines();
+
+    /**
+     * Gets the encoding of the text in the buffer.
+     *
+     * @return The encoding.
+     */
+    String getEncoding();
 }
