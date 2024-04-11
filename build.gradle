@@ -20,7 +20,7 @@ plugins {
 }
 
 group = 'io.github.ssoloff'
-version = '0.1.0'
+version = '0.1.1-xsymbol'
 sourceCompatibility = '1.7'
 
 ext {
