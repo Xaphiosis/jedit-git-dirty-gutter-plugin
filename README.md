@@ -1,3 +1,43 @@
+# Notes on this (xsymbol) fork
+
+This fork uses lcm.XSymbolSubst from an xsymbol-enabled DirtyGutter plugin to
+translate xsymbols in file to unicode, which are already translated in the
+buffer in the `UTF-8-Isabelle` encoding. Not doing this results in spurious
+line change indicators.
+
+This requires an xsymbol-enabled DirtyGutter plugin (e.g. version
+`0.4-xsymbol`).
+
+## Compiling in 2024
+
+Attempts to build this plugin by someone very inexperienced with gradle,
+eclipse, and so on many years after the last plugin update resulted in many
+difficulties. The project was heavily engineered to include many tests, none of
+whose frameworks seem to work properly anymore, and there were difficulties
+locating build dependencies.
+
+In order to obtain a compiled jar file, `build.gradle` was modified to accept
+jars in a `libs` subfolder to fulfill the missing dependencies:
+* `DirtyGutter.jar` (xsymbol-enabled DirtyGutter plugin mentioned above)
+* `jedit.jar` (JEdit version 5.7pre1)
+* `CommonControls.jar` (version 1.7.4 unmodified plugin obtained from JEdit website)
+* `GitPlugin.jar` (version 0.8 unmodified plugin obtained from JEdit website)
+
+With those in place, a "just give me the jar" compilation goes like this:
+```bash
+# Use Java 11
+export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+rm -rf build
+# Avoid all tests, which while nice, don't seem to work properly anymore.
+gradle build -x compileTestGroovy -x compileIntegrationTestGroovy -x compileAcceptanceTestGroovy -x checkstyleMain -x compileSmokeTestGroovy -x pmdMain -x pmdTest -x smokeTest -x findbugsMain
+```
+
+The above has been included as a `minimal_build.sh` script. A more experienced
+Java developer could update the breaking dependencies / test frameworks in the
+canonical way, but this fork is a drive-thru minimal change to functionality.
+
+# Original README follows below:
+
 # jEdit Git DirtyGutter Plugin
 
 [![Build Status](https://travis-ci.org/ssoloff/jedit-git-dirty-gutter-plugin.svg?branch=master)](https://travis-ci.org/ssoloff/jedit-git-dirty-gutter-plugin)
