@@ -69,6 +69,9 @@ repositories {
     maven {
         url 'https://dl.bintray.com/ssoloff/maven/'
     }
+    flatDir {
+        dirs 'libs'
+    }
 }
 
 dependencies {
@@ -78,9 +81,9 @@ dependencies {
     )
     provided(
         [group: 'io.github.ssoloff', name: 'jedit', version: '5.2.0'],
-        [group: 'io.github.ssoloff', name: 'jedit-common-controls-plugin', version: '1.7.4'],
-        [group: 'io.github.ssoloff', name: 'jedit-dirty-gutter-plugin', version: '0.3b'],
-        [group: 'io.github.ssoloff', name: 'jedit-git-plugin', version: '0.7.1']
+        [group: 'io.github.ssoloff', name: 'CommonControls', version: '1.7.4'],
+        [group: 'io.github.ssoloff', name: 'DirtyGutter', version: '0.4'],
+        [group: 'io.github.ssoloff', name: 'GitPlugin', version: '0.8']
     )
     testCompile(
         [group: 'com.athaydes', name: 'spock-reports', version: '1.2.8', transitive: false],
@@ -91,7 +94,7 @@ dependencies {
     functionalTestCompile(
         [group: 'com.athaydes', name: 'spock-reports', version: '1.2.8', transitive: false],
         [group: 'commons-io', name: 'commons-io', version: '2.4'],
-        [group: 'io.github.ssoloff', name: 'jedit-test-framework', version: jeditFunctionalTestVersion],
+        // [group: 'io.github.ssoloff', name: 'jedit-test-framework', version: jeditFunctionalTestVersion],
         [group: 'org.slf4j', name: 'slf4j-api', version: '1.7.13'],
         [group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.13'],
         [group: 'org.spockframework', name: 'spock-core', version: '1.0-groovy-2.4']
@@ -100,9 +103,9 @@ dependencies {
         [group: 'io.github.ssoloff', name: 'jedit', version: jeditFunctionalTestVersion, classifier: 'bin', ext: 'tar.gz']
     )
     functionalTestPlugins(
-        [group: 'io.github.ssoloff', name: 'jedit-common-controls-plugin', version: '1.7.4', classifier: 'bin', ext: 'tar.gz'],
-        [group: 'io.github.ssoloff', name: 'jedit-dirty-gutter-plugin', version: '0.3b', classifier: 'bin', ext: 'tar.gz'],
-        [group: 'io.github.ssoloff', name: 'jedit-git-plugin', version: '0.7.1', classifier: 'bin', ext: 'tar.gz'],
+        [group: 'io.github.ssoloff', name: 'CommonControls', version: '1.7.4', classifier: 'bin', ext: 'tar.gz'],
+        [group: 'io.github.ssoloff', name: 'DirtyGutter', version: '0.4', classifier: 'bin', ext: 'tar.gz'],
+        [group: 'io.github.ssoloff', name: 'GitPlugin', version: '0.8', classifier: 'bin', ext: 'tar.gz'],
         [group: 'io.github.ssoloff', name: 'jedit-project-viewer-plugin', version: '3.5.3', classifier: 'bin', ext: 'tar.gz']
     )
     acceptanceTestPlugins(
